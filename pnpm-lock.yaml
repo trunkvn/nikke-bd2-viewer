@@ -17,6 +17,12 @@ importers:
       react-dom:
         specifier: 19.3.0
         version: 19.3.0(react@19.3.0)
+      spine-webgl-40:
+        specifier: npm:@esotericsoftware/spine-webgl@4.0.31
+        version: '@esotericsoftware/spine-webgl@4.0.31'
+      spine-webgl-41:
+        specifier: npm:@esotericsoftware/spine-webgl@4.1.56
+        version: '@esotericsoftware/spine-webgl@4.1.56'
     devDependencies:
       '@tailwindcss/turbopack':
         specifier: ^4
@@ -162,6 +168,18 @@ packages:
   '@eslint/plugin-kit@0.4.1':
     resolution: {integrity: sha512-43/qtrDUokr7LJqoF2c3+RInu/t4zfrpYdoSDfYyhg52rwLV6TnOvdG4fXm7IkSB3wErkcmJS9iEhjVtOSEjjA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@esotericsoftware/spine-core@4.0.31':
+    resolution: {integrity: sha512-SiP87Xudw8qfg6t1Gv4NVoqP+Tw0eaCj1ApS+GXLdCvb/i5FNQevqEt4RgEvD8j1vJy+WVriPLMJYQSdaSehgA==}
+
+  '@esotericsoftware/spine-core@4.1.56':
+    resolution: {integrity: sha512-sJbqIof+yE7LbkImbJt2cHfYcGBqadABttx8RY3ggu4JCa0sZLGdh+tWwe0+aRoN/91VI0rGSgG16fmkZ7Hc8Q==}
+
+  '@esotericsoftware/spine-webgl@4.0.31':
+    resolution: {integrity: sha512-G6j31+caQJck/4UN8TVaTKnU0RPysI7ECMkCxcXBGsTmv98m0O5Wx18YgeIf//Bg8KAO+mZ/DmwzeScwGG9HPA==}
+
+  '@esotericsoftware/spine-webgl@4.1.56':
+    resolution: {integrity: sha512-LNr/X4B81/rC96mzFV+L5LPnqaIj1v3RBCKTagmFlAd/2MtXcxwEatIQVPq487NigFwlrkvmxQuMpl1TRf3xxw==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -2100,6 +2118,18 @@ snapshots:
     dependencies:
       '@eslint/core': 0.17.0
       levn: 0.4.1
+
+  '@esotericsoftware/spine-core@4.0.31': {}
+
+  '@esotericsoftware/spine-core@4.1.56': {}
+
+  '@esotericsoftware/spine-webgl@4.0.31':
+    dependencies:
+      '@esotericsoftware/spine-core': 4.0.31
+
+  '@esotericsoftware/spine-webgl@4.1.56':
+    dependencies:
+      '@esotericsoftware/spine-core': 4.1.56
 
   '@humanfs/core@0.19.2':
     dependencies:

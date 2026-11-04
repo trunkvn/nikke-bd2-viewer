@@ -11,7 +11,9 @@
   "dependencies": {
     "next": "16.4.5",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "spine-webgl-40": "npm:@esotericsoftware/spine-webgl@4.0.31",
+    "spine-webgl-41": "npm:@esotericsoftware/spine-webgl@4.1.56"
   },
   "devDependencies": {
     "@tailwindcss/turbopack": "^4",
