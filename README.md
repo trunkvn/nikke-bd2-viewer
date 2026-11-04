@@ -29,6 +29,17 @@ node scripts/render-posters.mjs --force          # render lại toàn bộ thumb
 Asset thuộc bản quyền Shift Up / Level Infinite. `public/assets/` và `data/nikke.local.json` đã nằm trong
 `.gitignore`: **đừng commit hay deploy công khai**.
 
+## Chia sẻ tạm thời qua Cloudflare Tunnel
+
+```bash
+brew install cloudflared      # một lần
+node scripts/share.mjs        # build + chạy bản production + mật khẩu ngẫu nhiên + link trycloudflare.com
+```
+
+In ra link `https://xxxx.trycloudflare.com` và mật khẩu (Basic Auth, tên đăng nhập gõ gì cũng được). Ctrl+C để đóng link.
+Tuỳ chọn: `--password <mk>`, `--skip-build`, `--port <cổng>`. Chỉ nên chia sẻ cho người quen và trong thời gian ngắn vì
+`public/assets` là asset game có bản quyền.
+
 ## Giọng nói nhân vật
 
 Giọng gốc của nhân vật, theo ngôn ngữ, đặt trong thư mục `voice/<lang>/` của nhân vật:
