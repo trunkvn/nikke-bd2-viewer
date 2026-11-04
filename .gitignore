@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# community game assets (local only, do not commit/deploy)
+/public/assets/
+/data/nikke.local.json
