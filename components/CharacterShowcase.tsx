@@ -109,7 +109,11 @@ function Showcase({
   const isDesktop = useMedia(DESKTOP_QUERY, true);
   const isWide = useMedia(WIDE_QUERY, true);
   const rootRef = useRef<HTMLDivElement>(null);
-  const { isFullscreen, supported: canFullscreen } = useFullscreen();
+  const { isFullscreen: apiFullscreen, supported: apiSupported } = useFullscreen();
+  // Trình duyệt không có Fullscreen API cho phần tử thường (iPhone Safari): phóng khung viewer ra phủ kín cửa sổ
+  // (che luôn header). Không ẩn được thanh địa chỉ của trình duyệt, nhưng nhân vật và điều khiển thì giống hệt.
+  const [immersive, setImmersive] = useState(false);
+  const isFullscreen = apiFullscreen || immersive;
 
   // Danh sách animation thuộc về từng skin; đổi skin thì trạng thái cũ tự mất hiệu lực.
   const [anim, setAnim] = useState<AnimState | null>(null);
@@ -147,9 +151,22 @@ function Showcase({
   };
 
   const toggleFullscreen = () => {
-    if (document.fullscreenElement) void document.exitFullscreen();
-    else void rootRef.current?.requestFullscreen().catch(() => {});
+    if (document.fullscreenElement) {
+      void document.exitFullscreen();
+    } else if (apiSupported) {
+      void rootRef.current?.requestFullscreen().catch(() => setImmersive(true));
+    } else {
+      setImmersive((v) => !v);
+    }
   };
+
+  // Esc thoát chế độ phủ kín giả lập (toàn màn hình thật đã được trình duyệt tự thoát bằng Esc).
+  useEffect(() => {
+    if (!immersive) return;
+    const onEsc = (e: KeyboardEvent) => e.key === "Escape" && setImmersive(false);
+    window.addEventListener("keydown", onEsc);
+    return () => window.removeEventListener("keydown", onEsc);
+  }, [immersive]);
 
   // Phím tắt: 1–9 chọn animation, I mở/đóng INFO, L bật/tắt lặp, F toàn màn hình.
   useEffect(() => {
@@ -174,7 +191,7 @@ function Showcase({
         skin.render.kind === "spine"
       ) {
         setLoop((v) => !v);
-      } else if ((e.key === "f" || e.key === "F") && canFullscreen) {
+      } else if (e.key === "f" || e.key === "F") {
         toggleFullscreen();
       } else if (e.key === "b" || e.key === "B") {
         cycleBackground();
@@ -184,7 +201,7 @@ function Showcase({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selectable, loop, skin.render.kind, canFullscreen, availablePoses, pose, onSelectPose]);
+  }, [selectable, loop, skin.render.kind, apiSupported, availablePoses, pose, onSelectPose]);
 
   // Giao diện ẩn khi toàn màn hình + rảnh tay (không ẩn khi đang mở INFO): nhân vật chiếm trọn màn hình.
   const hideUi = isFullscreen && !infoOpen;
@@ -208,8 +225,12 @@ function Showcase({
   return (
     <div
       ref={rootRef}
-      className={`relative w-full overflow-hidden bg-bg ${
-        isFullscreen ? "h-dvh" : "h-[calc(100dvh-3.5rem)] min-h-[560px]"
+      className={`w-full overflow-hidden bg-bg ${
+        immersive
+          ? "fixed inset-0 z-50 h-dvh"
+          : apiFullscreen
+            ? "relative h-dvh"
+            : "relative h-[calc(100dvh-3.5rem)] min-h-[560px]"
       }`}
     >
       <CharacterViewer
@@ -222,12 +243,7 @@ function Showcase({
         voice={voice}
         controlsHidden={hideUi}
         toolbarExtra={
-          canFullscreen ? (
-            <FullscreenButton
-              active={isFullscreen}
-              onToggle={toggleFullscreen}
-            />
-          ) : null
+          <FullscreenButton active={isFullscreen} onToggle={toggleFullscreen} />
         }
         onAnimations={(list) => setAnim({ viewKey, list, current: null })}
         onPlaying={(name) =>
