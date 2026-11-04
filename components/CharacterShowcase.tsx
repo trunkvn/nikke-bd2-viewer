@@ -215,7 +215,6 @@ function Showcase({
       <CharacterViewer
         className="absolute inset-0"
         skin={viewSkin}
-        pose={pose}
         name={character.name}
         insets={insets}
         captionBottom={hideUi || isDesktop ? 24 : hasDock ? dockH + 28 : 20}

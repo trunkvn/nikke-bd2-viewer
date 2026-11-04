@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Pose, Render, Skin } from "@/data/types";
+import type { Render, Skin } from "@/data/types";
 import type { VoiceUi } from "@/lib/useVoice";
 import { BackgroundPicker } from "./BackgroundPicker";
 import { ImageRenderer } from "./ImageRenderer";
@@ -10,52 +10,27 @@ import { ViewerBackdrop } from "./ViewerBackdrop";
 import { ViewerStage, type Insets } from "./ViewerStage";
 import { VoiceLangButton, VoiceToggle } from "./VoiceToggle";
 
-/** Một "lớp" nhân vật: một skeleton/ảnh cụ thể (skin + tư thế). Chuyển skin/tư thế = chuyển từ lớp này sang lớp khác. */
-type LayerDef = { key: string; render: Render; skinId: string; pose: Pose; label: string };
-
-/** Lớp cũ đang rời đi; `outro` là lệnh phát animation "thoát" (nếu có) rồi giữ khung cuối. */
-type LeavingLayer = LayerDef & { outro: PlayCommand | null };
+/** Một "lớp" nhân vật: một skeleton/ảnh cụ thể (skin + tư thế). Chuyển skin/tư thế = mờ từ lớp này sang lớp khác. */
+type LayerDef = { key: string; render: Render; label: string };
 
 type ViewState = {
-  /** Key của lớp hiện tại lần gần nhất, để phát hiện khi chuyển. */
+  /** Lớp hiện tại lần gần nhất, để phát hiện khi chuyển. */
   def: LayerDef;
-  leaving: LeavingLayer | null;
-  /** Animation mở đầu của lớp mới (vào tư thế mới). */
-  intro?: string;
+  /** Lớp cũ đang mờ đi. */
+  leaving: LayerDef | null;
   /** Lớp mới đã vẽ khung hình đầu tiên: lúc này lớp cũ mới mờ đi. */
   ready: boolean;
-  /**
-   * Lớp mới đã được phép nạp. Khi có animation "thoát" thì chờ nó chạy xong rồi mới nạp lớp mới: việc khởi tạo WebGL
-   * và biên dịch shader chạy trên luồng chính và làm đứng hình, nên để nó rơi vào lúc lớp cũ đang giữ khung cuối.
-   */
-  armed: boolean;
 };
 
-/**
- * Chuyển giữa hai tư thế chiến đấu (ngắm ↔ nấp) của cùng một skin: skeleton cũ chạy `to_<tư thế mới>` rồi giữ khung cuối,
- * skeleton mới mở đầu bằng chính animation `to_<tư thế mới>` của nó rồi về idle, hai lớp mờ chồng lên nhau.
- * Các trường hợp khác (đổi skin, đứng ↔ ngắm/nấp...) chỉ mờ chồng, vì không có animation chuyển tiếp phù hợp.
- */
-function transitionFor(prev: LayerDef, next: LayerDef): { outro: PlayCommand | null; intro?: string } {
-  const poseToPose =
-    prev.skinId === next.skinId && prev.pose !== next.pose && prev.pose !== "stand" && next.pose !== "stand";
-  if (!poseToPose) return { outro: null };
-  const anim = `to_${next.pose}`;
-  return { outro: { name: anim, nonce: 1, hold: true }, intro: anim };
-}
-
 const CROSSFADE_MS = 220;
-/** Độ dài animation chuyển tư thế (to_aim/to_cover đều 0.2s) cộng chút dư. */
-const OUTRO_MS = 230;
 
 /**
  * Chọn renderer theo loại render của skin/tư thế.
  * ViewerStage không bị remount khi đổi skin/tư thế nên zoom/pan được giữ nguyên. Trong lúc chuyển, lớp cũ được giữ lại
- * cho tới khi lớp mới nạp xong rồi mới mờ đi, nên không có khoảnh khắc trống.
+ * cho tới khi lớp mới nạp xong rồi mới mờ đi (crossfade), nên không có khoảnh khắc trống.
  */
 export function CharacterViewer({
   skin,
-  pose = "stand",
   name,
   className,
   insets,
@@ -68,8 +43,6 @@ export function CharacterViewer({
   controlsHidden,
 }: {
   skin: Skin;
-  /** Tư thế đang xem; dùng để chọn animation chuyển tiếp. `skin.render` đã là render của tư thế này. */
-  pose?: Pose;
   name: string;
   className?: string;
   /** Phần diện tích bị giao diện che; nhân vật căn giữa trong phần còn lại. */
@@ -88,26 +61,18 @@ export function CharacterViewer({
   const { render } = skin;
   const label = `${name} — ${skin.name}`;
   const isImage = render.kind === "image";
-  const def: LayerDef = { key: render.kind === "spine" ? render.skel : skin.id, render, skinId: skin.id, pose, label };
+  const def: LayerDef = { key: render.kind === "spine" ? render.skel : skin.id, render, label };
 
-  const [view, setView] = useState<ViewState>({ def, leaving: null, ready: false, armed: true });
+  const [view, setView] = useState<ViewState>({ def, leaving: null, ready: false });
 
   // Điều chỉnh state ngay trong lúc render (cách React khuyến nghị để phản ứng với prop đổi, không cần effect):
   // khi lớp hiện tại đổi sang một lớp khác thì lớp cũ thành "đang rời đi".
   if (view.def.key !== def.key) {
-    const t = transitionFor(view.def, def);
-    setView({ def, leaving: { ...view.def, outro: t.outro }, intro: t.intro, ready: false, armed: t.outro === null });
+    setView({ def, leaving: view.def, ready: false });
   }
 
   // Ảnh tĩnh không có bước nạp dài nên coi như sẵn sàng ngay.
   const ready = view.ready || render.kind === "image";
-
-  // Có animation thoát: đợi nó chạy xong rồi mới cho lớp mới bắt đầu nạp.
-  useEffect(() => {
-    if (view.armed) return;
-    const t = window.setTimeout(() => setView((v) => (v.armed ? v : { ...v, armed: true })), OUTRO_MS);
-    return () => window.clearTimeout(t);
-  }, [view.armed]);
 
   // Gỡ lớp cũ sau khi mờ xong. Nếu lớp mới mãi không báo sẵn sàng (lỗi nạp) thì vẫn gỡ sau một lúc để khỏi treo.
   useEffect(() => {
@@ -125,9 +90,9 @@ export function CharacterViewer({
   const captionLeft = (insets?.left ?? 0) + 24;
   const captionRight = (insets?.right ?? 0) + 24;
 
-  const layers: { layer: LayerDef; leaving: LeavingLayer | null }[] = [
-    ...(view.leaving ? [{ layer: view.leaving, leaving: view.leaving }] : []),
-    ...(view.armed ? [{ layer: def, leaving: null }] : []),
+  const layers: { layer: LayerDef; leaving: boolean }[] = [
+    ...(view.leaving ? [{ layer: view.leaving, leaving: true }] : []),
+    { layer: def, leaving: false },
   ];
 
   return (
@@ -180,13 +145,12 @@ export function CharacterViewer({
           {layer.render.kind === "image" ? (
             <ImageRenderer src={layer.render.src} alt={layer.label} />
           ) : leaving ? (
-            <SpineRenderer render={layer.render} label={layer.label} command={leaving.outro} interactive={false} />
+            <SpineRenderer render={layer.render} label={layer.label} interactive={false} />
           ) : (
             <SpineRenderer
               render={layer.render}
               label={layer.label}
               command={command}
-              intro={view.intro}
               quietLoading={view.leaving !== null}
               onReady={markReady}
               onAnimations={onAnimations}
