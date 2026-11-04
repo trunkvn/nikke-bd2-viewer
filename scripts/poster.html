@@ -1,0 +1,115 @@
+<!doctype html>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; background: transparent; }
+  canvas { display: block; }
+</style>
+<canvas id="c"></canvas>
+<script>
+  // Trang phụ trợ cho scripts/render-posters.mjs: vẽ 1 khung hình Spine rồi báo window.__done.
+  // Query: v=4.0|4.1, skel, atlas, w, h, mode=bust|full
+  const q = new URLSearchParams(location.search);
+  const W = +q.get("w") || 600;
+  const H = +q.get("h") || 800;
+  const mode = q.get("mode") || "bust";
+  const fail = (e) => { window.__error = String(e && e.message ? e.message : e); };
+
+  const script = document.createElement("script");
+  script.src = `/node_modules/spine-webgl-${q.get("v") === "4.1" ? "41" : "40"}/dist/iife/spine-webgl.js`;
+  script.onerror = () => fail("không nạp được runtime Spine");
+  script.onload = () => run().catch(fail);
+  document.head.appendChild(script);
+
+  async function run() {
+    const canvas = document.getElementById("c");
+    canvas.width = W; canvas.height = H;
+    const context = new spine.ManagedWebGLRenderingContext(canvas, { alpha: true, premultipliedAlpha: true });
+    const gl = context.gl;
+    const assets = new spine.AssetManager(context, "");
+    assets.loadBinary(q.get("skel"));
+    assets.loadTextureAtlas(q.get("atlas"));
+    await new Promise((res, rej) => {
+      const t = () => assets.hasErrors() ? rej(JSON.stringify(assets.getErrors())) : assets.isLoadingComplete() ? res() : setTimeout(t, 30);
+      t();
+    });
+
+    const data = new spine.SkeletonBinary(new spine.AtlasAttachmentLoader(assets.require(q.get("atlas")))).readSkeletonData(assets.require(q.get("skel")));
+    const skeleton = new spine.Skeleton(data);
+    // Giống SpineRenderer: skin default gần như rỗng thì dùng skin có nhiều attachment nhất.
+    let best = null, bestCount = data.defaultSkin.getAttachments().length;
+    for (const s of data.skins) {
+      if (s === data.defaultSkin) continue;
+      const n = s.getAttachments().length;
+      if (n > bestCount) { best = s; bestCount = n; }
+    }
+    const wanted = q.get("spineSkin");
+    const variant = wanted ? data.findSkin(wanted) : best;
+    if (variant) skeleton.setSkin(variant);
+    const state = new spine.AnimationState(new spine.AnimationStateData(data));
+    const idle = (data.findAnimation("idle") || data.animations[0]).name;
+    state.setAnimation(0, idle, true);
+    state.update(0.5);
+    skeleton.setToSetupPose();
+    state.apply(skeleton);
+    skeleton.updateWorldTransform();
+
+    const offset = new spine.Vector2(), size = new spine.Vector2();
+    skeleton.getBounds(offset, size, []);
+    const cx = offset.x + size.x / 2;
+    const cy = offset.y + size.y / 2;
+
+    const renderer = new spine.SceneRenderer(canvas, context);
+    const cam = renderer.camera;
+    cam.zoom = 1;
+    const draw = (x, y, vw, vh) => {
+      cam.position.x = x; cam.position.y = y;
+      cam.setViewport(vw, vh);
+      cam.update();
+      gl.viewport(0, 0, W, H);
+      gl.clearColor(0, 0, 0, 0);
+      gl.clear(gl.COLOR_BUFFER_BIT);
+      renderer.begin();
+      renderer.drawSkeleton(skeleton, true);
+      renderer.end();
+    };
+
+    // Lần 1: vẽ cả người vào khung rồi đo hình bóng thật (bounds của Spine hay bị phồng bởi vũ khí/hiệu ứng).
+    let fullH = Math.max(size.y * 1.04, (size.x * 1.04 * H) / W);
+    let fullW = fullH * (W / H);
+    let camX = cx, camY = cy, vh = fullH, vw = fullW;
+    draw(cx, cy, fullW, fullH);
+    if (mode === "bust") {
+      const px = new Uint8Array(W * H * 4);
+      gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, px);
+      const rowCount = new Uint32Array(H);
+      for (let r = 0; r < H; r++) { let n = 0; for (let x = 0; x < W; x++) if (px[(r * W + x) * 4 + 3] > 40) n++; rowCount[r] = n; }
+      // "Đỉnh đầu" = hàng đầu tiên (từ trên xuống) đủ rộng để là đầu/tóc/mũ, bỏ qua vật mảnh nhô lên
+      // như giáo, gậy, ăng-ten (rộng chỉ vài pixel).
+      const headRow = Math.round(W * 0.07);
+      let top = -1, bottom = -1;
+      for (let r = H - 1; r >= 0; r--) if (rowCount[r] >= headRow) { top = r; break; }
+      for (let r = 0; r < H; r++) if (rowCount[r] >= 4) { bottom = r; break; }
+      if (top > bottom) {
+        const ppu = H / fullH;                         // pixel trên đơn vị thế giới
+        const charH = (top - bottom) / ppu;
+        // Tâm ngang của đầu = trọng tâm các pixel đặc trong 12% trên cùng của hình bóng.
+        const bandLow = top - Math.max(4, Math.round((top - bottom) * 0.12));
+        let sx = 0, sn = 0;
+        for (let r = bandLow; r <= top; r++) for (let x = 0; x < W; x++) if (px[(r * W + x) * 4 + 3] > 40) { sx += x; sn++; }
+        const headX = cx + ((sn ? sx / sn : W / 2) - W / 2) / ppu;
+        const worldTop = cy + (top + 1 - H / 2) / ppu;
+        vh = charH * 0.36;                              // nửa người trên
+        vw = vh * (W / H);
+        camX = headX;
+        camY = worldTop + vh * 0.08 - vh / 2;           // chừa 8% phía trên (phần đỉnh đầu mảnh nằm trên hàng đo)
+      }
+    }
+    draw(camX, camY, vw, vh);
+    const redraw = () => {
+      draw(camX, camY, vw, vh);
+      requestAnimationFrame(redraw);
+    };
+    requestAnimationFrame(redraw);
+    window.__done = true;
+  }
+</script>
