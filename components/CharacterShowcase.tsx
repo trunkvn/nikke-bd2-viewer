@@ -396,6 +396,13 @@ function Showcase({
           </div>
         )}
       </div>
+
+      {/* Toàn màn hình ẩn hết giao diện; giữ lại một nút thoát mờ để điện thoại (không có Esc/phím F) thoát được. */}
+      {hideUi && (
+        <div className="absolute right-3 top-3 z-20 opacity-60 transition-opacity hover:opacity-100 focus-within:opacity-100">
+          <FullscreenButton active onToggle={toggleFullscreen} />
+        </div>
+      )}
     </div>
   );
 }
