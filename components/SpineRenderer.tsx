@@ -13,8 +13,6 @@ export type PlayCommand = {
   name: string;
   nonce: number;
   loop?: boolean;
-  /** Phát một lần rồi GIỮ khung cuối (không quay về idle): dùng cho animation "thoát" khi chuyển tư thế. */
-  hold?: boolean;
 };
 
 /**
@@ -70,7 +68,6 @@ export function SpineRenderer({
   onPlaying,
   onTouch,
   speaking = false,
-  intro,
   interactive = true,
   onReady,
   quietLoading = false,
@@ -87,9 +84,7 @@ export function SpineRenderer({
   onTouch?: () => void;
   /** Đang phát giọng nói: nhép miệng bằng animation talk_* trên track riêng. */
   speaking?: boolean;
-  /** Animation phát một lần đầu tiên ngay khi nạp xong (ví dụ "to_cover" khi vào tư thế nấp), rồi về idle. */
-  intro?: string;
-  /** false: lớp đang rời đi trong lúc chuyển tư thế, không nhận nhấp chuột. */
+  /** false: lớp đang mờ đi khi chuyển skin/tư thế, không nhận nhấp chuột. */
   interactive?: boolean;
   /** Báo khi khung hình đầu tiên đã vẽ xong (để lớp cũ biết lúc mờ đi). */
   onReady?: () => void;
@@ -102,12 +97,11 @@ export function SpineRenderer({
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const playRef = useRef<((name: string, loop?: boolean, hold?: boolean) => void) | null>(null);
+  const playRef = useRef<((name: string, loop?: boolean) => void) | null>(null);
   const tapRequest = useRef<{ clientX: number; clientY: number } | null>(null);
   const talkRef = useRef<((on: boolean) => void) | null>(null);
   const speakingRef = useRef(speaking);
   const cbRef = useRef({ onAnimations, onPlaying, onTouch, onReady });
-  const introRef = useRef(intro);
   useEffect(() => {
     cbRef.current = { onAnimations, onPlaying, onTouch, onReady };
   });
@@ -124,7 +118,7 @@ export function SpineRenderer({
   });
 
   useEffect(() => {
-    if (command) playRef.current?.(command.name, command.loop, command.hold);
+    if (command) playRef.current?.(command.name, command.loop);
   }, [command]);
 
   useEffect(() => {
@@ -191,13 +185,10 @@ export function SpineRenderer({
 
         /**
          * Idle (hoặc loop=true) thì lặp mãi; animation khác phát một lần rồi tự quay về idle.
-         * hold=true: phát một lần rồi giữ nguyên khung cuối.
          */
-        const play = (name: string, loop = false, hold = false) => {
+        const play = (name: string, loop = false) => {
           if (!skeletonData.findAnimation(name)) return;
-          if (hold) {
-            state.setAnimation(0, name, false);
-          } else if (loop || isIdleAnimation(name) || !idleName) {
+          if (loop || isIdleAnimation(name) || !idleName) {
             state.setAnimation(0, name, true);
           } else {
             state.setAnimation(0, name, false);
@@ -220,14 +211,7 @@ export function SpineRenderer({
           }
         };
         talkRef.current = talk;
-        // Animation mở đầu (nếu có) chạy một lần rồi nối vào idle; không có thì vào idle luôn.
-        const introName = introRef.current;
-        if (introName && idleName && skeletonData.findAnimation(introName)) {
-          state.setAnimation(0, introName, false);
-          state.addAnimation(0, idleName, true, 0);
-        } else if (idleName) {
-          state.setAnimation(0, idleName, true);
-        }
+        if (idleName) state.setAnimation(0, idleName, true);
 
         // Khung hình đầu để đo bounds dùng cho việc căn giữa/vừa khung.
         skeleton.setToSetupPose();
