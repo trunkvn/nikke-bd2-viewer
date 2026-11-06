@@ -167,3 +167,12 @@ body::before {
     animation: none;
   }
 }
+
+/* Toàn màn hình (lib/fullscreen.ts): ẩn header, khung viewer cao đủ cả màn hình. */
+html[data-fs] [data-site-header] {
+  display: none;
+}
+html[data-fs] [data-viewer] {
+  height: 100dvh;
+  min-height: 0;
+}
