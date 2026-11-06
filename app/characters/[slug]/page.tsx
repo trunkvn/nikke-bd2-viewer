@@ -148,7 +148,7 @@ async function CharacterContent({ params }: { params: Props["params"] }) {
             <Kbd>I</Kbd> Mở/đóng thông tin này
           </li>
           <li className="flex items-center gap-3">
-            <Kbd>F</Kbd> Toàn màn hình (di chuột để hiện lại giao diện)
+            <Kbd>F</Kbd> Toàn màn hình (dock và nút chuyển nhân vật vẫn dùng được)
           </li>
           <li className="flex items-center gap-3">
             <Kbd>B</Kbd> Đổi nền viewer (hoặc dùng nút nền ở cạnh phải)
