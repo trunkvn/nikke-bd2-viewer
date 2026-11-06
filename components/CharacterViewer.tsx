@@ -40,7 +40,6 @@ export function CharacterViewer({
   onPlaying,
   voice,
   toolbarExtra,
-  controlsHidden,
 }: {
   skin: Skin;
   name: string;
@@ -56,7 +55,6 @@ export function CharacterViewer({
   voice?: VoiceUi;
   /** Nút thêm ở thanh công cụ (ví dụ toàn màn hình), đứng dưới các nút voice. */
   toolbarExtra?: React.ReactNode;
-  controlsHidden?: boolean;
 }) {
   const { render } = skin;
   const label = `${name} — ${skin.name}`;
@@ -101,7 +99,6 @@ export function CharacterViewer({
       className={className}
       insets={insets}
       cssTransform={isImage}
-      controlsHidden={controlsHidden}
       toolbar={
         <>
           {voice?.available && (
