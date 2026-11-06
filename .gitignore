@@ -43,3 +43,4 @@ next-env.d.ts
 # community game assets (local only, do not commit/deploy)
 /public/assets/
 /data/nikke.local.json
+/data/nikke.local.json.bak
