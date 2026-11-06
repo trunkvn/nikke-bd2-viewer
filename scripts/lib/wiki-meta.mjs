@@ -2,6 +2,8 @@
  * Lấy metadata nhân vật từ infobox {{Playable Character}} của wiki NIKKE (MediaWiki API).
  * Mỗi request gộp tối đa 50 trang. Nội dung wiki: CC BY-SA (Fandom).
  */
+import { parseSkillTable } from "./wiki-skills.mjs";
+
 const API = "https://nikke-goddess-of-victory-international.fandom.com/api.php";
 const UA = "interactive-anime-local-fetch (personal fan project)";
 
@@ -61,6 +63,8 @@ export function parseInfobox(wikitext) {
     squad: f.squad ? clean(f.squad) : undefined,
     description: desc ? clean(desc) : undefined,
     released: Number.isNaN(release) ? undefined : release <= Date.now(),
+    burst: f.burst ? f.burst.trim() : undefined,
+    skills: parseSkillTable(wikitext) ?? undefined,
   };
 }
 
