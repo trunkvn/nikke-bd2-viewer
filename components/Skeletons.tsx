@@ -15,7 +15,7 @@ export function GallerySkeleton() {
 /** Skeleton cho trang chi tiết: khung viewer full-bleed cùng chiều cao với trang thật. */
 export function CharacterSkeleton() {
   return (
-    <main aria-busy="true" aria-label="Đang tải" className="relative h-[calc(100dvh-3.5rem)] min-h-[560px] w-full overflow-hidden">
+    <main data-viewer aria-busy="true" aria-label="Đang tải" className="relative h-[calc(100dvh-3.5rem)] min-h-[560px] w-full overflow-hidden">
       <div className="skeleton absolute inset-0" />
       <div className="absolute left-6 top-4 space-y-3">
         <div className="skeleton h-9 w-48" />
