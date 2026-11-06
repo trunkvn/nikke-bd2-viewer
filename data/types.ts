@@ -51,6 +51,46 @@ export type VoiceLang = string;
 /** Giọng nói theo từng ngôn ngữ. */
 export type Voice = Partial<Record<VoiceLang, VoiceSet>>;
 
+/** Một đoạn chữ trong mô tả kỹ năng; `c` là màu đánh dấu của wiki ("cyan" = hiệu ứng, "orange" = chỉ số chính...). */
+export type RichRun = { t: string; c?: string };
+/** Mô tả kỹ năng gồm nhiều dòng, mỗi dòng nhiều đoạn chữ. */
+export type RichLine = RichRun[];
+
+export type SkillKind = "passive" | "active" | "burst";
+
+export type Skill = {
+  name: string;
+  kind: SkillKind;
+  /** Hồi chiêu (giây); bị động thì không có. */
+  cooldown?: number;
+  /** Biểu tượng kỹ năng (đã tải về local), nếu có. */
+  icon?: string;
+  /** Mô tả ở cấp 1. */
+  desc: RichLine[];
+  /** Giá trị chính theo cấp 1–10, ví dụ "328.86% / 30.37%". */
+  levels: string[];
+};
+
+export type WeaponInfo = {
+  name?: string;
+  /** AR, SMG, SG, SR, RL, MG. */
+  type?: string;
+  /** Dung lượng băng đạn. */
+  ammo?: number;
+  /** Thời gian nạp đạn (giây). */
+  reload?: number;
+  control?: string;
+  desc: RichLine[];
+};
+
+export type CharacterSkills = {
+  /** Giai đoạn Burst: "I" | "II" | "III" | "All". */
+  burstStage?: string;
+  weapon?: WeaponInfo;
+  /** Theo thứ tự: kỹ năng 1, kỹ năng 2, Burst. */
+  list: Skill[];
+};
+
 export type Character = {
   id: string;
   slug: string;
@@ -67,4 +107,6 @@ export type Character = {
   skins: Skin[];
   /** Không lưu trong JSON: lib/voice.ts tự quét thư mục public/assets/<game>/<id>/voice/. */
   voice?: Voice;
+  /** Không lưu trong data/nikke.local.json: lib/characters.ts ghép từ data/nikke.skills.local.json (scripts/fetch-skills.mjs). */
+  skills?: CharacterSkills;
 };
