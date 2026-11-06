@@ -90,7 +90,6 @@ export function ViewerStage({
   backdrop,
   overlay,
   toolbar,
-  controlsHidden = false,
   insets = NO_INSETS,
   className = "",
 }: {
@@ -104,8 +103,6 @@ export function ViewerStage({
   overlay?: ReactNode;
   /** Nút bổ sung ở thanh công cụ (đứng phía trên các nút zoom). */
   toolbar?: ReactNode;
-  /** Ẩn thanh công cụ (ví dụ khi toàn màn hình và đang rảnh tay). */
-  controlsHidden?: boolean;
   insets?: Insets;
   /** Kích thước + định vị của khung (ví dụ "absolute inset-0"); mặc định "relative". */
   className?: string;
@@ -276,10 +273,7 @@ export function ViewerStage({
 
       {/* Thanh công cụ ở mép phải; tự dịch sang trái khi có panel phủ bên phải. */}
       <div
-        inert={controlsHidden}
-        className={`absolute top-1/2 z-10 flex -translate-y-1/2 flex-col items-center gap-1.5 transition-[right,opacity] duration-300 ease-out ${
-          controlsHidden ? "opacity-0" : "opacity-100"
-        }`}
+        className="absolute top-1/2 z-10 flex -translate-y-1/2 flex-col items-center gap-1.5 transition-[right] duration-300 ease-out"
         style={{ right: right + 12 }}
       >
         {toolbar}
