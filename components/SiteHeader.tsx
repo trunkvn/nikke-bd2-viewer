@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export function SiteHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-bg/80 backdrop-blur-md">
+    <header data-site-header className="sticky top-0 z-40 border-b border-white/10 bg-bg/80 backdrop-blur-md">
       <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-4 px-4">
         <Link href="/" className="group flex items-center gap-3 outline-none">
           {/* Logo mark tự vẽ: ô cắt góc + vạch chéo, không dùng logo gốc của game. */}
