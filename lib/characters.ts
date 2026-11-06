@@ -1,6 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { Character, Game } from "@/data/types";
+import type { Character, CharacterSkills, Game } from "@/data/types";
 import { loadVoice } from "./voice";
 
 /**
@@ -12,7 +12,14 @@ function loadAll(): Character[] {
   const file = join(process.cwd(), "data", "nikke.local.json");
   if (!existsSync(file)) return [];
   const local = JSON.parse(readFileSync(file, "utf8")) as Character[];
-  return local.map((c) => ({ ...c, voice: loadVoice(c) }));
+  const skills = loadSkills();
+  return local.map((c) => ({ ...c, voice: loadVoice(c), skills: skills[c.id] }));
+}
+
+/** data/nikke.skills.local.json do `scripts/fetch-skills.mjs` sinh ra; không có thì nhân vật không có mục Skills. */
+function loadSkills(): Record<string, CharacterSkills> {
+  const file = join(process.cwd(), "data", "nikke.skills.local.json");
+  return existsSync(file) ? (JSON.parse(readFileSync(file, "utf8")) as Record<string, CharacterSkills>) : {};
 }
 
 // Production: đọc một lần. Dev: đọc lại mỗi lần để thấy ngay dữ liệu/voice vừa thêm.
