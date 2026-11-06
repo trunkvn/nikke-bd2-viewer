@@ -5,6 +5,7 @@ import { Suspense } from "react";
 import { CharacterNav } from "@/components/CharacterNav";
 import { CharacterShowcase } from "@/components/CharacterShowcase";
 import { CharacterSkeleton } from "@/components/Skeletons";
+import { SkillList } from "@/components/SkillList";
 import { Kbd, Panel, SectionTitle } from "@/components/ui/Panel";
 import { getAllCharacters, getCharacterBySlug } from "@/lib/characters";
 import { accentStyle, elementColor, rarityColor } from "@/lib/theme";
@@ -125,6 +126,13 @@ async function CharacterContent({ params }: { params: Props["params"] }) {
           )}
         </dl>
       </section>
+
+      {character.skills && (
+        <section>
+          <SectionTitle>Skills</SectionTitle>
+          <SkillList skills={character.skills} />
+        </section>
+      )}
 
       <section>
         <SectionTitle>Controls</SectionTitle>
