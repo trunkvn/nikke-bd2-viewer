@@ -162,24 +162,20 @@ function Showcase({
     return () => window.removeEventListener("keydown", onKey);
   }, [selectable, loop, skin.render.kind, availablePoses, pose, onSelectPose]);
 
-  // Giao diện ẩn khi toàn màn hình + rảnh tay (không ẩn khi đang mở INFO): nhân vật chiếm trọn màn hình.
-  const hideUi = isFullscreen && !infoOpen;
-
   const drawerOnSide = isDesktop && infoOpen;
   // Desktop: dock nằm ở góc dưới-trái nên không cần chừa đáy. Chỉ chừa chiều ngang bên trái khi màn hình
   // hẹp hoặc khi ngăn INFO đẩy nhân vật về phía dock, để chân nhân vật không chui sau dock.
   const leftInset =
     isDesktop && hasDock && (drawerOnSide || !isWide) ? DOCK_WIDTH + 16 : 0;
-  const insets: Insets = hideUi
-    ? { top: 12, left: 0, right: 0, bottom: 12 }
-    : isDesktop
-      ? {
-          top: 8,
-          left: leftInset,
-          right: drawerOnSide ? DRAWER_WIDTH + 24 : 0,
-          bottom: 12,
-        }
-      : { top: 84, left: 0, right: 0, bottom: hasDock ? dockH + 22 : 14 };
+  // Toàn màn hình giấu khối tên nhân vật nên phần chừa phía trên (mobile) nhỏ lại, chỉ còn hàng nút chuyển nhân vật.
+  const insets: Insets = isDesktop
+    ? {
+        top: 8,
+        left: leftInset,
+        right: drawerOnSide ? DRAWER_WIDTH + 24 : 0,
+        bottom: 12,
+      }
+    : { top: isFullscreen ? 64 : 84, left: 0, right: 0, bottom: hasDock ? dockH + 22 : 14 };
 
   return (
     <div
@@ -191,10 +187,9 @@ function Showcase({
         skin={viewSkin}
         name={character.name}
         insets={insets}
-        captionBottom={hideUi || isDesktop ? 24 : hasDock ? dockH + 28 : 20}
+        captionBottom={isDesktop ? 24 : hasDock ? dockH + 28 : 20}
         command={command}
         voice={voice}
-        controlsHidden={hideUi}
         toolbarExtra={
           <FullscreenButton active={isFullscreen} onToggle={toggleFullscreen} />
         }
@@ -205,16 +200,16 @@ function Showcase({
       />
 
       {/* Lớp giao diện: không chặn chuột, chỉ các phần tử tương tác mới nhận sự kiện. */}
-      <div
-        inert={hideUi}
-        className={`pointer-events-none absolute inset-0 z-10 transition-opacity duration-500 ${
-          hideUi ? "opacity-0" : "opacity-100"
-        }`}
-      >
+      <div className="pointer-events-none absolute inset-0 z-10">
         <div className="absolute left-4 top-3 flex max-w-[min(30rem,calc(100%-9rem))] flex-col gap-3 sm:left-6 sm:top-4">
           <div className="pointer-events-auto w-fit">{nav}</div>
-          <div className="pointer-events-auto w-fit">{identity}</div>
-          <div className="pointer-events-none flex flex-col items-start gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em]">
+          {/* Toàn màn hình: giấu khối tên/thông tin để nhân vật rộng chỗ, nút chuyển nhân vật và dock vẫn dùng được. */}
+          {!isFullscreen && <div className="pointer-events-auto w-fit">{identity}</div>}
+          <div
+            className={`pointer-events-none flex-col items-start gap-1.5 font-mono text-[10px] uppercase tracking-[0.18em] ${
+              isFullscreen ? "hidden" : "flex"
+            }`}
+          >
             {character.skins.length > 1 && (
               <span className="clip-chamfer-sm hidden bg-black/45 px-2.5 py-1 text-white/70 backdrop-blur sm:inline-block">
                 <span className="text-white/40">Skin · </span>
@@ -349,13 +344,6 @@ function Showcase({
           </div>
         )}
       </div>
-
-      {/* Toàn màn hình ẩn hết giao diện; giữ lại một nút thoát mờ để điện thoại (không có Esc/phím F) thoát được. */}
-      {hideUi && (
-        <div className="absolute right-3 top-3 z-20 opacity-60 transition-opacity hover:opacity-100 focus-within:opacity-100">
-          <FullscreenButton active onToggle={toggleFullscreen} />
-        </div>
-      )}
     </div>
   );
 }
