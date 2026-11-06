@@ -11,6 +11,7 @@ import {
 import { usePathname, useSearchParams } from "next/navigation";
 import { POSES, type Character, type Pose } from "@/data/types";
 import { isIdleAnimation, selectableAnimations } from "@/lib/animations";
+import { getFullscreen, subscribeFullscreen, toggleFullscreen } from "@/lib/fullscreen";
 import { cycleBackground } from "@/lib/viewerBg";
 import { useVoice } from "@/lib/useVoice";
 import { AnimationPicker } from "./AnimationPicker";
@@ -53,26 +54,6 @@ function useMedia(query: string, serverValue: boolean) {
 }
 
 
-function subscribeFullscreen(cb: () => void) {
-  document.addEventListener("fullscreenchange", cb);
-  return () => document.removeEventListener("fullscreenchange", cb);
-}
-
-/** Trạng thái toàn màn hình của trình duyệt + khả năng hỗ trợ (iPhone Safari không hỗ trợ cho phần tử thường). */
-function useFullscreen() {
-  const isFullscreen = useSyncExternalStore(
-    subscribeFullscreen,
-    () => document.fullscreenElement != null,
-    () => false,
-  );
-  const supported = useSyncExternalStore(
-    () => () => {},
-    () => document.fullscreenEnabled === true,
-    () => false,
-  );
-  return { isFullscreen, supported };
-}
-
 /**
  * Màn hình xem nhân vật full-bleed: viewer lấp đầy khung, mọi điều khiển nổi lên trên.
  *  - Trên-trái: định danh. Trên-phải: chuyển nhân vật + nút INFO.
@@ -108,12 +89,8 @@ function Showcase({
   const viewKey = render.kind === "spine" ? render.skel : skin.id;
   const isDesktop = useMedia(DESKTOP_QUERY, true);
   const isWide = useMedia(WIDE_QUERY, true);
-  const rootRef = useRef<HTMLDivElement>(null);
-  const { isFullscreen: apiFullscreen, supported: apiSupported } = useFullscreen();
-  // Trình duyệt không có Fullscreen API cho phần tử thường (iPhone Safari): phóng khung viewer ra phủ kín cửa sổ
-  // (che luôn header). Không ẩn được thanh địa chỉ của trình duyệt, nhưng nhân vật và điều khiển thì giống hệt.
-  const [immersive, setImmersive] = useState(false);
-  const isFullscreen = apiFullscreen || immersive;
+  // Toàn màn hình của cả trang (lib/fullscreen.ts): chuyển nhân vật vẫn giữ nguyên chế độ.
+  const isFullscreen = useSyncExternalStore(subscribeFullscreen, getFullscreen, () => false);
 
   // Danh sách animation thuộc về từng skin; đổi skin thì trạng thái cũ tự mất hiệu lực.
   const [anim, setAnim] = useState<AnimState | null>(null);
@@ -150,24 +127,6 @@ function Showcase({
       play(active.current, next);
   };
 
-  const toggleFullscreen = () => {
-    if (document.fullscreenElement) {
-      void document.exitFullscreen();
-    } else if (apiSupported) {
-      void rootRef.current?.requestFullscreen().catch(() => setImmersive(true));
-    } else {
-      setImmersive((v) => !v);
-    }
-  };
-
-  // Esc thoát chế độ phủ kín giả lập (toàn màn hình thật đã được trình duyệt tự thoát bằng Esc).
-  useEffect(() => {
-    if (!immersive) return;
-    const onEsc = (e: KeyboardEvent) => e.key === "Escape" && setImmersive(false);
-    window.addEventListener("keydown", onEsc);
-    return () => window.removeEventListener("keydown", onEsc);
-  }, [immersive]);
-
   // Phím tắt: 1–9 chọn animation, I mở/đóng INFO, L bật/tắt lặp, F toàn màn hình.
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -201,7 +160,7 @@ function Showcase({
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [selectable, loop, skin.render.kind, apiSupported, availablePoses, pose, onSelectPose]);
+  }, [selectable, loop, skin.render.kind, availablePoses, pose, onSelectPose]);
 
   // Giao diện ẩn khi toàn màn hình + rảnh tay (không ẩn khi đang mở INFO): nhân vật chiếm trọn màn hình.
   const hideUi = isFullscreen && !infoOpen;
@@ -224,14 +183,8 @@ function Showcase({
 
   return (
     <div
-      ref={rootRef}
-      className={`w-full overflow-hidden bg-bg ${
-        immersive
-          ? "fixed inset-0 z-50 h-dvh"
-          : apiFullscreen
-            ? "relative h-dvh"
-            : "relative h-[calc(100dvh-3.5rem)] min-h-[560px]"
-      }`}
+      data-viewer
+      className="relative h-[calc(100dvh-3.5rem)] min-h-[560px] w-full overflow-hidden bg-bg"
     >
       <CharacterViewer
         className="absolute inset-0"
