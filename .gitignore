@@ -44,3 +44,4 @@ next-env.d.ts
 /public/assets/
 /data/nikke.local.json
 /data/nikke.local.json.bak
+/data/nikke.skills.local.json
