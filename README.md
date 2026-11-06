@@ -40,6 +40,20 @@ In ra link `https://xxxx.trycloudflare.com` và mật khẩu (Basic Auth, tên �
 Tuỳ chọn: `--password <mk>`, `--skip-build`, `--port <cổng>`. Chỉ nên chia sẻ cho người quen và trong thời gian ngắn vì
 `public/assets` là asset game có bản quyền.
 
+## Kỹ năng nhân vật
+
+Mục **Skills** trong ngăn INFO (vũ khí, kỹ năng 1, kỹ năng 2, Burst, giá trị theo cấp 1–10) lấy từ mẫu `{{Skill table}}`
+của wiki NIKKE (Fandom, CC BY-SA):
+
+```bash
+node scripts/fetch-skills.mjs                  # toàn bộ nhân vật; chạy lại an toàn
+node scripts/fetch-skills.mjs --only rapi,neon # chỉ vài nhân vật (gộp vào dữ liệu có sẵn)
+node scripts/fetch-skills.mjs --no-icons       # chỉ cập nhật chữ, không tải biểu tượng
+```
+
+Kết quả: `data/nikke.skills.local.json` và biểu tượng ở `public/assets/nikke/skill-icons/` (cả hai đã gitignore).
+Chưa chạy script thì nhân vật không có mục Skills.
+
 ## Giọng nói nhân vật
 
 Giọng gốc của nhân vật, theo ngôn ngữ, đặt trong thư mục `voice/<lang>/` của nhân vật:
