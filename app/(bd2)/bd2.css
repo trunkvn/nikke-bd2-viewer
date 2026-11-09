@@ -1,0 +1,201 @@
+@import "tailwindcss";
+
+/*
+ * Brown Dust 2: giao diện gọn và hiện đại, tông tối dịu. Nền than chì xanh (không đen tuyền), bảng tối viền mảnh, bóng đổ mềm,
+ * một màu nhấn chàm, chữ không chân. Ít trang trí để nhân vật và nội dung là trung tâm. Khác NIKKE ở chỗ bo tròn, mảnh, mềm
+ * (NIKKE là sci-fi góc cạnh nhấn vàng).
+ * Các component dùng chung với NIKKE (ViewerStage, SpineRenderer...) đọc cùng tên token (bg, accent, font-display...) và các
+ * biến --stage-xxx, --tool-xxx, nên tự mang màu của trang này.
+ */
+:root {
+  --bg: #111218;
+  --panel: #1a1c25;
+  --foreground: #ececf2;
+  --muted: #9aa0b3;
+  --line: rgba(255, 255, 255, 0.09);
+  --accent: #6f6fe8; /* chàm: nút chính, vòng chọn, focus */
+  --star: #f5b301;
+  color-scheme: dark;
+
+  /* Viewer dùng chung */
+  --stage-bg: #14161d;
+  --stage-vignette: rgba(0, 0, 0, 0.4);
+  --tool-bg: rgba(30, 32, 42, 0.9);
+  --tool-fg: #e6e7ef;
+  --tool-hover-fg: #ffffff;
+  --tool-label: #c9cddc;
+  --tool-label-shadow: 0 0 6px rgba(0, 0, 0, 0.9), 0 0 2px #000;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+  --font-display: var(--font-jakarta), system-ui, sans-serif;
+  --font-mono: var(--font-jakarta), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--foreground);
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  position: relative;
+}
+
+/* Quầng sáng chàm rất nhẹ ở đỉnh trang cho đỡ phẳng. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(900px 420px at 50% -10%, rgba(111, 111, 232, 0.14), transparent 70%), var(--bg);
+}
+
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ───────── Hình khối dùng chung với component NIKKE: ở đây bo tròn thay vì cắt góc ───────── */
+.clip-chamfer,
+.clip-chamfer-sm,
+.clip-chamfer-lg {
+  clip-path: none;
+  border-radius: 12px;
+}
+.clip-chamfer-sm.tool-button {
+  border: 1px solid var(--line);
+  box-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.4),
+    0 8px 18px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* Thẻ nội dung: nền tối hơn nền trang một chút, viền mảnh. */
+.bd2-card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Kính mờ cho các bảng nổi trên viewer (dock, ngăn INFO, tên nhân vật). */
+.bd2-glass {
+  background: rgba(24, 26, 35, 0.86);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border-radius: 18px;
+  box-shadow:
+    0 0 0 1px var(--line),
+    0 14px 34px -16px rgba(0, 0, 0, 0.75);
+}
+
+/* Nút dạng viên thuốc; chọn = nền sáng chữ tối. */
+.bd2-chip {
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--foreground);
+  font-weight: 600;
+  transition:
+    background 150ms,
+    color 150ms,
+    border-color 150ms,
+    transform 150ms;
+}
+.bd2-chip:hover {
+  background: rgba(255, 255, 255, 0.12);
+  border-color: rgba(255, 255, 255, 0.24);
+}
+.bd2-chip:active {
+  transform: scale(0.97);
+}
+.bd2-chip[aria-pressed="true"],
+.bd2-chip[aria-checked="true"],
+.bd2-chip[data-active="true"] {
+  background: var(--foreground);
+  border-color: var(--foreground);
+  color: var(--bg);
+}
+
+/* ───────── Hoạt hoạ ───────── */
+@keyframes skin-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-skin-in {
+  animation: skin-in 250ms ease-out;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 420ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0.4;
+  }
+}
+.animate-blink {
+  animation: blink 1.4s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+.skeleton {
+  background:
+    linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.09) 50%, transparent 70%) 0 0 / 200% 100%,
+    rgba(255, 255, 255, 0.04);
+  animation: shimmer 1.6s linear infinite;
+}
+
+/* Toàn màn hình (lib/fullscreen.ts): ẩn header, khung viewer cao đủ cả màn hình. */
+html[data-fs] [data-site-header] {
+  display: none;
+}
+html[data-fs] [data-viewer] {
+  height: 100dvh;
+  min-height: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-fade-up,
+  .animate-skin-in,
+  .skeleton,
+  .animate-blink {
+    animation: none;
+  }
+  .bd2-chip {
+    transition: none;
+  }
+}
