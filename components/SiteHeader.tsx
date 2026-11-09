@@ -25,13 +25,14 @@ export function SiteHeader() {
           >
             Gallery
           </Link>
-          <span
-            title="Sắp có"
-            className="hidden cursor-not-allowed items-center gap-2 px-3 py-2 text-white/25 sm:flex"
+          {/* Brown Dust 2 có layout gốc riêng nên chuyển sang đó là tải trang mới. */}
+          <Link
+            href="/bd2"
+            title="Chuyển sang Brown Dust 2"
+            className="hidden items-center gap-1.5 px-3 py-2 text-white/70 outline-none transition hover:text-accent focus-visible:text-accent sm:flex"
           >
-            Brown Dust 2
-            <span className="clip-chamfer-sm bg-white/10 px-1.5 py-0.5 text-[9px] text-white/50">SOON</span>
-          </span>
+            Brown Dust 2 <span aria-hidden>↗</span>
+          </Link>
         </nav>
       </div>
     </header>
