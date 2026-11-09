@@ -5,7 +5,7 @@ import type { Render, Skin } from "@/data/types";
 import type { VoiceUi } from "@/lib/useVoice";
 import { BackgroundPicker } from "./BackgroundPicker";
 import { ImageRenderer } from "./ImageRenderer";
-import { SpineRenderer, type PlayCommand } from "./SpineRenderer";
+import { SpineRenderer, type PlayCommand, type TapPlan } from "./SpineRenderer";
 import { ViewerBackdrop } from "./ViewerBackdrop";
 import { ViewerStage, type Insets } from "./ViewerStage";
 import { VoiceLangButton, VoiceToggle } from "./VoiceToggle";
@@ -40,6 +40,17 @@ export function CharacterViewer({
   onPlaying,
   voice,
   toolbarExtra,
+  backdrop = <ViewerBackdrop />,
+  backgroundPicker = <BackgroundPicker />,
+  tapPlan,
+  tapEnabled = true,
+  speed,
+  hiddenSlots,
+  onSlots,
+  skinName,
+  onSkins,
+  fitContent,
+  pickRest,
 }: {
   skin: Skin;
   name: string;
@@ -49,12 +60,33 @@ export function CharacterViewer({
   /** Khoảng cách (px) từ đáy khung tới phụ đề/lời nhắc, để chúng nằm phía trên dock. */
   captionBottom?: number;
   command?: PlayCommand | null;
-  onAnimations?: (names: string[]) => void;
+  onAnimations?: (names: string[], durations?: Record<string, number>) => void;
   onPlaying?: (name: string) => void;
   /** Giọng nói của nhân vật; bỏ trống nếu không có file voice. */
   voice?: VoiceUi;
   /** Nút thêm ở thanh công cụ (ví dụ toàn màn hình), đứng dưới các nút voice. */
   toolbarExtra?: React.ReactNode;
+  /** Nền phía sau nhân vật; mặc định là nền NIKKE (theo lựa chọn của người dùng). */
+  backdrop?: React.ReactNode;
+  /** Nút chọn nền ở thanh công cụ; truyền null để ẩn. */
+  backgroundPicker?: React.ReactNode;
+  /** Tự chọn phản ứng khi nhấp vào nhân vật (xem SpineRenderer). */
+  tapPlan?: (names: string[], last: string | null) => TapPlan | null;
+  /** false: nhấp vào nhân vật không làm gì (Ultimate, Fated Guest: không phải tư thế đứng nên không có "cử động khi chạm"). */
+  tapEnabled?: boolean;
+  /** Tốc độ phát animation (1 = bình thường). */
+  speed?: number;
+  /** Tên các slot (lớp) của skeleton đang ẩn. */
+  hiddenSlots?: readonly string[];
+  /** Báo danh sách slot của skeleton khi nạp xong. */
+  onSlots?: (names: string[]) => void;
+  /** Skin bên trong file Spine đang dùng / báo danh sách skin (Fated Guest có nhiều skin). */
+  skinName?: string;
+  onSkins?: (names: string[]) => void;
+  /** Căn khung theo phần hình có nội dung (Fated Guest: bỏ qua các mảng đen che viền). */
+  fitContent?: boolean;
+  /** Chọn animation làm tư thế nghỉ ban đầu (xem SpineRenderer). */
+  pickRest?: (names: string[]) => string | undefined;
 }) {
   const { render } = skin;
   const label = `${name} — ${skin.name}`;
@@ -109,11 +141,11 @@ export function CharacterViewer({
               <VoiceToggle enabled={voice.enabled} onToggle={voice.toggle} />
             </>
           )}
-          <BackgroundPicker />
+          {backgroundPicker}
           {toolbarExtra}
         </>
       }
-      backdrop={<ViewerBackdrop />}
+      backdrop={backdrop}
       overlay={
         voice?.caption ? (
           <div className="absolute flex justify-center" style={{ bottom: captionBottom, left: captionLeft, right: captionRight }}>
@@ -153,6 +185,15 @@ export function CharacterViewer({
               onAnimations={onAnimations}
               onPlaying={onPlaying}
               speaking={voice?.speaking}
+              tapPlan={tapPlan}
+              interactive={tapEnabled}
+              speed={speed}
+              hiddenSlots={hiddenSlots}
+              onSlots={onSlots}
+              skinName={skinName}
+              onSkins={onSkins}
+              fitContent={fitContent}
+              pickRest={pickRest}
               onTouch={() => voice?.play("touch")}
             />
           )}
