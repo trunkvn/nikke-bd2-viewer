@@ -1,19 +1,28 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Character, CharacterSkills, Game } from "@/data/types";
-import { loadVoice } from "./voice";
+import { loadVoice, loadVoiceAt } from "./voice";
+
+/** Đọc một file dữ liệu local; chưa có file thì danh sách trống. */
+function readLocal(name: string): Character[] {
+  const file = join(process.cwd(), "data", name);
+  return existsSync(file) ? (JSON.parse(readFileSync(file, "utf8")) as Character[]) : [];
+}
 
 /**
- * data/nikke.local.json do `scripts/fetch-nikke.mjs` sinh ra (asset cộng đồng, chỉ dùng local, đã gitignore).
- * Chưa có file này thì danh sách trống: chạy `node scripts/fetch-nikke.mjs` để tạo.
+ * Dữ liệu do các script fetch sinh ra (asset cộng đồng, chỉ dùng local, đã gitignore):
+ *  - data/nikke.local.json ← scripts/fetch-nikke.mjs (kèm voice và kỹ năng)
+ *  - data/bd2.local.json   ← scripts/fetch-bd2.mjs
+ * Chưa có file thì game đó không có nhân vật nào.
  */
 function loadAll(): Character[] {
-  // Khi thêm Brown Dust 2: đọc thêm data/bd2.local.json và nối vào mảng.
-  const file = join(process.cwd(), "data", "nikke.local.json");
-  if (!existsSync(file)) return [];
-  const local = JSON.parse(readFileSync(file, "utf8")) as Character[];
   const skills = loadSkills();
-  return local.map((c) => ({ ...c, voice: loadVoice(c), skills: skills[c.id] }));
+  const nikke = readLocal("nikke.local.json").map((c) => ({ ...c, voice: loadVoice(c), skills: skills[c.id] }));
+  const bd2 = readLocal("bd2.local.json").map((c) => ({
+    ...c,
+    skins: c.skins.map((s) => ({ ...s, voice: loadVoiceAt(`bd2/${c.slug}/${s.id}`) })),
+  }));
+  return [...nikke, ...bd2];
 }
 
 /** data/nikke.skills.local.json do `scripts/fetch-skills.mjs` sinh ra; không có thì nhân vật không có mục Skills. */
