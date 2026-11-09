@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Suspense, useEffect, useRef, useState, useSyncExternalStore, type ReactNode } from "react";
-import type { Character, Skin } from "@/data/types";
+import type { Character, CutsceneSequence, Skin } from "@/data/types";
 import { bd2DefaultSkin } from "@/lib/bd2Cards";
 import {
   bd2CutsceneAutoSetting,
@@ -17,7 +17,7 @@ import {
   naturalSort,
   type Bd2Category,
 } from "@/lib/bd2";
-import { phaseOfAnimation, planCutscene, restAnimation, singleAnimationPlan, type CutscenePlan } from "@/lib/bd2Cutscene";
+import { buildSequencePlan, phaseOfAnimation, planCutscene, restAnimation, singleAnimationPlan, type CutscenePlan } from "@/lib/bd2Cutscene";
 import { getFullscreen, subscribeFullscreen, toggleFullscreen } from "@/lib/fullscreen";
 import { useMedia } from "@/lib/useMedia";
 import { useVoice } from "@/lib/useVoice";
@@ -49,6 +49,9 @@ type Keyed<T> = { viewKey: string } & T;
 const CATEGORY_LABEL: Record<Bd2Category, string> = { character: "Nhân vật", ultimate: "Ultimate", dating: "Fated Guest" };
 /** Lớp biểu cảm khuôn mặt đang chồng lên idle (track 1). */
 type OverlayState = { viewKey: string; face: number | null; talk: boolean };
+
+/** Đồng hồ cho các hàm xử lý sự kiện (tách ra ngoài component để không bị coi là gọi hàm không thuần khiết lúc render). */
+const nowMs = () => performance.now();
 
 const formatDate = (iso?: string) => {
   if (!iso) return null;
@@ -106,8 +109,12 @@ function Showcase({
   const [skinsRaw, setSkins] = useState<Keyed<{ names: string[] }> | null>(null);
   const [pickRaw, setPick] = useState<Keyed<{ skinName?: string; name: string | null; scene: number | null }> | null>(null);
   // Phát toàn bộ Ultimate (các pha A → B → C rồi giữ đoạn lặp cuối) ngay trong viewer; `startedAt` là mốc để nền chạy theo.
-  const [seq, setSeq] = useState<Keyed<{ plan: CutscenePlan; startedAt: number }> | null>(null);
+  const [seq, setSeq] = useState<Keyed<{ plan: CutscenePlan; startedAt: number; label: string }> | null>(null);
   const hasUltimate = !!skin.cutscene;
+  // Chuỗi chỉnh tay "cut_all" (nếu có) là "Phát toàn bộ"; các chuỗi còn lại hiện thành chip riêng. Không có thì dùng kế hoạch tự động.
+  const sequences = skin.cutscene?.sequences ?? [];
+  const defaultSequence = sequences.find((q) => q.name === "cut_all") ?? sequences[0];
+  const otherSequences = sequences.filter((q) => q !== defaultSequence);
   // Vào một nhân vật có Ultimate thì tự chuyển sang tab Ultimate và phát toàn bộ (trừ khi người dùng đã tắt). Mỗi nhân vật chỉ một
   // lần: đổi trang phục sau đó không làm nó tự phát lại.
   const autoFor = useRef<string | null>(null);
@@ -153,12 +160,15 @@ function Showcase({
   };
 
   /** Ultimate: phát toàn bộ theo kế hoạch tự động (các pha nối nhau, kết thúc bằng đoạn lặp cuối). */
-  const playAll = (list: string[], durations: Record<string, number>) => {
-    const p = planCutscene(list, durations);
+  const playSequence = (sequence: CutsceneSequence | undefined, list: string[], durations: Record<string, number>) => {
+    const p = sequence ? buildSequencePlan(sequence, list, durations) : planCutscene(list, durations);
     if (!p) return;
     setPickPart({ name: null });
-    setSeq({ viewKey, plan: p, startedAt: performance.now() });
+    setSeq({ viewKey, plan: p, startedAt: nowMs(), label: sequence?.name ?? "" });
     setCommand((c) => ({ name: "", nonce: (c?.nonce ?? 0) + 1, plan: p.steps }));
+  };
+  const playAll = (list: string[], durations: Record<string, number>) => {
+    playSequence(defaultSequence, list, durations);
   };
 
   /** Fated Guest: chạy `name` chồng lên cảnh nền `base` (`idleN`); tên trùng `base` thì chỉ chạy cảnh nền. */
@@ -420,13 +430,26 @@ function Showcase({
                     <button
                       type="button"
                       onClick={() => playAll(active.list, active.durations)}
-                      data-active={!!seqActive}
+                      data-active={!!seqActive && seqActive.label === (defaultSequence?.name ?? "")}
                       title="Phát toàn bộ các pha liên tiếp, rồi giữ đoạn lặp cuối"
                       className={`${itemChip} font-semibold`}
                     >
                       ▶ Phát toàn bộ
                     </button>
                   )}
+                  {active &&
+                    otherSequences.map((q) => (
+                      <button
+                        key={q.name}
+                        type="button"
+                        onClick={() => playSequence(q, active.list, active.durations)}
+                        data-active={seqActive?.label === q.name}
+                        title="Chuỗi phát chỉnh tay"
+                        className={itemChip}
+                      >
+                        ▶ {q.name}
+                      </button>
+                    ))}
                   {active ? (
                     ultimateNames.map((n) => (
                       <button
