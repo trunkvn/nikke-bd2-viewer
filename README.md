@@ -1,6 +1,12 @@
-# NIKKE Viewer
+# NIKKE & Brown Dust 2 Viewer
 
-Gallery + viewer tương tác cho nhân vật NIKKE (Next.js 16, Spine 4.0/4.1). Chạy local, không cần tài khoản.
+Gallery + viewer tương tác cho nhân vật NIKKE và Brown Dust 2 (Next.js 16, Spine 4.0/4.1). Chạy local, không cần tài khoản.
+
+- `/` — NIKKE (giao diện tối, góc cạnh, sci-fi).
+- `/bd2` — Brown Dust 2 (giao diện tối dịu, gọn và hiện đại: nền than chì xanh, bảng tối viền mảnh, màu nhấn chàm, chữ không chân).
+
+Mỗi game có **layout gốc riêng** (route group `app/(nikke)` và `app/(bd2)`) nên phông, màu, header hoàn toàn khác nhau;
+chuyển qua lại giữa hai game là tải trang mới. Phần dùng chung là engine viewer (Spine, zoom/kéo, toàn màn hình).
 
 ```bash
 pnpm install
@@ -28,6 +34,58 @@ node scripts/render-posters.mjs --force          # render lại toàn bộ thumb
 
 Asset thuộc bản quyền Shift Up / Level Infinite. `public/assets/` và `data/nikke.local.json` đã nằm trong
 `.gitignore`: **đừng commit hay deploy công khai**.
+
+## Brown Dust 2
+
+```bash
+node scripts/fetch-bd2.mjs --list              # nhân vật/trang phục có thể tải
+node scripts/fetch-bd2.mjs                     # tải toàn bộ (~0.45GB), ghi data/bd2.local.json, render thumbnail
+node scripts/fetch-bd2.mjs --only blade,eris   # chỉ vài nhân vật (gộp vào dữ liệu có sẵn)
+node scripts/fetch-bd2.mjs --no-posters        # bỏ qua bước render thumbnail (cần Chrome)
+```
+
+- Mô hình Spine (4.1) lấy từ [Zormolo/Brown-Dust-2-Assets](https://github.com/Zormolo/Brown-Dust-2-Assets); hạng sao và
+  ngày ra mắt từ `CharInfo(Dropped).json` của [myssal/Brown-Dust-2-Asset](https://github.com/myssal/Brown-Dust-2-Asset)
+  (có thể thiếu nhân vật mới). Chạy lại an toàn: file đã tải thì bỏ qua.
+- Brown Dust 2 **không có tư thế ngắm/nấp** như NIKKE. Thay vào đó mỗi mô hình có chuyển động toàn thân (`idle`,
+  `motion`, một số có `_feelingN`) và các biểu cảm khuôn mặt `_faceN` chạy ở track chồng lên idle, kèm bản nhép miệng
+  `_faceN_talk`. Trong viewer: hàng "Chuyển động" và "Biểu cảm" ở dock; nhấp vào nhân vật để họ làm một cử động.
+- Thumbnail BD2 render ở chế độ `portrait` (`scripts/render-posters.mjs`): căn khung quanh **khuôn mặt thật** của mô hình
+  (tâm các attachment mắt/miệng/mũi/lông mày), chừa chỗ cho tai/mũ/sừng phía trên đầu và không bị vũ khí hay hiệu ứng lớn kéo
+  lệch. NIKKE vẫn dùng chế độ `bust` cũ. Render lại: `node scripts/fetch-bd2.mjs` (hoặc xoá `thumb.webp` rồi chạy lại).
+- Nén texture (tuỳ chọn, giảm khoảng 45% dung lượng mỗi lần xem): `node scripts/optimize-textures.mjs --all --game bd2 --quality 95`.
+  Giữ nguyên PNG gốc, thêm `.webp` + `.webp.atlas` và trỏ `data/bd2.local.json` sang đó; `--revert --game bd2` để hoàn tác.
+- **Cutscene kỹ năng** (cảnh cắt vào khi nhân vật tung chiêu; 171 trang phục của 69 nhân vật):
+  `node scripts/fetch-bd2-cutscenes.mjs` (≈1.5GB mô hình + ≈0.3GB nền và hiệu ứng; `--dry-run` để xem trước, `--only blade,eris`),
+  rồi nén texture bằng `optimize-textures.mjs --all --game bd2 --quality 95` (cutscene từ 1.3GB còn khoảng 0.5GB).
+  Đây là **animation Spine ghép với ảnh nền, không phải file video** (game cũng dựng thế). Cutscene nằm ở tab **Ultimate** của viewer
+  (không còn lớp phủ video riêng): nút "▶ Phát toàn bộ" chạy các pha A, B, C liên tiếp rồi giữ đoạn lặp cuối, nền và các khung hình
+  hiệu ứng (đạn găm, mảnh vụn) đổi theo pha.
+  **Tự phát:** vào nhân vật có Ultimate là viewer tự mở tab Ultimate và phát toàn bộ (mặc định bật; chỉ khi vào nhân vật, đổi trang
+  phục thì không tự phát). Tắt/bật bằng công tắc "Tự phát Ultimate khi vào nhân vật" trong tab Ultimate; lưu trong trình duyệt.
+  Mô hình không kèm nền nên mỗi pha ghép với một ảnh nền (back1, back2... của kho asset) và các khung hiệu ứng (back2-1, back2-2...)
+  cùng hệ toạ độ. Tên animation khác nhau giữa các nhân vật (`cut_A`, `A_cut`, `cut_1`, `loop_2`...) nên `lib/bd2Cutscene.ts`
+  nhận diện pha theo mẫu tên và chạy các lớp phụ (váy, lửa...) song song. Cách ghép nền/hiệu ứng với từng pha là suy ra từ dữ
+  liệu nên có thể không giống hệt game. NIKKE không có dữ liệu cutscene.
+- **Chế độ xem** (thẻ ở đầu dock, tham khảo [BD2-L2D-Viewer](https://jelosus2.github.io/BD2-L2D-Viewer/) của jelosus2): *Nhân vật* (tư thế
+  đứng), *Ultimate* (cutscene kỹ năng, **chọn từng animation** `cut_A`, `B_cut`, `loop`... kèm các lớp phụ chạy song song, nền cutscene (bật bằng chip "Nền cutscene", mặc định tắt)
+  đổi theo pha; nút "Phát toàn bộ" chạy cả chuỗi) và *Fated Guest* (tranh động toàn màn hình của cảnh hẹn hò: chọn cảnh `idleN`
+  rồi các phản ứng `mixN_k`, đổi skin bên trong file Spine). Thẻ nào trang phục không có thì mờ đi.
+- Dock còn có **thanh tốc độ** 0.1x–2x (nhấp đúp để về 1x) và nút **Layers** (mở bảng bật/tắt từng lớp/slot của mô hình, có ô lọc).
+- **Fated Guest** (20 tranh, 19 nhân vật; bỏ qua Angelica "Neon Savior" vì dùng định dạng mới chưa dựng đúng): `node scripts/fetch-bd2-dating.mjs` (≈0.5GB, `--dry-run`, `--only dalvi,yuri`), rồi nén texture
+  như trên (≈0.43GB → 0.16GB). Tranh bao quanh bằng các mảng đen rất lớn nên renderer tự tìm phần hình thật để căn khung (`fitContent`).
+- **Giọng nói** (câu "BattleReady", 3 câu mỗi trang phục, tiếng Nhật + Hàn; 204/205 trang phục, ≈40MB):
+  `node scripts/fetch-bd2-voice.mjs` (nguồn: repo BD2-L2D-Viewer; `--dry-run`, `--only anastasia`). Nhấp vào nhân vật thì họ làm cử động
+  `motion` **và** nói một câu (mô hình có `_faceN_talk` thì nhép miệng). Nút loa và nút JP/KR nằm ở thanh công cụ của khung. Chỉ phản ứng
+  khi nhân vật đang đứng yên (nhấp chồng lên cử động đang chạy bị bỏ qua, như viewer gốc), lời thoại nằm ở
+  `public/assets/bd2/<nhân vật>/<trang phục>/voice/<ja|ko>/touch_N.webm`.
+- Một số mô hình (13 trang phục, ví dụ Luvencia, Scheherazade "Pool Party", Levia "Night of Jealousy") có animation biểu cảm `_faceN` đổi
+  luôn attachment của cả thân, bật lên là mất 20–70% hình. Renderer tự thử từng biểu cảm lúc nạp và ẩn những cái làm mất hình.
+- Texture BD2 không nhân sẵn alpha (khác NIKKE có `pma:true`); renderer đọc cờ `pma` của atlas để vẽ đúng.
+- Gallery `/bd2` có hai bộ lọc **Ultimate** và **Fated Guest** (kèm số nhân vật), kết hợp được với tìm kiếm và hạng sao; thẻ nhân vật dán nhãn tương ứng.
+- Phím tắt: `←` `→` chuyển nhân vật, `C` đổi trang phục, `F` toàn màn hình, `B` đổi nền, `I` thông tin.
+
+Asset thuộc bản quyền Neowiz / Neon Eyes; `data/bd2.local.json` và `public/assets/` đã nằm trong `.gitignore`.
 
 ## Chia sẻ tạm thời qua Cloudflare Tunnel
 
