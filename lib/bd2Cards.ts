@@ -1,4 +1,4 @@
-import type { Character } from "@/data/types";
+import type { Character, SpineRender } from "@/data/types";
 
 /** Phần dữ liệu một thẻ nhân vật Brown Dust 2 trong gallery (nhẹ, để gửi xuống client). */
 export type Bd2Card = {
@@ -17,6 +17,8 @@ export type Bd2Card = {
   /** Có trang phục nào có Ultimate (cutscene kỹ năng) / Fated Guest không, để lọc và dán nhãn. */
   hasUltimate: boolean;
   hasDating: boolean;
+  /** Model Spine của trang phục làm ảnh thẻ, để xem trước khi rê chuột vào thẻ. */
+  preview?: SpineRender;
 };
 
 /** Trang phục mặc định của nhân vật: mới ra mắt nhất nếu biết ngày, không thì trang phục đầu tiên. */
@@ -39,5 +41,6 @@ export function toBd2Card(c: Character): Bd2Card {
     latest: dated[0]?.released ?? "",
     hasUltimate: c.skins.some((s) => !!s.cutscene),
     hasDating: c.skins.some((s) => !!s.dating),
+    preview: cover.render.kind === "spine" ? cover.render : undefined,
   };
 }

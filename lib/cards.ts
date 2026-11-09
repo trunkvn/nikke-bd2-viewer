@@ -1,4 +1,4 @@
-import type { Character, Rarity } from "@/data/types";
+import type { Character, Rarity, SpineRender } from "@/data/types";
 
 /**
  * Dữ liệu tối thiểu để vẽ thẻ nhân vật trong gallery và lọc/tìm kiếm.
@@ -18,6 +18,8 @@ export type CardData = {
   thumb: string;
   skinCount: number;
   hasSpine: boolean;
+  /** Model Spine của ảnh thẻ, để xem trước khi rê chuột vào thẻ. */
+  preview?: SpineRender;
 };
 
 /** Số thẻ dựng ban đầu (cả phía server lẫn client); cuộn xuống thì dựng thêm theo từng đợt cùng cỡ. */
@@ -37,5 +39,6 @@ export function toCard(c: Character): CardData {
     thumb: c.skins[0]?.thumb ?? "",
     skinCount: c.skins.length,
     hasSpine: c.skins.some((s) => s.render.kind === "spine"),
+    preview: c.skins[0]?.render.kind === "spine" ? c.skins[0].render : undefined,
   };
 }
