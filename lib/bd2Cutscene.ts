@@ -1,4 +1,5 @@
 import type { PlanStep } from "@/components/SpineRenderer";
+import type { CutsceneNode, CutsceneSequence } from "@/data/types";
 
 /**
  * Cutscene kỹ năng của Brown Dust 2: mỗi mô hình Spine có vài animation theo pha (A, B, C...) rồi một animation lặp cuối,
@@ -170,4 +171,78 @@ export function restAnimation(names: string[]): string | undefined {
 export function phaseOfAnimation(plan: CutscenePlan | null, name: string): number {
   const step = plan?.steps.find((s) => s.name === name);
   return plan && step ? Math.min(phaseIndexAt(plan, step.at), Math.max(0, plan.mainPhases - 1)) : 0;
+}
+
+// ───────── Chuỗi Ultimate chỉnh tay ─────────
+
+type Segment = { track: number; start: number; duration: number; name: string; loop: boolean; holdUntil?: number };
+type Laid = { segs: Segment[]; duration: number; tracks: number };
+
+/**
+ * Dàn một nút của chuỗi chỉnh tay thành các đoạn có mốc bắt đầu, thời lượng và track (cùng cách tính với viewer cộng đồng):
+ * tuần tự thì cộng dồn thời lượng; song song thì cùng mốc bắt đầu, mỗi nhánh một track riêng, thời lượng là nhánh dài nhất; nhánh `hold`
+ * hoặc `loop` được giữ tới hết nhóm. Thời lượng một animation là min(`d`, thời lượng gốc).
+ */
+function layout(node: CutsceneNode, durations: Record<string, number>, start: number, track: number): Laid {
+  if ("a" in node) {
+    const native = durations[node.a] ?? 0;
+    const duration = node.d && node.d > 0 ? Math.min(node.d, Math.max(native, 0)) || node.d : native;
+    const offset = node.o ?? 0;
+    return { segs: [{ track, start: start + offset, duration, name: node.a, loop: !!node.l }], duration: Math.max(duration + offset, 0), tracks: 1 };
+  }
+  if ("s" in node) {
+    const segs: Segment[] = [];
+    let elapsed = 0;
+    let tracks = 1;
+    for (const child of node.s) {
+      const r = layout(child, durations, start + elapsed, track);
+      segs.push(...r.segs);
+      elapsed += r.duration;
+      tracks = Math.max(tracks, r.tracks);
+    }
+    return { segs, duration: elapsed, tracks };
+  }
+  let next = track;
+  let duration = 0;
+  const branches = node.p.map((child) => {
+    const r = layout(child, durations, start, next);
+    duration = Math.max(duration, r.duration);
+    next += Math.max(r.tracks, 1);
+    return { child, r };
+  });
+  const end = start + duration;
+  const segs = branches.flatMap(({ child, r }) =>
+    "a" in child && (child.h || child.l) ? r.segs.map((s) => ({ ...s, holdUntil: end })) : r.segs,
+  );
+  return { segs, duration, tracks: Math.max(next - track, 1) };
+}
+
+/**
+ * Kế hoạch phát từ một chuỗi chỉnh tay. Animation cuối cùng của track 0 chạy hết bản gốc rồi giữ khung cuối; các track phụ bị tắt khi
+ * hết đoạn của chúng (hoặc hết nhóm nếu `hold`/`loop`) để lớp phụ không kẹt lại ở pha sau. Chỉ số pha (cho ảnh nền) suy ra từ TÊN
+ * animation bằng bộ lập kế hoạch tự động, vì chuỗi chỉnh tay không nói pha nào dùng ảnh nền nào.
+ */
+export function buildSequencePlan(sequence: CutsceneSequence, names: string[], durations: Record<string, number>): CutscenePlan {
+  const { segs, duration } = layout(sequence.node, durations, 0, 0);
+  const sorted = [...segs].sort((a, b) => a.start - b.start || a.track - b.track);
+  const steps: PlanStep[] = Array.from({ length: 8 }, (_, i) => ({ at: 0, name: "", track: i + 1 }));
+  for (const s of sorted) {
+    steps.push({ at: s.start, name: s.name, track: s.track, loop: s.loop });
+    if (s.track === 0) continue;
+    const end = s.holdUntil ?? s.start + s.duration;
+    // Không tắt nếu ngay lúc đó có đoạn khác bắt đầu trên cùng track (nó tự thay thế).
+    if (!sorted.some((o) => o !== s && o.track === s.track && o.start >= s.start && o.start <= end + 1e-6)) steps.push({ at: end, name: "", track: s.track });
+  }
+
+  const auto = planCutscene(names, durations);
+  let idx = 0;
+  const firstAt: number[] = [0];
+  for (const s of sorted) {
+    if (!auto || !auto.steps.some((p) => p.name === s.name)) continue;
+    const i = Math.max(idx, phaseOfAnimation(auto, s.name));
+    for (let k = idx + 1; k <= i; k++) firstAt[k] = s.start;
+    idx = i;
+  }
+  const phases = firstAt.map((at, i) => ({ label: String(i + 1), at }));
+  return { steps, phases, mainPhases: phases.length, total: duration + MIN_TAIL };
 }
