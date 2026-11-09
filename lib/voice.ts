@@ -36,6 +36,9 @@ export function loadVoiceAt(path: string): Voice | undefined {
     const dir = join(root, lang);
     if (!LANG_DIR.test(lang) || !statSync(dir).isDirectory()) continue;
     const set = loadSet(dir, `/assets/${game}/voice/${lang}`);
+    // Brown Dust 2 chỉ có các câu "BattleReady" (đều là câu chào khi sẵn sàng): câu đầu tiên làm lời chào khi vào trang,
+    // vẫn nằm trong nhóm câu nói khi nhấp.
+    if (set && !set.enter && set.touch?.length && path.startsWith("bd2/")) set.enter = [set.touch[0]];
     if (set) voice[lang] = set;
   }
   return Object.keys(voice).length ? voice : undefined;
