@@ -141,9 +141,10 @@ export function useVoice(voice: Voice | undefined, key: string): VoiceUi {
   const setLang = useCallback(
     (next: VoiceLang) => {
       voiceLangSetting.set(next);
-      playRef.current("enter", next);
+      // Brown Dust 2 chỉ có câu "touch" (không có "enter"): nghe thử bằng câu đó.
+      playRef.current(voice?.[next]?.enter?.length ? "enter" : "touch", next);
     },
-    [],
+    [voice],
   );
 
   return {

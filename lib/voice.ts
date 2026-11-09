@@ -19,14 +19,23 @@ const LANG_DIR = /^[a-z]{2}$/;
  */
 export function loadVoice(character: Pick<Character, "id" | "game">): Voice | undefined {
   const key = character.id.replace(/^[a-z0-9]+-/i, "");
-  const root = join(process.cwd(), "public", "assets", character.game, key, "voice");
+  return loadVoiceAt(`${character.game}/${key}`);
+}
+
+/**
+ * Giọng nói của MỘT trang phục (Brown Dust 2): public/assets/bd2/<nhân vật>/<trang phục>/voice/<lang>/touch_N.webm.
+ * `path` là đường dẫn dưới public/assets, ví dụ "bd2/alec/sword-breaker".
+ */
+export function loadVoiceAt(path: string): Voice | undefined {
+  const root = join(process.cwd(), "public", "assets", ...path.split("/"), "voice");
   if (!existsSync(root)) return undefined;
+  const game = path;
 
   const voice: Voice = {};
   for (const lang of readdirSync(root).sort()) {
     const dir = join(root, lang);
     if (!LANG_DIR.test(lang) || !statSync(dir).isDirectory()) continue;
-    const set = loadSet(dir, `/assets/${character.game}/${key}/voice/${lang}`);
+    const set = loadSet(dir, `/assets/${game}/voice/${lang}`);
     if (set) voice[lang] = set;
   }
   return Object.keys(voice).length ? voice : undefined;
