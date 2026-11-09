@@ -107,9 +107,15 @@ function Showcase({
   const [slotsRaw, setSlots] = useState<Keyed<{ names: string[] }> | null>(null);
   const [hiddenRaw, setHidden] = useState<Keyed<{ names: string[] }> | null>(null);
   const [skinsRaw, setSkins] = useState<Keyed<{ names: string[] }> | null>(null);
+  // So sánh hai trang phục: bật thì thêm một khung thứ hai (trang phục B) cạnh khung chính; mọi lệnh phát animation gửi cho cả hai.
+  const [compareOn, setCompareOn] = useState(false);
+  const [cmpId, setCmpId] = useState<string | null>(null);
   const [pickRaw, setPick] = useState<Keyed<{ skinName?: string; name: string | null; scene: number | null }> | null>(null);
   // Phát toàn bộ Ultimate (các pha A → B → C rồi giữ đoạn lặp cuối) ngay trong viewer; `startedAt` là mốc để nền chạy theo.
   const [seq, setSeq] = useState<Keyed<{ plan: CutscenePlan; startedAt: number; label: string }> | null>(null);
+  const canCompare = category === "character" && character.skins.length > 1;
+  const compare = compareOn && canCompare;
+  const cmpSkin = compare ? (character.skins.find((s) => s.id === cmpId && s.id !== skin.id) ?? character.skins.find((s) => s.id !== skin.id) ?? null) : null;
   const hasUltimate = !!skin.cutscene;
   // Chuỗi chỉnh tay "cut_all" (nếu có) là "Phát toàn bộ"; các chuỗi còn lại hiện thành chip riêng. Không có thì dùng kế hoạch tự động.
   const sequences = skin.cutscene?.sequences ?? [];
@@ -203,6 +209,7 @@ function Showcase({
       else if (k === "i") setInfoOpen((v) => !v);
       else if (k === "f") toggleFullscreen();
       else if (k === "b") cycleBd2Background();
+      else if (k === "s" && skinIds.length > 1) setCompareOn((v) => !v);
       else if (k === "c" && skinIds.length > 1) onSelect(skinIds[(skinIds.indexOf(skin.id) + 1) % skinIds.length]);
     };
     window.addEventListener("keydown", onKey);
@@ -224,6 +231,23 @@ function Showcase({
   // Desktop: dock ở góc dưới-trái. Chỉ chừa chiều ngang bên trái khi màn hình hẹp hoặc khi ngăn INFO đẩy nhân vật
   // về phía dock, để chân nhân vật không chui sau dock. Mobile: dock là dải ngang ở đáy.
   const leftInset = isDesktop && (drawerOnSide || !isWide) ? DOCK_WIDTH + 16 : 0;
+  // So sánh: hai khung nằm trên dock (desktop: trái/phải; điện thoại: trên/dưới); dock chuyển xuống giữa đáy trang.
+  const cmpBottom = dockH + 16;
+  // Điện thoại: hai khung xếp dọc, thanh công cụ của khung trên chỉ giữ nút zoom (nút voice/nền/toàn màn hình không đủ chỗ).
+  const slim = compare && !isDesktop;
+  const LABEL = 76; // nhãn + hàng ảnh chọn trang phục B; hai khung dùng cùng khoảng này để nhân vật cùng cỡ
+  const paneTop = (second: boolean) => (!second || isDesktop ? 52 : 8) + LABEL;
+  const paneInsets = (second: boolean): Insets => ({
+    top: paneTop(second),
+    left: 0,
+    right: second && drawerOnSide ? DRAWER_WIDTH + 24 : 0,
+    bottom: 4,
+  });
+  const paneStyle = (second: boolean): React.CSSProperties => {
+    const region = `calc(100% - ${cmpBottom}px)`;
+    if (isDesktop) return { top: 0, bottom: cmpBottom, [second ? "right" : "left"]: 0, width: "50%" };
+    return { left: 0, right: 0, height: `calc(${region} / 2)`, top: second ? `calc(${region} / 2)` : 0 };
+  };
   const insets: Insets = isDesktop
     ? { top: 8, left: leftInset, right: drawerOnSide ? DRAWER_WIDTH + 24 : 0, bottom: 12 }
     : { top: isFullscreen ? 64 : 126, left: 0, right: 0, bottom: dockH + 22 };
@@ -235,46 +259,96 @@ function Showcase({
 
   return (
     <div data-viewer className="relative h-[calc(100dvh-3.6rem)] min-h-[560px] w-full overflow-hidden bg-bg">
-      <CharacterViewer
-        className="absolute inset-0"
-        skin={viewSkin}
-        name={character.name}
-        insets={insets}
-        captionBottom={24}
-        command={command}
-        voice={category === "character" ? voice : undefined}
-        backdrop={
-          category === "ultimate" && skin.cutscene && plateOn && skin.cutscene.backgrounds.length > 0 ? (
-            <UltimateBackdrop
-              cutscene={skin.cutscene}
-              plan={seqActive ? seqActive.plan : null}
-              startedAt={seqActive ? seqActive.startedAt : null}
-              staticIndex={phaseOfAnimation(plan, pick?.name ?? active?.current ?? "")}
-            />
-          ) : (
-            <BD2Backdrop />
-          )
-        }
-        backgroundPicker={<BD2BackgroundPicker />}
-        tapPlan={bd2TapPlan}
-        tapEnabled={category === "character"}
-        speed={speed}
-        hiddenSlots={hidden}
-        skinName={spineSkin}
-        fitContent={category === "dating"}
-        pickRest={category === "ultimate" ? restAnimation : category === "dating" ? datingRest : undefined}
-        toolbarExtra={<FullscreenButton active={isFullscreen} onToggle={toggleFullscreen} />}
-        onAnimations={(list, durations) => {
-          setAnim({ viewKey, list, durations: durations ?? {}, current: null });
-          if (autoPending.current === viewKey) {
-            autoPending.current = null;
-            playAll(list, durations ?? {});
+      <div className="absolute" style={compare ? paneStyle(false) : { inset: 0 }}>
+        <CharacterViewer
+          className="absolute inset-0"
+          skin={viewSkin}
+          name={character.name}
+          insets={compare ? paneInsets(false) : insets}
+          captionBottom={24}
+          command={command}
+          voice={category === "character" && !slim ? voice : undefined}
+          backdrop={
+            category === "ultimate" && skin.cutscene && plateOn && skin.cutscene.backgrounds.length > 0 ? (
+              <UltimateBackdrop
+                cutscene={skin.cutscene}
+                plan={seqActive ? seqActive.plan : null}
+                startedAt={seqActive ? seqActive.startedAt : null}
+                staticIndex={phaseOfAnimation(plan, pick?.name ?? active?.current ?? "")}
+              />
+            ) : (
+              <BD2Backdrop />
+            )
           }
-        }}
-        onSlots={(names) => setSlots({ viewKey, names })}
-        onSkins={(names) => setSkins({ viewKey, names })}
-        onPlaying={(name) => setAnim((a) => (a && a.viewKey === viewKey ? { ...a, current: name } : a))}
-      />
+          backgroundPicker={slim ? null : <BD2BackgroundPicker />}
+          tapPlan={bd2TapPlan}
+          tapEnabled={category === "character"}
+          speed={speed}
+          hiddenSlots={hidden}
+          skinName={spineSkin}
+          fitContent={category === "dating"}
+          pickRest={category === "ultimate" ? restAnimation : category === "dating" ? datingRest : undefined}
+          toolbarExtra={slim ? undefined : <FullscreenButton active={isFullscreen} onToggle={toggleFullscreen} />}
+          onAnimations={(list, durations) => {
+            setAnim({ viewKey, list, durations: durations ?? {}, current: null });
+            if (autoPending.current === viewKey) {
+              autoPending.current = null;
+              playAll(list, durations ?? {});
+            }
+          }}
+          onSlots={(names) => setSlots({ viewKey, names })}
+          onSkins={(names) => setSkins({ viewKey, names })}
+          onPlaying={(name) => setAnim((a) => (a && a.viewKey === viewKey ? { ...a, current: name } : a))}
+        />
+        {compare && (
+          <div className="pointer-events-none absolute inset-x-0 top-[52px] flex justify-center">
+            <span className="bd2-glass max-w-[80%] truncate px-3 py-1 text-[12px] font-semibold">
+              <span className="mr-1.5 text-muted">A</span>
+              {skin.name}
+            </span>
+          </div>
+        )}
+      </div>
+
+      {compare && cmpSkin && (
+        <div className="absolute" style={paneStyle(true)}>
+          <CharacterViewer
+            className="absolute inset-0"
+            skin={cmpSkin}
+            name={character.name}
+            insets={paneInsets(true)}
+            command={command}
+            backdrop={<BD2Backdrop />}
+            backgroundPicker={null}
+            tapPlan={bd2TapPlan}
+            speed={speed}
+          />
+          <div className="pointer-events-none absolute inset-x-0 flex flex-col items-center gap-1.5" style={{ top: isDesktop ? 52 : 8 }}>
+            <span className="bd2-glass max-w-[80%] truncate px-3 py-1 text-[12px] font-semibold">
+              <span className="mr-1.5 text-muted">B</span>
+              {cmpSkin.name}
+            </span>
+            <div className="pointer-events-auto -mx-1 flex max-w-[92%] gap-1.5 overflow-x-auto px-1 pb-1" role="group" aria-label="Chọn trang phục B">
+              {character.skins
+                .filter((s) => s.id !== skin.id)
+                .map((s) => (
+                  <button
+                    key={s.id}
+                    type="button"
+                    onClick={() => setCmpId(s.id)}
+                    aria-pressed={s.id === cmpSkin.id}
+                    title={s.name}
+                    className={`relative h-9 w-7 shrink-0 overflow-hidden rounded-lg border-2 bg-white/10 outline-none transition focus-visible:ring-2 focus-visible:ring-accent ${
+                      s.id === cmpSkin.id ? "border-accent" : "border-transparent opacity-75 hover:opacity-100"
+                    }`}
+                  >
+                    <Image src={s.thumb} alt={s.name} fill sizes="28px" className="object-cover object-top" />
+                  </button>
+                ))}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Lớp giao diện: không chặn chuột, chỉ các phần tử tương tác mới nhận sự kiện. */}
       <div className="pointer-events-none absolute inset-0 z-10">
@@ -296,7 +370,7 @@ function Showcase({
           </nav>
 
           {/* Toàn màn hình: giấu bảng tên để nhân vật rộng chỗ; nút chuyển nhân vật và dock vẫn dùng được. */}
-          {!isFullscreen && (
+          {!isFullscreen && !compare && (
             <div className="bd2-glass animate-fade-up w-fit max-w-full px-4 py-3">
               {character.stars ? <Stars value={character.stars} max={character.stars} size={14} /> : null}
               <h1 className="mt-1 font-display text-3xl font-extrabold leading-none tracking-tight sm:text-5xl">{character.name}</h1>
@@ -362,8 +436,10 @@ function Showcase({
 
         <div
           ref={dockRef}
-          className="pointer-events-auto absolute inset-x-3 bottom-3 lg:inset-x-auto lg:bottom-4 lg:left-6"
-          style={{ width: isDesktop ? DOCK_WIDTH : undefined }}
+          className={`pointer-events-auto absolute inset-x-3 bottom-3 lg:inset-x-auto lg:bottom-4 ${
+            compare ? "lg:left-1/2 lg:-translate-x-1/2" : "lg:left-6"
+          }`}
+          style={{ width: isDesktop ? (compare ? 640 : DOCK_WIDTH) : undefined }}
         >
           <div className="bd2-glass flex max-h-[46dvh] flex-col gap-2 overflow-y-auto px-3 py-2.5 lg:max-h-[calc(100dvh-9rem)] lg:gap-3 lg:px-3.5 lg:py-3">
             {(skin.cutscene || skin.dating) && (
@@ -393,7 +469,20 @@ function Showcase({
 
             {character.skins.length > 1 && (
               <section aria-label="Trang phục">
-                <DockLabel>Trang phục</DockLabel>
+                <div className="flex items-center justify-between gap-2">
+                  <DockLabel>{compare ? "Trang phục A" : "Trang phục"}</DockLabel>
+                  {canCompare && (
+                    <button
+                      type="button"
+                      aria-pressed={compare}
+                      onClick={() => setCompareOn((v) => !v)}
+                      title="So sánh hai trang phục cạnh nhau (phím S)"
+                      className="bd2-chip px-2.5 py-0.5 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                    >
+                      ⇄ So sánh
+                    </button>
+                  )}
+                </div>
                 <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1.5 pt-1">
                   {character.skins.map((s) => (
                     <button
@@ -674,6 +763,7 @@ function Drawer({ character, activeSkin, onSelect }: { character: Character; act
     ["C", "Đổi trang phục"],
     ["F", "Toàn màn hình"],
     ["B", "Đổi nền"],
+    ["S", "So sánh hai trang phục (bật/tắt)"],
     ["I", "Mở/đóng bảng này"],
   ];
   return (
