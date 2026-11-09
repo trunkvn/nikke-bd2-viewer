@@ -30,8 +30,18 @@ export type SpineRender = Extract<Render, { kind: "spine" }>;
 export type Pose = "stand" | "aim" | "cover";
 export const POSES: Pose[] = ["stand", "aim", "cover"];
 
+/**
+ * Một bước trong chuỗi Ultimate chỉnh tay: `a` = animation (kèm `o` lệch bắt đầu, `d` thời lượng phát tối đa, `h` giữ khung cuối tới hết
+ * nhóm song song, `l` lặp tới hết nhóm), `s` = các bước nối tiếp, `p` = các bước chạy song song (mỗi bước một track).
+ */
+export type CutsceneNode = { a: string; o?: number; d?: number; h?: true; l?: true } | { s: CutsceneNode[] } | { p: CutsceneNode[] };
+/** Một chuỗi có tên ("cut_all", "cut_A_all"...). Không lưu trong data/bd2.local.json: lib/characters.ts ghép từ data/bd2.sequences.local.json. */
+export type CutsceneSequence = { name: string; node: CutsceneNode };
+
 /** Cutscene kỹ năng (Brown Dust 2): mô hình Spine kèm vài ảnh nền ứng với từng giai đoạn của cảnh. */
 export type Cutscene = SpineRender & {
+  /** Thứ tự phát chỉnh tay (scripts/fetch-bd2-sequences.mjs); không có thì dùng bộ lập kế hoạch tự động theo tên animation. */
+  sequences?: CutsceneSequence[];
   backgrounds: string[];
   /** Khung hình hiệu ứng (đạn găm, mảnh vụn...) phủ lên từng ảnh nền, cùng chỉ số với `backgrounds`; phát tuần tự khi pha đó hiển thị. */
   effects?: string[][];
