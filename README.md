@@ -76,6 +76,9 @@ node scripts/fetch-bd2.mjs --no-posters        # bỏ qua bước render thumbna
   đứng), *Ultimate* (cutscene kỹ năng, **chọn từng animation** `cut_A`, `B_cut`, `loop`... kèm các lớp phụ chạy song song, nền cutscene (bật bằng chip "Nền cutscene", mặc định tắt)
   đổi theo pha; nút "Phát toàn bộ" chạy cả chuỗi) và *Fated Guest* (tranh động toàn màn hình của cảnh hẹn hò: chọn cảnh `idleN`
   rồi các phản ứng `mixN_k`, đổi skin bên trong file Spine). Thẻ nào trang phục không có thì mờ đi.
+- **So sánh trang phục:** nút "⇄ So sánh" (hoặc phím `S`) ở mục Trang phục chia viewer làm hai khung, A và B (trái/phải trên máy tính,
+  trên/dưới trên điện thoại). Chọn trang phục B bằng hàng ảnh nhỏ phía trên khung B; mọi lệnh phát animation (chuyển động, tốc độ) chạy
+  đồng thời cho cả hai, còn zoom/kéo của mỗi khung độc lập. Chỉ ở chế độ Nhân vật.
 - Dock còn có **thanh tốc độ** 0.1x–2x (nhấp đúp để về 1x) và nút **Layers** (mở bảng bật/tắt từng lớp/slot của mô hình, có ô lọc).
 - **Fated Guest** (20 tranh, 19 nhân vật; bỏ qua Angelica "Neon Savior" vì dùng định dạng mới chưa dựng đúng): `node scripts/fetch-bd2-dating.mjs` (≈0.5GB, `--dry-run`, `--only dalvi,yuri`), rồi nén texture
   như trên (≈0.43GB → 0.16GB). Tranh bao quanh bằng các mảng đen rất lớn nên renderer tự tìm phần hình thật để căn khung (`fitContent`).
