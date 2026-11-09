@@ -33,7 +33,10 @@
       t();
     });
 
-    const data = new spine.SkeletonBinary(new spine.AtlasAttachmentLoader(assets.require(q.get("atlas")))).readSkeletonData(assets.require(q.get("skel")));
+    const atlas = assets.require(q.get("atlas"));
+    // Texture NIKKE nhân sẵn alpha ("pma:true" trong atlas), texture BD2 thì không.
+    const pma = atlas.pages.every((p) => p.pma);
+    const data = new spine.SkeletonBinary(new spine.AtlasAttachmentLoader(atlas)).readSkeletonData(assets.require(q.get("skel")));
     const skeleton = new spine.Skeleton(data);
     // Giống SpineRenderer: skin default gần như rỗng thì dùng skin có nhiều attachment nhất.
     let best = null, bestCount = data.defaultSkin.getAttachments().length;
@@ -69,7 +72,7 @@
       gl.clearColor(0, 0, 0, 0);
       gl.clear(gl.COLOR_BUFFER_BIT);
       renderer.begin();
-      renderer.drawSkeleton(skeleton, true);
+      renderer.drawSkeleton(skeleton, pma);
       renderer.end();
     };
 
@@ -98,10 +101,90 @@
         for (let r = bandLow; r <= top; r++) for (let x = 0; x < W; x++) if (px[(r * W + x) * 4 + 3] > 40) { sx += x; sn++; }
         const headX = cx + ((sn ? sx / sn : W / 2) - W / 2) / ppu;
         const worldTop = cy + (top + 1 - H / 2) / ppu;
-        vh = charH * 0.36;                              // nửa người trên
+        vh = charH * (+q.get("bh") || 0.36);            // nửa người trên (bh = tỉ lệ chiều cao khung so với nhân vật)
         vw = vh * (W / H);
         camX = headX;
         camY = worldTop + vh * 0.08 - vh / 2;           // chừa 8% phía trên (phần đỉnh đầu mảnh nằm trên hàng đo)
+      }
+    }
+    if (mode === "portrait") {
+      // Chân dung (Brown Dust 2): căn khung quanh khuôn mặt thật của mô hình. Tâm mặt lấy từ các attachment mắt/miệng/mũi/
+      // lông mày/mặt đang hiển thị (đúng vị trí trong tạo hình, không bị vũ khí hay tư thế làm lệch như đo hình bóng).
+      // Tên slot khuôn mặt: khớp theo từ nguyên vẹn (eye, eyeline, eyebrow, brow, mouth, nose, face) để không nhầm với
+      // "eyelet", "brown", "surface"... Lấy TRUNG VỊ tâm các attachment đang hiển thị (không phải khung bao) cho khỏi bị điểm lạc kéo lệch.
+      const FACE_SLOT = /(^|[^a-z])(eye|eyes|eyeline|eyebrow|eyebrows|brow|mouth|nose|face)([^a-z]|$)/i;
+      const faceBox = () => {
+        const xs = [], ys = [];
+        let uMinX = 1e9, uMaxX = -1e9, uMinY = 1e9, uMaxY = -1e9; // khung bao các đỉnh (kích thước thật của vùng mặt)
+        const buf = new Float32Array(4096);
+        for (const slot of skeleton.slots) {
+          if (!FACE_SLOT.test(slot.data.name)) continue;
+          const att = slot.getAttachment();
+          if (!att || slot.color.a < 0.05) continue;
+          let count = 0;
+          if (att instanceof spine.RegionAttachment) { att.computeWorldVertices(slot, buf, 0, 2); count = 8; }
+          else if (att instanceof spine.MeshAttachment && att.worldVerticesLength <= buf.length) { count = att.worldVerticesLength; att.computeWorldVertices(slot, 0, count, buf, 0, 2); }
+          else continue;
+          let minX = 1e9, maxX = -1e9, minY = 1e9, maxY = -1e9;
+          for (let i = 0; i < count; i += 2) { minX = Math.min(minX, buf[i]); maxX = Math.max(maxX, buf[i]); minY = Math.min(minY, buf[i + 1]); maxY = Math.max(maxY, buf[i + 1]); }
+          xs.push((minX + maxX) / 2); ys.push((minY + maxY) / 2);
+          uMinX = Math.min(uMinX, minX); uMaxX = Math.max(uMaxX, maxX); uMinY = Math.min(uMinY, minY); uMaxY = Math.max(uMaxY, maxY);
+        }
+        if (!xs.length) return null;
+        const med = (a) => a.sort((p, q) => p - q)[Math.floor(a.length / 2)];
+        return { x: med(xs), y: med(ys), n: xs.length, w: uMaxX - uMinX, h: uMaxY - uMinY };
+      };
+
+      const px = new Uint8Array(W * H * 4);
+      gl.readPixels(0, 0, W, H, gl.RGBA, gl.UNSIGNED_BYTE, px);
+      const solid = (x, r) => px[(r * W + x) * 4 + 3] > 40;
+      const rowCount = new Uint32Array(H);
+      for (let r = 0; r < H; r++) { let n = 0; for (let x = 0; x < W; x++) if (solid(x, r)) n++; rowCount[r] = n; }
+      // Chiều cao nhân vật: từ "đỉnh đầu" (hàng đầu tiên từ trên đủ rộng, bỏ qua vật mảnh) tới hàng thấp nhất (gốc GL: r = 0 ở đáy).
+      const headRow = Math.round(W * 0.07);
+      let top = -1, bottom = -1;
+      for (let r = H - 1; r >= 0; r--) if (rowCount[r] >= headRow) { top = r; break; }
+      for (let r = 0; r < H; r++) if (rowCount[r] >= 4) { bottom = r; break; }
+      if (top > bottom) {
+        const ppu = H / fullH;
+        const charPx = top - bottom;
+        const face = faceBox();
+        // Không tìm được mặt (mô hình đặt tên slot khác thường): ước lượng tâm mặt ở ~9% dưới đỉnh đầu, giữa các pixel đặc.
+        let fx = W / 2, fy = top - charPx * 0.09;
+        if (face) { fx = W / 2 + (face.x - cx) * ppu; fy = H / 2 + (face.y - cy) * ppu; }
+        else {
+          const xs = [];
+          for (let r = Math.max(bottom, top - Math.round(charPx * 0.17)); r <= top; r++) for (let x = 0; x < W; x += 2) if (solid(x, r)) xs.push(x);
+          if (xs.length > 20) { xs.sort((a, b) => a - b); fx = xs[Math.floor(xs.length / 2)]; }
+        }
+        // Bình thường mặt nằm ~7–25% chiều cao nhân vật dưới đỉnh hình bóng. Nếu sâu hơn 32% thì phần "đỉnh" là hiệu ứng/vũ khí
+        // khổng lồ (vòng lửa, cánh...) chứ không phải đầu: lấy tỉ lệ theo khuôn mặt (≈7.5 lần chiều cao vùng mặt; trung vị đo
+        // trên 205 trang phục là 7.3) nhưng không vượt quá hình bóng thật.
+        const faceHpx = face ? face.h * ppu : 0;
+        const inflated = !!face && faceHpx >= 8 && (top - fy) / charPx > 0.32;
+        const charEffPx = inflated ? Math.min(charPx, faceHpx * 7.5) : charPx;
+        const charH = charEffPx / ppu;
+        // Tai thỏ, mũ, sừng... nhô trên đầu: đi lên từ tâm mặt trong một dải cột hẹp quanh mặt (nên vũ khí ở hai bên không
+        // ảnh hưởng), dừng khi hình bóng đứt quãng, tối đa 26% chiều cao nhân vật.
+        const half = Math.round(charEffPx * 0.14);
+        const x0 = Math.max(0, Math.round(fx - half)), x1 = Math.min(W - 1, Math.round(fx + half));
+        const limit = Math.min(H - 1, Math.round(fy + charEffPx * 0.26));
+        let topAcc = Math.min(H - 1, Math.max(0, Math.round(fy)));
+        for (let r = topAcc; r <= limit; r++) {
+          let any = false;
+          for (let x = x0; x <= x1 && !any; x++) if (solid(x, r)) any = true;
+          if (any) topAcc = r; else if (r - topAcc > 8) break;
+        }
+        // Đầu thường cao ~10% chiều cao nhân vật phía trên tâm mặt: không để đỉnh khung thấp hơn mức đó dù quét gặp khoảng hở
+        // trong mái tóc (nếu không trán sẽ bị xén).
+        topAcc = Math.max(topAcc, Math.min(H - 1, Math.round(fy + charEffPx * 0.1)));
+        const ratio = W / H;
+        vh = Math.min(charH * (+q.get("bh") || 0.5), charH * 0.8);
+        vw = vh * ratio;
+        camX = cx + (fx - W / 2) / ppu;
+        const worldTopAcc = cy + (topAcc + 1 - H / 2) / ppu;
+        camY = worldTopAcc + vh * 0.07 - vh / 2;     // chừa 7% phía trên điểm cao nhất của đầu/phụ kiện
+        window.__info = { W, H, top, bottom, charPx, face: face ? face.n : 0, fw: face ? Math.round(face.w * ppu) : 0, fh: Math.round(faceHpx), inflated, fx: Math.round(fx), fy: Math.round(fy), topAcc, limit, half, vhPx: Math.round(vh * ppu) };
       }
     }
     draw(camX, camY, vw, vh);

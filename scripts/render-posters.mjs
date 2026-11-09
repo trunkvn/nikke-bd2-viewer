@@ -54,13 +54,14 @@ function freePort() {
 
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
-/** Chỉ phục vụ đúng 3 nguồn cần thiết (trang poster, runtime Spine, asset nikke), bind localhost. */
+/** Chỉ phục vụ đúng các nguồn cần thiết (trang poster, runtime Spine, asset nikke/bd2), bind localhost. */
 function resolveRequest(urlPath) {
   if (urlPath === "/poster.html") return join(ROOT, "scripts", "poster.html");
   if (/^\/node_modules\/spine-webgl-4[01]\/dist\/iife\/spine-webgl\.js$/.test(urlPath)) return join(ROOT, urlPath);
-  if (urlPath.startsWith("/assets/nikke/")) {
+  const game = /^\/assets\/(nikke|bd2)\//.exec(urlPath)?.[1];
+  if (game) {
     const file = normalize(join(ROOT, "public", urlPath));
-    return file.startsWith(join(ROOT, "public", "assets", "nikke")) ? file : null;
+    return file.startsWith(join(ROOT, "public", "assets", game)) ? file : null;
   }
   return null;
 }
@@ -80,12 +81,16 @@ function startServer() {
 }
 
 /**
- * @param {{skinId:string, version:string, skel:string, atlas:string}[]} items  skel/atlas là đường dẫn URL (/assets/...)
+ * @param {{skinId:string, version:string, skel:string, atlas:string, dir?:string, spineSkin?:string}[]} items
+ *   skel/atlas là đường dẫn URL (/assets/...); `dir` là thư mục ghi thumb (mặc định public/assets/nikke/<skinId>).
+ * @param {{force?:boolean, zoom?:number, mode?:"bust"|"portrait"}} opts  zoom = chiều cao khung theo tỉ lệ chiều cao nhân vật
+ *   (bust mặc định 0.36, portrait mặc định 0.5); mode: "bust" (NIKKE) hoặc "portrait" (Brown Dust 2: căn theo hình bóng thật)
  * @returns {Promise<Set<string>>} các skinId render thành công
  */
-export async function renderPosters(items, { force = false } = {}) {
+export async function renderPosters(items, { force = false, zoom, mode = "bust" } = {}) {
   const ok = new Set();
-  const todo = items.filter((i) => force || !existsSync(join(ROOT, "public", "assets", "nikke", i.skinId, THUMB_FILE)));
+  const dirOf = (i) => i.dir ?? join(ROOT, "public", "assets", "nikke", i.skinId);
+  const todo = items.filter((i) => force || !existsSync(join(dirOf(i), THUMB_FILE)));
   for (const i of items) if (!todo.includes(i)) ok.add(i.skinId);
   if (todo.length === 0) return ok;
 
@@ -155,9 +160,10 @@ export async function renderPosters(items, { force = false } = {}) {
         atlas: item.atlas,
         w: String(THUMB_W),
         h: String(THUMB_H),
-        mode: "bust",
+        mode,
       });
       if (item.spineSkin) qs.set("spineSkin", item.spineSkin);
+      if (zoom) qs.set("bh", String(zoom));
       await send("Page.navigate", { url: `http://127.0.0.1:${appPort}/poster.html?${qs}` });
       let done = false;
       for (let i = 0; i < 150 && !done; i++) {
@@ -171,12 +177,13 @@ export async function renderPosters(items, { force = false } = {}) {
       }
       if (!done) continue;
       await sleep(250); // chờ vài frame vẽ
+      if (process.env.POSTER_DEBUG) console.log(`  ? ${item.skinId} ${await evalJs("JSON.stringify(window.__info ?? null)")}`);
       const shot = await send("Page.captureScreenshot", {
         format: "webp",
         quality: 88,
         clip: { x: 0, y: 0, width: THUMB_W, height: THUMB_H, scale: 1 },
       });
-      const dir = join(ROOT, "public", "assets", "nikke", item.skinId);
+      const dir = dirOf(item);
       writeFileSync(join(dir, THUMB_FILE), Buffer.from(shot.result.data, "base64"));
       rmSync(join(dir, "thumb.png"), { force: true }); // bản PNG cũ (600x800, nặng)
       ok.add(item.skinId);
