@@ -5,7 +5,7 @@ import { toCard } from "@/lib/cards";
 import { getAllCharacters } from "@/lib/characters";
 
 export default function Home() {
-  const characters = getAllCharacters();
+  const characters = getAllCharacters("nikke");
   const skinCount = characters.reduce((n, c) => n + c.skins.length, 0);
   // Chỉ gửi xuống trình duyệt phần dữ liệu cần để vẽ thẻ và lọc (không kèm mô tả, skin, đường dẫn Spine).
   const cards = characters.map(toCard);

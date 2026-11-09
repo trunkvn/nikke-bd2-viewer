@@ -13,12 +13,12 @@ import { accentStyle, elementColor, rarityColor } from "@/lib/theme";
 type Props = PageProps<"/characters/[slug]">;
 
 export function generateStaticParams() {
-  return getAllCharacters().map((c) => ({ slug: c.slug }));
+  return getAllCharacters("nikke").map((c) => ({ slug: c.slug }));
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
-  const character = getCharacterBySlug(slug);
+  const character = getCharacterBySlug(slug, "nikke");
   return {
     title: character ? `${character.name} — NIKKE Viewer` : "Không tìm thấy",
   };
@@ -26,11 +26,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 async function CharacterContent({ params }: { params: Props["params"] }) {
   const { slug } = await params;
-  const character = getCharacterBySlug(slug);
+  const character = getCharacterBySlug(slug, "nikke");
   if (!character) notFound();
 
   // Thứ tự prev/next trùng với thứ tự mặc định của gallery (tên A–Z).
-  const ordered = [...getAllCharacters()].sort((a, b) => a.name.localeCompare(b.name));
+  const ordered = [...getAllCharacters("nikke")].sort((a, b) => a.name.localeCompare(b.name));
   const i = ordered.findIndex((c) => c.id === character.id);
   const pick = (c?: (typeof ordered)[number]) => (c ? { slug: c.slug, name: c.name } : null);
   const prev = pick(ordered[(i - 1 + ordered.length) % ordered.length]);
