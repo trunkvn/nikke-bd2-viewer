@@ -12,6 +12,7 @@ import { usePathname, useSearchParams } from "next/navigation";
 import { POSES, type Character, type Pose } from "@/data/types";
 import { isIdleAnimation, selectableAnimations } from "@/lib/animations";
 import { getFullscreen, subscribeFullscreen, toggleFullscreen } from "@/lib/fullscreen";
+import { useMedia } from "@/lib/useMedia";
 import { cycleBackground } from "@/lib/viewerBg";
 import { useVoice } from "@/lib/useVoice";
 import { AnimationPicker } from "./AnimationPicker";
@@ -40,19 +41,6 @@ const DESKTOP_QUERY = "(min-width: 1024px)";
 const WIDE_QUERY = "(min-width: 1280px)";
 const DRAWER_WIDTH = 360;
 const DOCK_WIDTH = 400;
-
-function useMedia(query: string, serverValue: boolean) {
-  return useSyncExternalStore(
-    (cb) => {
-      const mq = window.matchMedia(query);
-      mq.addEventListener("change", cb);
-      return () => mq.removeEventListener("change", cb);
-    },
-    () => window.matchMedia(query).matches,
-    () => serverValue,
-  );
-}
-
 
 /**
  * Màn hình xem nhân vật full-bleed: viewer lấp đầy khung, mọi điều khiển nổi lên trên.
