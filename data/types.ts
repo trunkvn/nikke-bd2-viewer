@@ -30,11 +30,26 @@ export type SpineRender = Extract<Render, { kind: "spine" }>;
 export type Pose = "stand" | "aim" | "cover";
 export const POSES: Pose[] = ["stand", "aim", "cover"];
 
+/** Cutscene kỹ năng (Brown Dust 2): mô hình Spine kèm vài ảnh nền ứng với từng giai đoạn của cảnh. */
+export type Cutscene = SpineRender & {
+  backgrounds: string[];
+  /** Khung hình hiệu ứng (đạn găm, mảnh vụn...) phủ lên từng ảnh nền, cùng chỉ số với `backgrounds`; phát tuần tự khi pha đó hiển thị. */
+  effects?: string[][];
+};
+
 export type Skin = {
   id: string;
   name: string;
   thumb: string;
   render: Render;
+  /** Ngày ra mắt (ISO, "2025-02-13") nếu biết; Brown Dust 2 dùng để sắp xếp theo mới nhất. */
+  released?: string;
+  /** Cutscene kỹ năng của trang phục này (Brown Dust 2), nếu có. */
+  cutscene?: Cutscene;
+  /** "Fated Guest": tranh động toàn màn hình của cảnh hẹn hò (Brown Dust 2), nếu có. Là skeleton Spine riêng (`idleN` + `mixN_k`). */
+  dating?: SpineRender;
+  /** Không lưu trong JSON: lib/voice.ts quét thư mục public/assets/bd2/<nhân vật>/<trang phục>/voice/ (Brown Dust 2 có giọng theo trang phục). */
+  voice?: Voice;
   /** Các tư thế chiến đấu có sẵn của skin này (không phải skin nào cũng có). */
   poses?: Partial<Record<Exclude<Pose, "stand">, SpineRender>>;
 };
@@ -98,6 +113,8 @@ export type Character = {
   name: string;
   /** Metadata có thể thiếu với nhân vật mới chưa tra được; UI tự ẩn phần thiếu. */
   rarity?: Rarity;
+  /** Hạng theo số sao (Brown Dust 2: 3–5); NIKKE dùng `rarity` (R/SR/SSR). */
+  stars?: number;
   class?: string;
   element?: string;
   manufacturer?: string;
