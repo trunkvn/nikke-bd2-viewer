@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
@@ -8,6 +8,7 @@ import { CharacterSkeleton } from "@/components/Skeletons";
 import { SkillList } from "@/components/SkillList";
 import { Kbd, Panel, SectionTitle } from "@/components/ui/Panel";
 import { getAllCharacters, getCharacterBySlug } from "@/lib/characters";
+import { shareMetadata } from "@/lib/site";
 import { accentStyle, elementColor, rarityColor } from "@/lib/theme";
 
 type Props = PageProps<"/characters/[slug]">;
@@ -16,11 +17,14 @@ export function generateStaticParams() {
   return getAllCharacters("nikke").map((c) => ({ slug: c.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const { slug } = await params;
   const character = getCharacterBySlug(slug, "nikke");
+  if (!character) return { title: "Không tìm thấy" };
   return {
-    title: character ? `${character.name} — NIKKE Viewer` : "Không tìm thấy",
+    title: character.name,
+    description: character.description || undefined,
+    ...(await shareMetadata(parent, "NIKKE Viewer", `${character.name} — NIKKE Viewer`, character.description)),
   };
 }
 

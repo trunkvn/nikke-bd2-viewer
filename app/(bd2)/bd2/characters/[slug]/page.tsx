@@ -1,9 +1,10 @@
-import type { Metadata } from "next";
+import type { Metadata, ResolvingMetadata } from "next";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { BD2Showcase } from "@/components/bd2/BD2Showcase";
 import { BD2Skeleton } from "@/components/bd2/BD2Skeleton";
 import { getAllCharacters, getCharacterBySlug } from "@/lib/characters";
+import { shareMetadata } from "@/lib/site";
 
 type Props = PageProps<"/bd2/characters/[slug]">;
 
@@ -11,10 +12,15 @@ export function generateStaticParams() {
   return getAllCharacters("bd2").map((c) => ({ slug: c.slug }));
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
+export async function generateMetadata({ params }: Props, parent: ResolvingMetadata): Promise<Metadata> {
   const { slug } = await params;
   const character = getCharacterBySlug(slug, "bd2");
-  return { title: character ? `${character.name} — Brown Dust 2` : "Không tìm thấy" };
+  if (!character) return { title: "Không tìm thấy" };
+  return {
+    title: character.name,
+    description: character.description || undefined,
+    ...(await shareMetadata(parent, "Brown Dust 2 Gallery", `${character.name} — Brown Dust 2`, character.description)),
+  };
 }
 
 async function CharacterContent({ params }: { params: Props["params"] }) {

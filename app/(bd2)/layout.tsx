@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import { BD2Header } from "@/components/bd2/BD2Header";
+import { NO_INDEX, SITE_URL } from "@/lib/site";
 import "./bd2.css";
 
 // Layout gốc riêng của Brown Dust 2: khác hẳn NIKKE về phông, màu và header.
@@ -11,10 +12,20 @@ const jakarta = Plus_Jakarta_Sans({
   weight: ["400", "500", "600", "700", "800"],
 });
 
+const DESCRIPTION = "Showcase nhân vật Brown Dust 2: gallery, viewer Spine tương tác, trang phục và biểu cảm.";
+
 export const metadata: Metadata = {
-  title: "Brown Dust 2 — Character Gallery",
-  description: "Showcase nhân vật Brown Dust 2: gallery, viewer Spine tương tác, trang phục và biểu cảm.",
+  metadataBase: SITE_URL,
+  title: { default: "Brown Dust 2 — Character Gallery", template: "%s — Brown Dust 2" },
+  description: DESCRIPTION,
+  applicationName: "Brown Dust 2 Gallery",
+  manifest: "/bd2/manifest.webmanifest",
+  robots: NO_INDEX,
+  openGraph: { type: "website", siteName: "Brown Dust 2 Gallery", locale: "vi_VN", title: "Brown Dust 2 — Character Gallery", description: DESCRIPTION },
+  twitter: { card: "summary_large_image", title: "Brown Dust 2 — Character Gallery", description: DESCRIPTION },
 };
+
+export const viewport: Viewport = { themeColor: "#111218", colorScheme: "dark" };
 
 export default function BD2Layout({ children }: { children: React.ReactNode }) {
   return (

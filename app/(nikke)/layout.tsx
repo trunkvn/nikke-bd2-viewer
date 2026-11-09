@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Chakra_Petch, Geist_Mono, Inter } from "next/font/google";
 import { SiteHeader } from "@/components/SiteHeader";
+import { NO_INDEX, SITE_URL } from "@/lib/site";
 import "./globals.css";
 
 // Chakra Petch: font góc cạnh kiểu sci-fi cho tiêu đề/nhãn, có hỗ trợ tiếng Việt.
@@ -20,10 +21,20 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const DESCRIPTION = "Showcase nhân vật NIKKE: gallery, viewer Spine tương tác, đổi skin và animation.";
+
 export const metadata: Metadata = {
-  title: "NIKKE Viewer — Interactive Character Gallery",
-  description: "Showcase nhân vật NIKKE: gallery, viewer Spine tương tác, đổi skin và animation.",
+  metadataBase: SITE_URL,
+  title: { default: "NIKKE Viewer — Interactive Character Gallery", template: "%s — NIKKE Viewer" },
+  description: DESCRIPTION,
+  applicationName: "NIKKE Viewer",
+  robots: NO_INDEX,
+  openGraph: { type: "website", siteName: "NIKKE Viewer", locale: "vi_VN", title: "NIKKE Viewer", description: DESCRIPTION },
+  twitter: { card: "summary_large_image", title: "NIKKE Viewer", description: DESCRIPTION },
 };
+
+// Thanh địa chỉ trên điện thoại ăn theo màu nền; trang luôn tối nên báo cho trình duyệt (form, thanh cuộn) dùng giao diện tối.
+export const viewport: Viewport = { themeColor: "#06080c", colorScheme: "dark" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
