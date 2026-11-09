@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { CardData } from "@/lib/cards";
 import { accentStyle, elementColor, rarityColor } from "@/lib/theme";
+import { CardPreview } from "./CardPreview";
 import { Panel } from "./ui/Panel";
 
 /**
@@ -39,9 +40,11 @@ export function CharacterCard({ card, eager = false }: { card: CardData; eager?:
               loading={eager ? "eager" : "lazy"}
               fetchPriority={eager ? "high" : "auto"}
               sizes="(min-width: 1280px) 236px, (min-width: 1024px) 25vw, (min-width: 640px) 33vw, 50vw"
-              className="object-cover object-top transition duration-500 group-hover:scale-[1.06]"
+              className="object-cover object-top transition duration-500 group-hover:scale-[1.06] group-data-[preview=ready]:opacity-0"
             />
           )}
+
+          {card.preview && <CardPreview render={card.preview} label={card.name} />}
 
           <div className="absolute inset-x-0 bottom-0 h-3/5 bg-linear-to-t from-panel via-panel/80 to-transparent" />
 

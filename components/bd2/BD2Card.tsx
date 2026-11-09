@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { Bd2Card } from "@/lib/bd2Cards";
+import { CardPreview } from "../CardPreview";
 import { Stars } from "./Ornaments";
 
 /** Thẻ nhân vật: ảnh nửa người trên nền xám nhạt, tên và trang phục bên dưới. */
@@ -22,8 +23,9 @@ export function BD2Card({ card, index }: { card: Bd2Card; index: number }) {
             sizes="(min-width: 1280px) 18vw, (min-width: 1024px) 22vw, (min-width: 640px) 30vw, 46vw"
             loading={index < 10 ? "eager" : "lazy"}
             fetchPriority={index < 5 ? "high" : "auto"}
-            className="object-cover object-top transition duration-500 group-hover:scale-[1.04]"
+            className="object-cover object-top transition duration-500 group-hover:scale-[1.04] group-data-[preview=ready]:opacity-0"
           />
+          {card.preview && <CardPreview render={card.preview} label={`${card.name} — ${card.costume}`} />}
           {card.costumes > 1 && (
             <span className="absolute right-2 top-2 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur">
               ×{card.costumes}
