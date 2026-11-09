@@ -92,6 +92,7 @@ export function ViewerStage({
   toolbar,
   insets = NO_INSETS,
   className = "",
+  locked = false,
 }: {
   children: ReactNode;
   cssTransform?: boolean;
@@ -106,6 +107,8 @@ export function ViewerStage({
   insets?: Insets;
   /** Kích thước + định vị của khung (ví dụ "absolute inset-0"); mặc định "relative". */
   className?: string;
+  /** Khoá cử chỉ: không kéo/zoom và không có thanh công cụ (dùng cho cutscene phát như video). */
+  locked?: boolean;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
@@ -151,7 +154,7 @@ export function ViewerStage({
   // Listener thủ công với passive:false để chặn cuộn trang khi zoom bằng wheel.
   useEffect(() => {
     const el = stageRef.current;
-    if (!el) return;
+    if (!el || locked) return;
     const onWheel = (e: WheelEvent) => {
       e.preventDefault();
       const i = insetsRef.current;
@@ -164,7 +167,7 @@ export function ViewerStage({
     };
     el.addEventListener("wheel", onWheel, { passive: false });
     return () => el.removeEventListener("wheel", onWheel);
-  }, [zoomAt]);
+  }, [zoomAt, locked]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     stageRef.current!.setPointerCapture(e.pointerId);
@@ -230,13 +233,13 @@ export function ViewerStage({
     <div className={`overflow-hidden ${className || "relative"}`}>
       <div
         ref={stageRef}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        style={{ touchAction: zoomed ? "none" : "pan-y" }}
-        className={`absolute inset-0 select-none overflow-hidden bg-[#05070a] ${
-          dragging ? "cursor-grabbing" : "cursor-grab"
+        onPointerDown={locked ? undefined : onPointerDown}
+        onPointerMove={locked ? undefined : onPointerMove}
+        onPointerUp={locked ? undefined : onPointerUp}
+        onPointerCancel={locked ? undefined : onPointerUp}
+        style={{ touchAction: locked ? "none" : zoomed ? "none" : "pan-y" }}
+        className={`absolute inset-0 select-none overflow-hidden bg-[var(--stage-bg,#05070a)] ${
+          locked ? "cursor-default" : dragging ? "cursor-grabbing" : "cursor-grab"
         }`}
       >
         {backdrop && <div className="pointer-events-none absolute inset-0">{backdrop}</div>}
@@ -262,7 +265,7 @@ export function ViewerStage({
         </StageContext.Provider>
 
         {/* Làm tối nhẹ mép khung để chữ và thanh điều khiển nổi lên dễ đọc. */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_100%_at_50%_45%,transparent_55%,rgba(0,0,0,0.55))]" />
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(120%_100%_at_50%_45%,transparent_55%,var(--stage-vignette,rgba(0,0,0,0.55)))]" />
         {overlay && <div className="pointer-events-none absolute inset-0">{overlay}</div>}
         {hint && (
           <p className="pointer-events-none absolute inset-x-0 top-3 hidden px-24 text-center font-mono text-[10px] uppercase tracking-[0.16em] text-white/30 lg:block">
@@ -272,18 +275,20 @@ export function ViewerStage({
       </div>
 
       {/* Thanh công cụ ở mép phải; tự dịch sang trái khi có panel phủ bên phải. */}
-      <div
-        className="absolute top-1/2 z-10 flex -translate-y-1/2 flex-col items-center gap-1.5 transition-[right] duration-300 ease-out"
-        style={{ right: right + 12 }}
-      >
-        {toolbar}
-        <ToolButton label="Phóng to" onClick={() => zoomButton(1.25)}>+</ToolButton>
-        <ToolButton label="Thu nhỏ" onClick={() => zoomButton(0.8)}>−</ToolButton>
-        <ToolButton label="Đặt lại góc nhìn" onClick={reset}>⟲</ToolButton>
-        <span className="pointer-events-none mt-1 font-mono text-[10px] tracking-widest text-white/45">
-          {Math.round(t.scale * 100)}%
-        </span>
-      </div>
+      {!locked && (
+        <div
+          className="absolute top-1/2 z-10 flex -translate-y-1/2 flex-col items-center gap-1.5 transition-[right] duration-300 ease-out"
+          style={{ right: right + 12 }}
+        >
+          {toolbar}
+          <ToolButton label="Phóng to" onClick={() => zoomButton(1.25)}>+</ToolButton>
+          <ToolButton label="Thu nhỏ" onClick={() => zoomButton(0.8)}>−</ToolButton>
+          <ToolButton label="Đặt lại góc nhìn" onClick={reset}>⟲</ToolButton>
+          <span className="pointer-events-none mt-1 font-mono text-[10px] tracking-widest text-[var(--tool-label,rgba(255,255,255,0.45))] [text-shadow:var(--tool-label-shadow,none)]">
+            {Math.round(t.scale * 100)}%
+          </span>
+        </div>
+      )}
     </div>
   );
 }
@@ -307,8 +312,10 @@ export function ToolButton({
       aria-pressed={pressed}
       title={label}
       onClick={onClick}
-      className={`clip-chamfer-sm flex h-9 w-9 items-center justify-center font-display text-lg outline-none backdrop-blur transition hover:bg-accent hover:text-black focus-visible:bg-accent focus-visible:text-black ${
-        pressed ? "bg-accent/90 text-black" : "bg-black/50 text-white"
+      className={`clip-chamfer-sm tool-button flex h-9 w-9 items-center justify-center font-display text-lg outline-none backdrop-blur transition hover:bg-accent hover:text-[var(--tool-hover-fg,#000)] focus-visible:bg-accent focus-visible:text-[var(--tool-hover-fg,#000)] ${
+        pressed
+          ? "bg-accent/90 text-[var(--tool-hover-fg,#000)]"
+          : "bg-[var(--tool-bg,rgba(0,0,0,0.5))] text-[var(--tool-fg,#fff)]"
       }`}
     >
       {children}
