@@ -97,6 +97,15 @@ node scripts/fetch-bd2.mjs --no-posters        # bỏ qua bước render thumbna
 
 Asset thuộc bản quyền Neowiz / Neon Eyes; `data/bd2.local.json` và `public/assets/` đã nằm trong `.gitignore`.
 
+## Icon, metadata và ảnh chia sẻ
+
+Mỗi game có bộ nhận diện riêng (dấu hiệu tự vẽ, không dùng logo gốc): NIKKE là ô vàng cắt góc chữ N, Brown Dust 2 là ô chàm bo góc chữ B.
+
+- Icon tab, icon iOS, `manifest` (cài lên màn hình chính, NIKKE ở `/manifest.webmanifest`, BD2 ở `/bd2/manifest.webmanifest`), `theme-color` và ảnh chia sẻ Open Graph/Twitter (`opengraph-image.tsx`) đều tách riêng theo game. Trang nhân vật có tiêu đề và mô tả theo từng nhân vật.
+- Tạo lại icon: `node scripts/generate-icons.mjs` (ghi `icon.svg`, `icon1.ico`, `apple-icon.png` trong thư mục từng game và `public/icons/*.png`).
+- Khi triển khai, đặt `NEXT_PUBLIC_SITE_URL` (ví dụ `https://anime.example.com`) để đường dẫn ảnh chia sẻ là địa chỉ đầy đủ; trên Vercel tự lấy tên miền production, còn lại là `http://localhost:3000`.
+- Site **không cho công cụ tìm kiếm lập chỉ mục** (`robots.txt` chặn hết và `noindex`), vì chứa asset game chỉ để dùng cá nhân. Muốn bật lại thì sửa `app/robots.ts` và `NO_INDEX` trong `lib/site.ts`.
+
 ## Chia sẻ tạm thời qua Cloudflare Tunnel
 
 ```bash
