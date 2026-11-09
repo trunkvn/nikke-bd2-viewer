@@ -63,6 +63,11 @@ node scripts/fetch-bd2.mjs --no-posters        # bỏ qua bước render thumbna
   hiệu ứng (đạn găm, mảnh vụn) đổi theo pha.
   **Tự phát:** vào nhân vật có Ultimate là viewer tự mở tab Ultimate và phát toàn bộ (mặc định bật; chỉ khi vào nhân vật, đổi trang
   phục thì không tự phát). Tắt/bật bằng công tắc "Tự phát Ultimate khi vào nhân vật" trong tab Ultimate; lưu trong trình duyệt.
+  **Thứ tự chỉnh tay:** `node scripts/fetch-bd2-sequences.mjs` lấy thứ tự phát từng nhân vật (cut_all, cut_A_all, cut_B_all... cùng thời lượng
+  từng pha, nhóm chạy song song, giữ/lặp) từ viewer [BD2-L2D-Viewer](https://github.com/jelosus2/BD2-L2D-Viewer) (MIT; đọc như dữ liệu,
+  không chạy mã) vào `data/bd2.sequences.local.json` (gitignore). 155/171 trang phục có; "Phát toàn bộ" dùng `cut_all`, các chuỗi còn lại
+  (cut_A_all...) hiện thành chip "▶ tên". Trang phục không có thì dùng bộ lập kế hoạch tự động bên dưới. Bỏ 14 bước dùng skeleton phụ
+  (2 nhân vật) vì ta không tải skeleton đó.
   Mô hình không kèm nền nên mỗi pha ghép với một ảnh nền (back1, back2... của kho asset) và các khung hiệu ứng (back2-1, back2-2...)
   cùng hệ toạ độ. Tên animation khác nhau giữa các nhân vật (`cut_A`, `A_cut`, `cut_1`, `loop_2`...) nên `lib/bd2Cutscene.ts`
   nhận diện pha theo mẫu tên và chạy các lớp phụ (váy, lửa...) song song. Cách ghép nền/hiệu ứng với từng pha là suy ra từ dữ
@@ -78,7 +83,8 @@ node scripts/fetch-bd2.mjs --no-posters        # bỏ qua bước render thumbna
   `node scripts/fetch-bd2-voice.mjs` (nguồn: repo BD2-L2D-Viewer; `--dry-run`, `--only anastasia`). Nhấp vào nhân vật thì họ làm cử động
   `motion` **và** nói một câu (mô hình có `_faceN_talk` thì nhép miệng). Nút loa và nút JP/KR nằm ở thanh công cụ của khung. Chỉ phản ứng
   khi nhân vật đang đứng yên (nhấp chồng lên cử động đang chạy bị bỏ qua, như viewer gốc), lời thoại nằm ở
-  `public/assets/bd2/<nhân vật>/<trang phục>/voice/<ja|ko>/touch_N.webm`.
+  `public/assets/bd2/<nhân vật>/<trang phục>/voice/<ja|ko>/touch_N.webm`. Câu đầu (`touch_1`) cũng là **lời chào khi vào trang** (tự phát khi vào
+  nhân vật hoặc đổi trang phục; trình duyệt chặn tự phát thì phát ngay khi bạn chạm lần đầu).
 - Một số mô hình (13 trang phục, ví dụ Luvencia, Scheherazade "Pool Party", Levia "Night of Jealousy") có animation biểu cảm `_faceN` đổi
   luôn attachment của cả thân, bật lên là mất 20–70% hình. Renderer tự thử từng biểu cảm lúc nạp và ẩn những cái làm mất hình.
 - Texture BD2 không nhân sẵn alpha (khác NIKKE có `pma:true`); renderer đọc cờ `pma` của atlas để vẽ đúng.
