@@ -441,8 +441,12 @@ function Showcase({
           }`}
           style={{ width: isDesktop ? (compare ? 640 : DOCK_WIDTH) : undefined }}
         >
-          <div className="bd2-glass flex max-h-[46dvh] flex-col gap-2 overflow-y-auto px-3 py-2.5 lg:max-h-[calc(100dvh-9rem)] lg:gap-3 lg:px-3.5 lg:py-3">
-            {(skin.cutscene || skin.dating) && (
+          <div
+            className={`bd2-glass flex max-h-[46dvh] flex-col gap-2 overflow-y-auto px-3 py-2.5 lg:max-h-[calc(100dvh-9rem)] lg:gap-3 lg:px-3.5 lg:py-3 ${
+              compare ? "lg:grid lg:grid-cols-2 lg:items-start lg:gap-x-5 lg:gap-y-2" : ""
+            }`}
+          >
+            {!compare && (skin.cutscene || skin.dating) && (
               <section aria-label="Chế độ xem">
                 <div role="tablist" className="flex gap-1.5">
                   {(["character", "ultimate", "dating"] as const).map((cat) => {
@@ -491,7 +495,9 @@ function Showcase({
                       onClick={() => onSelect(s.id)}
                       aria-pressed={s.id === skin.id}
                       title={s.name}
-                      className={`relative h-[56px] w-[42px] shrink-0 overflow-hidden rounded-xl border-2 bg-white/10 outline-none transition focus-visible:ring-2 focus-visible:ring-accent lg:h-[68px] lg:w-[52px] ${
+                      className={`relative shrink-0 overflow-hidden rounded-xl border-2 bg-white/10 outline-none transition focus-visible:ring-2 focus-visible:ring-accent ${
+                        compare ? "h-[44px] w-[34px]" : "h-[56px] w-[42px] lg:h-[68px] lg:w-[52px]"
+                      } ${
                         s.id === skin.id ? "border-accent" : "border-transparent opacity-75 hover:opacity-100"
                       }`}
                     >
@@ -667,7 +673,7 @@ function Showcase({
                 </div>
               </section>
 
-              {faces.length > 0 && (
+              {!compare && faces.length > 0 && (
                 <section aria-label="Biểu cảm">
                   <div className="flex items-center justify-between gap-2">
                     <DockLabel>Biểu cảm</DockLabel>
@@ -713,7 +719,7 @@ function Showcase({
               </>
             )}
 
-            <section aria-label="Phát" className="flex items-center gap-3">
+            <section aria-label="Phát" className="flex items-center gap-3 lg:col-span-2">
               <label className="flex min-w-0 flex-1 items-center gap-2 text-[12px] font-medium text-muted">
                 <span className="shrink-0">Tốc độ</span>
                 <input
