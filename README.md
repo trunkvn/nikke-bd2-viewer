@@ -91,6 +91,7 @@ node scripts/fetch-bd2.mjs --no-posters        # bỏ qua bước render thumbna
 - Một số mô hình (13 trang phục, ví dụ Luvencia, Scheherazade "Pool Party", Levia "Night of Jealousy") có animation biểu cảm `_faceN` đổi
   luôn attachment của cả thân, bật lên là mất 20–70% hình. Renderer tự thử từng biểu cảm lúc nạp và ẩn những cái làm mất hình.
 - Texture BD2 không nhân sẵn alpha (khác NIKKE có `pma:true`); renderer đọc cờ `pma` của atlas để vẽ đúng.
+- **Xem trước khi rê chuột** (cả NIKKE và BD2): dừng chuột trên một thẻ nhân vật ở gallery chừng 0,2 giây thì model Spine của thẻ đó hiện ra, chạy idle ngay trên thẻ (ảnh tĩnh mờ đi); rời chuột là gỡ. Chỉ một model chạy mỗi lúc, chỉ với chuột (không áp dụng cho cảm ứng) và tắt khi hệ thống bật giảm chuyển động. Nhấp vào thẻ vẫn mở trang chi tiết.
 - Gallery `/bd2` có hai bộ lọc **Ultimate** và **Fated Guest** (kèm số nhân vật), kết hợp được với tìm kiếm và hạng sao; thẻ nhân vật dán nhãn tương ứng.
 - Phím tắt: `←` `→` chuyển nhân vật, `C` đổi trang phục, `F` toàn màn hình, `B` đổi nền, `I` thông tin.
 
