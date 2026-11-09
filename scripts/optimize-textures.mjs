@@ -4,18 +4,19 @@
  *
  *   node scripts/optimize-textures.mjs --only c010,c019      # chỉ các nhân vật này (id hoặc slug)
  *   node scripts/optimize-textures.mjs --all                  # toàn bộ
+ *   node scripts/optimize-textures.mjs --all --game bd2       # Brown Dust 2 (mặc định: nikke)
  *   node scripts/optimize-textures.mjs --all --quality 95     # chất lượng cao hơn (file lớn hơn)
  *   node scripts/optimize-textures.mjs --force                # chuyển lại cả các skin đã chuyển (khi đổi --quality)
  *   node scripts/optimize-textures.mjs --dry-run              # chỉ báo cáo, không ghi gì
  *   node scripts/optimize-textures.mjs --revert               # trỏ dữ liệu về lại PNG gốc
  *
  * Không đụng tới file gốc: với mỗi `x.atlas` + `x.png` sinh thêm `x.webp` và `x.webp.atlas` (atlas giống hệt, chỉ
- * đổi tên trang ảnh), rồi sửa data/nikke.local.json trỏ sang `.webp.atlas`. Bản gốc của JSON được giữ ở
- * data/nikke.local.json.bak. Chạy lại `fetch-nikke.mjs` sẽ ghi đè JSON và đưa dữ liệu về PNG.
+ * đổi tên trang ảnh), rồi sửa data/<game>.local.json trỏ sang `.webp.atlas`. Bản gốc của JSON được giữ ở
+ * data/<game>.local.json.bak. Chạy lại `fetch-nikke.mjs` / `fetch-bd2.mjs` sẽ ghi đè JSON và đưa dữ liệu về PNG.
  *
- * Atlas của Nikke dùng alpha nhân sẵn (pma:true). WebP giữ kênh alpha không mất mát (alphaQuality 100) và dùng
- * smartSubsample để màu ở viền các mảnh nhỏ không bị lem; RGB dưới vùng trong suốt giữ nguyên (exact) để không làm
- * hỏng giá trị nhân sẵn.
+ * Atlas của NIKKE dùng alpha nhân sẵn (pma:true), của Brown Dust 2 thì không; cả hai đều ổn vì WebP giữ kênh alpha
+ * không mất mát (alphaQuality 100), dùng smartSubsample để màu ở viền các mảnh nhỏ không bị lem, và giữ nguyên RGB dưới
+ * vùng trong suốt (exact) để không làm hỏng giá trị nhân sẵn / màu viền đệm. Atlas nhiều trang texture cũng được xử lý.
  */
 import { copyFileSync, existsSync, readFileSync, statSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -24,13 +25,21 @@ import sharp from "sharp";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const PUBLIC = join(ROOT, "public");
-const DATA = join(ROOT, "data", "nikke.local.json");
-const BACKUP = DATA + ".bak";
-
 const argv = process.argv.slice(2);
 const flag = (n) => argv.includes(`--${n}`);
 const opt = (n, d) => (argv.includes(`--${n}`) ? argv[argv.indexOf(`--${n}`) + 1] : d);
 
+const game = opt("game", "nikke");
+if (!["nikke", "bd2"].includes(game)) {
+  console.error('--game phải là "nikke" hoặc "bd2".');
+  process.exit(1);
+}
+const DATA = join(ROOT, "data", `${game}.local.json`);
+const BACKUP = DATA + ".bak";
+if (!existsSync(DATA)) {
+  console.error(`Chưa có ${DATA}: chạy scripts/fetch-${game}.mjs trước.`);
+  process.exit(1);
+}
 const quality = Number(opt("quality", 90));
 const only = opt("only") ? new Set(opt("only").split(",").map((s) => s.trim())) : null;
 const dry = flag("dry-run");
@@ -59,9 +68,9 @@ if (flag("revert")) {
   process.exit(0);
 }
 
-/** Mọi render Spine của một nhân vật: skin chính + các tư thế aim/cover. */
+/** Mọi render Spine của một nhân vật: skin chính, các tư thế aim/cover (NIKKE) cutscene kỹ năng và Fated Guest (Brown Dust 2). */
 function renders(c) {
-  return c.skins.flatMap((s) => [s.render, ...Object.values(s.poses ?? {})]).filter((r) => r?.kind === "spine");
+  return c.skins.flatMap((s) => [s.render, s.cutscene, s.dating, ...Object.values(s.poses ?? {})]).filter((r) => r?.kind === "spine");
 }
 
 const fileOf = (url) => join(PUBLIC, url.replace(/^\//, ""));
