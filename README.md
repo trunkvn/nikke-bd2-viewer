@@ -134,6 +134,13 @@ node scripts/fetch-azurlane.mjs
 `~/Developer/Personal/.azl-cache`.
 Kiểm tra mọi skin có vẽ được không: `node scripts/azurlane/render-thumbs.mjs --check --base http://127.0.0.1:3000`.
 
+**Voice:** `node scripts/azurlane/voice.mjs EN` (sync.mjs tự chạy, bỏ qua bằng `--no-voice`). Voice nằm trong các gói `cue/cv-<mã>.b` (định dạng ACB của CRIWARE, âm thanh
+HCA không mã hoá). Mã gói là `voice_key` của skin trong bảng `ship_skin_words` của [AzurLaneData](https://github.com/AzurLaneTools/AzurLaneData) (skin có `voice_key` 0 dùng voice của tàu gốc);
+bảng đó cũng cho phụ đề tiếng Anh. Script tải đúng các gói cần, giải mã bằng `vgmstream-cli` (`brew install vgmstream`) và nén Opus/WebM bằng `ffmpeg`
+vào `public/assets/azurlane/voice/<mã>/<cue>.webm` (khoảng 40 MB cho 70 tàu). Viewer phát câu thoại khi hoạt cảnh tương ứng bắt đầu (bấm nút hoặc chạm vào nhân vật),
+miệng nhép theo âm lượng, có phụ đề và nút loa (dùng chung cài đặt bật/tắt tiếng với NIKKE và BD2). Ghép hoạt cảnh với câu thoại theo tên, chưa đối chiếu từng cái trong game
+(`lib/azurlaneShared.ts`). Nếu HCA bị mã hoá bằng khoá thì script dừng ở gói đó (không dò khoá).
+
 **Thêm một tàu:** thêm dòng `{ "bundle": "...", "ship": "<tên EN>", "skin": null }` vào `selection.json` (hoặc chạy lại `--select`), rồi `node scripts/azurlane/sync.mjs EN`.
 Tìm tên bundle của một tàu bằng `tools/azl-venv/bin/python scripts/azurlane/match-bundles.py EN`.
 
