@@ -65,6 +65,10 @@ async function thumb(url, dest) {
 const VOICE_FILE = join(ROOT, "data", "azurlane.voice.local.json");
 const VOICE = existsSync(VOICE_FILE) ? JSON.parse(readFileSync(VOICE_FILE, "utf8")) : { bundles: {}, sets: {} };
 
+// Thông tin tàu từ bảng của game (scripts/azurlane/select.py): hệ, loại, độ hiếm, số sao. Có cả tàu mới hơn dữ liệu AzurAPI.
+const META_FILE = join(ROOT, "scripts", "azurlane", "ships.json");
+const SHIPS_META = existsSync(META_FILE) ? JSON.parse(readFileSync(META_FILE, "utf8")) : {};
+
 const all = await ships();
 const template = await skinTemplate();
 // Dữ liệu lần trước: nếu tên chính thức khác tên đã gán (tên cũ lấy từ AzurAPI theo thứ tự bundle, sai ở vài tàu) thì ảnh thẻ cũ có thể là của skin khác, bỏ để lấy lại.
@@ -81,26 +85,27 @@ for (const bundle of present.filter((b) => BUNDLES[b])) {
   const skinName = skinForBundle(template, bundle, en)?.name ?? selectedName ?? neutralName(bundle);
   const before = previousName.get(bundle);
   if (before && before !== skinName && !/^Skin |^Default$/.test(before) && !/\(cv \d+\)$/.test(before)) rmSync(join(ASSET_DIR, bundle, "thumb.webp"), { force: true });
-  const s = all.find((x) => x.names.en === en);
-  if (!s) {
-    console.warn(`! Không thấy tàu "${en}" trong AzurAPI (${bundle})`);
+  const s = all.find((x) => x.names.en === en); // AzurAPI: chỉ còn dùng cho ảnh skin và tên đa ngôn ngữ (dữ liệu dừng ở 2/2023)
+  const meta = SHIPS_META[en];
+  if (!s && !meta) {
+    console.warn(`! Không có thông tin tàu "${en}" (${bundle}): chạy scripts/azurlane/select.py`);
     continue;
   }
-  const skin = s.skins.find((k) => k.name === skinName);
+  const skin = s?.skins.find((k) => k.name === skinName);
   const info = JSON.parse(readFileSync(join(ASSET_DIR, bundle, "info.json"), "utf8"));
   const dest = join(ASSET_DIR, bundle, "thumb.webp");
   // Skin không có ảnh trong AzurAPI: dùng ảnh đã dựng từ Live2D nếu có (scripts/azurlane/render-thumbs.mjs).
   const ok = skin?.image ? await thumb(skin.image, dest) : existsSync(dest);
   if (!ok) console.warn(`! Chưa có ảnh của ${en} / ${skinName} (chạy scripts/azurlane/render-thumbs.mjs rồi chạy lại script này)`);
-  const entry = byShip.get(s.id) ?? {
-    id: `azurlane-${s.id}`,
+  const entry = byShip.get(en) ?? {
+    id: s ? `azurlane-${s.id}` : `azurlane-${slugify(en)}`,
     slug: slugify(en),
     name: en,
-    names: s.names,
-    nation: s.nationality,
-    hull: s.hullType,
-    rarity: s.rarity,
-    stars: s.stars,
+    names: s?.names ?? { en },
+    nation: meta?.nation ?? s.nationality,
+    hull: meta?.hull ?? s.hullType,
+    rarity: meta?.rarity ?? s.rarity,
+    stars: meta?.stars ?? s?.stars,
     skins: [],
   };
   entry.skins.push({
@@ -112,7 +117,7 @@ for (const bundle of present.filter((b) => BUNDLES[b])) {
     hitAreas: info.hitAreas,
     ...(VOICE.sets[VOICE.bundles[bundle]] ? { voice: VOICE.sets[VOICE.bundles[bundle]] } : {}),
   });
-  byShip.set(s.id, entry);
+  byShip.set(en, entry);
 }
 const list = [...byShip.values()].map((s) => ({ ...s, skins: s.skins.sort((a, b) => (a.name === "Default" ? -1 : b.name === "Default" ? 1 : a.id.localeCompare(b.id, undefined, { numeric: true }))) }));
 list.sort((a, b) => a.name.localeCompare(b.name));
