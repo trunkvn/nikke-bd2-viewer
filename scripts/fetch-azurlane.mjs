@@ -55,6 +55,11 @@ const BUNDLES = {
   lvzuofu_2: { ship: "Lützow", skin: "Everlasting Blood Banquet" },
   aisaikesi_4: { ship: "Essex", skin: "Craft Fairytail" },
   jiluofu_3: { ship: "Kirov", skin: "Drifting Justice" },
+  tiancheng_3: { ship: "Amagi", skin: "Wending Waters, Serene Lotus" },
+  // Hai bundle "cv" là skin mới hơn dữ liệu AzurAPI (2/2023) nên chưa có tên chính thức: đặt tên theo cảnh, ảnh thẻ dựng từ chính Live2D
+  // (scripts/azurlane/render-thumbs.mjs). Hai bundle này dùng định dạng moc3 bản 4 và 5, có 37 và 62 hoạt cảnh.
+  tiancheng_cv_2: { ship: "Amagi", skin: "Nhà thờ hoa hồng (cv 2)" },
+  tiancheng_cv_3: { ship: "Amagi", skin: "Nàng tiên cá dưới biển (cv 3)" },
 };
 
 const slugify = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -98,8 +103,9 @@ for (const bundle of present.filter((b) => BUNDLES[b])) {
   const skin = s.skins.find((k) => k.name === skinName);
   const info = JSON.parse(readFileSync(join(ASSET_DIR, bundle, "info.json"), "utf8"));
   const dest = join(ASSET_DIR, bundle, "thumb.webp");
-  const ok = skin?.image ? await thumb(skin.image, dest) : false;
-  if (!ok) console.warn(`! Không tải được ảnh của ${en} / ${skinName}`);
+  // Skin không có ảnh trong AzurAPI: dùng ảnh đã dựng từ Live2D nếu có (scripts/azurlane/render-thumbs.mjs).
+  const ok = skin?.image ? await thumb(skin.image, dest) : existsSync(dest);
+  if (!ok) console.warn(`! Chưa có ảnh của ${en} / ${skinName} (chạy scripts/azurlane/render-thumbs.mjs rồi chạy lại script này)`);
   const entry = byShip.get(s.id) ?? {
     id: `azurlane-${s.id}`,
     slug: slugify(en),
@@ -121,7 +127,7 @@ for (const bundle of present.filter((b) => BUNDLES[b])) {
   });
   byShip.set(s.id, entry);
 }
-const list = [...byShip.values()].map((s) => ({ ...s, skins: s.skins.sort((a, b) => (a.name === "Default" ? -1 : b.name === "Default" ? 1 : a.name.localeCompare(b.name))) }));
+const list = [...byShip.values()].map((s) => ({ ...s, skins: s.skins.sort((a, b) => (a.name === "Default" ? -1 : b.name === "Default" ? 1 : a.id.localeCompare(b.id, undefined, { numeric: true }))) }));
 list.sort((a, b) => a.name.localeCompare(b.name));
 mkdirSync(dirname(OUT), { recursive: true });
 writeFileSync(OUT, JSON.stringify(list, null, 2) + "\n");
