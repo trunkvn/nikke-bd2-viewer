@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import type { AzurCard } from "@/lib/azurlaneShared";
+import { rarityStyle, type AzurCard } from "@/lib/azurlaneShared";
 
 /** Thẻ tàu: ảnh trên nền xanh có quầng sáng, tên và hệ/loại tàu bên dưới. */
 export function AzurShipCard({ card, index }: { card: AzurCard; index: number }) {
@@ -23,6 +23,13 @@ export function AzurShipCard({ card, index }: { card: AzurCard; index: number })
           )}
           <div className="absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-bg/90 to-transparent" />
           <span className="absolute left-2 top-2 bg-accent px-2 py-0.5 font-mono text-[10px] font-bold uppercase tracking-widest text-accent-ink">L2D</span>
+          <span
+            className="absolute bottom-2 left-2 border px-1.5 py-0.5 font-display text-[11px] font-bold leading-none"
+            style={{ color: rarityStyle(card.rarity).color, borderColor: rarityStyle(card.rarity).color, background: "rgba(4,12,24,0.75)" }}
+            title={card.rarity}
+          >
+            {rarityStyle(card.rarity).abbr}
+          </span>
           {card.skins > 1 && (
             <span className="absolute right-5 top-2 rounded-full bg-black/55 px-2 py-0.5 text-[11px] font-semibold text-white backdrop-blur">×{card.skins}</span>
           )}

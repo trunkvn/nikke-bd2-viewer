@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { getFullscreen, subscribeFullscreen, toggleFullscreen } from "@/lib/fullscreen";
-import { motionLabel, orderMotions, type AzurShip } from "@/lib/azurlaneShared";
+import { motionLabel, orderMotions, rarityStyle, type AzurShip } from "@/lib/azurlaneShared";
 import { FullscreenButton } from "../FullscreenButton";
 import { ViewerStage } from "../ViewerStage";
 import { Live2DRenderer, type MotionCommand } from "./Live2DRenderer";
@@ -116,7 +116,8 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
           </nav>
           <div className="azl-glass animate-fade-up w-fit max-w-full px-4 py-3">
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
-              {ship.hull} · {ship.nation}
+              {ship.hull} · {ship.nation} ·{" "}
+              <span style={{ color: rarityStyle(ship.rarity).color }}>{ship.rarity}</span>
             </p>
             <h1 className="mt-1 font-display text-3xl font-bold uppercase leading-none tracking-tight sm:text-5xl">{ship.name}</h1>
             <p className="mt-1.5 text-sm font-medium text-muted">{skin.name}</p>

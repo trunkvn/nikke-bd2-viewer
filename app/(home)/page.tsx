@@ -1,6 +1,7 @@
 import { GameCard, type CoverArt, type GameStat } from "@/components/home/GameCard";
 import { bd2DefaultSkin, toBd2Card } from "@/lib/bd2Cards";
 import { getAllShips } from "@/lib/azurlane";
+import { rarityRank } from "@/lib/azurlaneShared";
 import { getAllCharacters } from "@/lib/characters";
 import { GAMES } from "@/lib/games";
 
@@ -23,7 +24,7 @@ export default function HomePage() {
     .slice(0, 3)
     .map(({ c, skin }) => ({ src: skin.thumb, name: c.name }));
 
-  const azurCovers: CoverArt[] = azur.filter((s) => s.skins[0]?.thumb).slice(0, 3).map((s) => ({ src: s.skins[0].thumb, name: s.name }));
+  const azurCovers: CoverArt[] = [...azur].filter((s) => s.skins[0]?.thumb).sort((a, b) => rarityRank(b.rarity) - rarityRank(a.rarity) || a.name.localeCompare(b.name)).slice(0, 3).map((s) => ({ src: s.skins[0].thumb, name: s.name }));
 
   const data: Record<string, { covers: CoverArt[]; stats: GameStat[] }> = {
     azurlane: {

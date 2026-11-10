@@ -76,3 +76,22 @@ export function orderMotions(names: string[]): string[] {
   const rank = (n: string) => (n === "idle" ? 0 : n.startsWith("touch_") ? 1 : n.startsWith("main_") ? 2 : n === "login" ? 3 : 4);
   return [...names].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b, undefined, { numeric: true }));
 }
+
+/**
+ * Độ hiếm của tàu, từ thấp lên cao. Bốn bậc thường (Normal, Rare, Elite, Super Rare); Ultra Rare là bậc đặc biệt bên trên; Priority và
+ * Decisive là tàu "nghiên cứu" (cùng cỡ với Super Rare trở lên). Số sao trong dữ liệu đi theo độ hiếm (Normal/Rare 4, Elite 5, còn lại 6).
+ */
+export const RARITIES = ["Normal", "Rare", "Elite", "Super Rare", "Priority", "Decisive", "Ultra Rare"] as const;
+export const rarityRank = (r: string) => RARITIES.indexOf(r as (typeof RARITIES)[number]);
+
+/** Viết tắt thường dùng trong cộng đồng và màu hiển thị. */
+const RARITY_STYLE: Record<string, { abbr: string; color: string }> = {
+  Normal: { abbr: "N", color: "#9aa5b1" },
+  Rare: { abbr: "R", color: "#5aa9ff" },
+  Elite: { abbr: "E", color: "#b88cff" },
+  "Super Rare": { abbr: "SR", color: "#ffcf4a" },
+  Priority: { abbr: "PR", color: "#ffb347" },
+  Decisive: { abbr: "DR", color: "#ff7a59" },
+  "Ultra Rare": { abbr: "UR", color: "#ff7ad9" },
+};
+export const rarityStyle = (r: string) => RARITY_STYLE[r] ?? { abbr: r, color: "#9aa5b1" };
