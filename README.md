@@ -146,8 +146,8 @@ Tìm tên bundle của một tàu bằng `tools/azl-venv/bin/python scripts/azur
 
 **Chọn tàu:** `selection.json` do `tools/azl-venv/bin/python scripts/azurlane/match-bundles.py EN --select` sinh ra (sửa tay được). Tiêu chí hiện tại: mọi tàu
 Super Rare trở lên (Super Rare, Priority, Decisive, Ultra Rare) cộng một số tàu Elite được nhiều người thích (sửa `TOP` và `ELITE_PICK` trong script). Script
-ghép tàu của AzurAPI với bundle theo pinyin tên Trung (82 tàu có Live2D ghép được ở server EN). Tên skin chính thức chỉ được gán khi số bundle bằng đúng số
-skin Live2D mà AzurAPI biết (đã đối chiếu thứ tự bằng mắt); còn lại là "Skin <số>" với ảnh dựng từ Live2D. AzurAPI dừng cập nhật từ 2/2023 nên khoảng 75 nhóm bundle
+ghép tàu của AzurAPI với bundle theo pinyin tên Trung (82 tàu có Live2D ghép được ở server EN). Tên skin lấy từ bảng `ship_skin_template` của game (qua AzurLaneData; cột `painting` = tên bundle), dựng lúc chạy `fetch-azurlane.mjs`; `selection.json` để `skin: null`. (Không đoán tên theo
+thứ tự bundle: cách đó sai ở Bremerton, Hermione và Suruga.) Skin quá mới chưa có trong bảng dùng tên tự đặt hoặc "Skin <số>", ảnh thẻ dựng từ chính Live2D. AzurAPI dừng cập nhật từ 2/2023 nên khoảng 75 nhóm bundle
 (phần lớn là tàu ra sau đó) chưa ghép được tên và chưa có trong danh sách. Bundle bị **mã hoá** (skin mới nhất, ví dụ `chaijun_6`) không tách được và được bỏ qua: không
 dò khoá vì đó là vượt qua cơ chế bảo vệ của game.
 
