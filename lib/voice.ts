@@ -27,15 +27,6 @@ export function loadVoice(character: Pick<Character, "id" | "game">): Voice | un
  * `path` là đường dẫn dưới public/assets, ví dụ "bd2/alec/sword-breaker".
  */
 export function loadVoiceAt(path: string): Voice | undefined {
-  // Có bảng kê (data/voice.local.json) thì dùng nó: asset đã chuyển lên R2 nên không còn thư mục voice trên đĩa để quét.
-  // Khoá không có trong bảng kê (voice mới thêm sau khi lập bảng) thì quét đĩa như cũ.
-  const listed = readManifest()?.[path];
-  if (listed !== undefined) return listed ?? undefined;
-  return scanVoiceAt(path);
-}
-
-/** Quét đĩa tìm voice của `path` (xem quy ước ở đầu file). Dùng cả cho script lập bảng kê. */
-export function scanVoiceAt(path: string): Voice | undefined {
   const root = join(process.cwd(), "public", "assets", ...path.split("/"), "voice");
   if (!existsSync(root)) return undefined;
   const game = path;
@@ -51,20 +42,6 @@ export function scanVoiceAt(path: string): Voice | undefined {
     if (set) voice[lang] = set;
   }
   return Object.keys(voice).length ? voice : undefined;
-}
-
-let manifest: { mtime: number; data: Record<string, Voice | null> } | null = null;
-
-/** data/voice.local.json do scripts/build-voice-manifest.mjs sinh ra: { "<khoá>": Voice | null }. Nạp lại khi file đổi (dev thấy ngay bảng kê mới). */
-function readManifest(): Record<string, Voice | null> | null {
-  const file = join(process.cwd(), "data", "voice.local.json");
-  try {
-    const mtime = statSync(file).mtimeMs;
-    if (manifest?.mtime !== mtime) manifest = { mtime, data: JSON.parse(readFileSync(file, "utf8")) };
-    return manifest.data;
-  } catch {
-    return (manifest = null);
-  }
 }
 
 function loadSet(dir: string, urlBase: string): VoiceSet | undefined {

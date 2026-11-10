@@ -106,36 +106,6 @@ Mỗi game có bộ nhận diện riêng (dấu hiệu tự vẽ, không dùng l
 - Khi triển khai, đặt `NEXT_PUBLIC_SITE_URL` (ví dụ `https://anime.example.com`) để đường dẫn ảnh chia sẻ là địa chỉ đầy đủ; trên Vercel tự lấy tên miền production, còn lại là `http://localhost:3000`.
 - Site **không cho công cụ tìm kiếm lập chỉ mục** (`robots.txt` chặn hết và `noindex`), vì chứa asset game chỉ để dùng cá nhân. Muốn bật lại thì sửa `app/robots.ts` và `NO_INDEX` trong `lib/site.ts`.
 
-## Asset trên Cloudflare R2 (riêng tư, không chiếm đĩa)
-
-`public/assets` nặng cả chục GB. Có thể đưa asset lên một bucket **R2 riêng tư** và xoá khỏi máy; Next lấy lại qua route `app/assets/[...path]/route.ts`, ký yêu cầu bằng khoá nằm trong `.env.local` (chỉ đọc ở phía server, trình duyệt không bao giờ thấy). Bucket không công khai, không có URL công khai nào. File còn ở `public/assets` thì vẫn được phục vụ từ đĩa như cũ; chỉ khi file không còn ở đó mới hỏi R2.
-
-**Làm một lần (trên trang Cloudflare):**
-1. R2 → *Create bucket* (đặt tên bất kỳ). Để nguyên mặc định riêng tư: **không** bật *Public access*, **không** gắn tên miền công khai hay `r2.dev`.
-2. R2 → *Manage API tokens* → *Create API token*, quyền **Object Read & Write**, giới hạn vào đúng bucket đó. Lấy *Access Key ID*, *Secret Access Key*, và *Account ID* (ở trang tổng quan R2).
-3. Tạo file `.env.local` ở thư mục gốc (đã nằm trong `.gitignore`, đừng dán khoá vào chat hay commit):
-   ```
-   R2_ACCOUNT_ID=...
-   R2_ACCESS_KEY_ID=...
-   R2_SECRET_ACCESS_KEY=...
-   R2_BUCKET=ten-bucket
-   ```
-
-**Chuyển asset lên:**
-```bash
-pnpm assets:voice        # lập bảng kê voice (data/voice.local.json); lib/voice.ts đọc nó thay vì quét thư mục voice trên đĩa
-pnpm assets:r2           # kiểm tra: bao nhiêu file được dữ liệu tham chiếu, thiếu gì (không cần khoá, không gửi gì đi)
-pnpm assets:r2 --upload  # tải lên R2, bỏ qua file đã có cùng kích thước; chạy lại an toàn
-```
-Chỉ tải những file thật sự được dữ liệu tham chiếu (skel, atlas và các trang texture của nó, ảnh, voice): khoảng 3,1 GB, thay vì toàn bộ thư mục (PNG gốc còn sót lại chiếm hơn 5 GB và không bao giờ được dùng). Script không xoá gì, cả trên đĩa lẫn trên R2.
-
-**Thử rồi mới xoá khỏi đĩa:** đổi tên `public/assets` thành chỗ khác (ví dụ `mv public/assets ~/assets-backup`), chạy `pnpm dev` và xem vài nhân vật (Spine, voice, ảnh thẻ, Ultimate, Fated Guest). Ổn thì mới xoá bản sao. Phải đặt `R2_*` trong môi trường của `pnpm dev` / `pnpm start` (`.env.local` tự được nạp). Các script `fetch-*` và `optimize-textures` vẫn làm việc trên `public/assets`, nên muốn tải thêm asset thì tạo lại thư mục đó rồi chạy `pnpm assets:voice` và `pnpm assets:r2 --upload`.
-
-**Lưu ý:**
-- Lần đầu xem một nhân vật sẽ chậm hơn đọc đĩa (phải đi qua mạng); trình duyệt lưu đệm 1 ngày nên lần sau nhanh.
-- Route này không có đăng nhập riêng: ai truy cập được trang web thì cũng lấy được asset qua nó. `pnpm share` (đường hầm) đang chạy với `--no-password`, nên khi chia sẻ qua link hãy bỏ cờ đó (`node scripts/share.mjs`) để có mật khẩu.
-- Build không cần R2 (trang dựng sẵn đọc voice từ bảng kê); chỉ lúc chạy mới cần.
-
 ## Chia sẻ tạm thời qua Cloudflare Tunnel
 
 ```bash
