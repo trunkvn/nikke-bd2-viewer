@@ -61,7 +61,7 @@ node scripts/fetch-bd2.mjs --no-posters        # bỏ qua bước render thumbna
   Đây là **animation Spine ghép với ảnh nền, không phải file video** (game cũng dựng thế). Cutscene nằm ở tab **Ultimate** của viewer
   (không còn lớp phủ video riêng): nút "▶ Phát toàn bộ" chạy các pha A, B, C liên tiếp rồi giữ đoạn lặp cuối, nền và các khung hình
   hiệu ứng (đạn găm, mảnh vụn) đổi theo pha.
-  **Tự phát:** vào nhân vật có Ultimate là viewer tự mở tab Ultimate và phát toàn bộ (mặc định bật; chỉ khi vào nhân vật, đổi trang
+  **Tự phát (mặc định tắt, vào nhân vật là ở tab Nhân vật):** khi bật, vào nhân vật có Ultimate là viewer tự mở tab Ultimate và phát toàn bộ (chỉ khi vào nhân vật, đổi trang
   phục thì không tự phát). Tắt/bật bằng công tắc "Tự phát Ultimate khi vào nhân vật" trong tab Ultimate; lưu trong trình duyệt.
   **Thứ tự chỉnh tay:** `node scripts/fetch-bd2-sequences.mjs` lấy thứ tự phát từng nhân vật (cut_all, cut_A_all, cut_B_all... cùng thời lượng
   từng pha, nhóm chạy song song, giữ/lặp) từ viewer [BD2-L2D-Viewer](https://github.com/jelosus2/BD2-L2D-Viewer) (MIT; đọc như dữ liệu,

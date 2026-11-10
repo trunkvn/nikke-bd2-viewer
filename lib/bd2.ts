@@ -140,15 +140,15 @@ export function cycleBd2Background() {
 
 // ───────── Tự phát cutscene ─────────
 
-/** "on" (mặc định) hoặc "off": vào trang nhân vật có cutscene thì tự phát cutscene luôn. Lưu ở localStorage. */
-export const bd2CutsceneAutoSetting = createSetting("bd2-viewer:cutscene-auto", "on");
+/** "off" (mặc định) hoặc "on": vào trang nhân vật có Ultimate thì tự mở tab Ultimate và phát. Mặc định vào tab Nhân vật. Lưu ở localStorage. */
+export const bd2CutsceneAutoSetting = createSetting("bd2-viewer:cutscene-auto", "off");
 
-/** [đang bật, đổi trạng thái]. Snapshot phía server là mặc định (bật) nên không lệch hydration. */
+/** [đang bật, đổi trạng thái]. Snapshot phía server là mặc định (tắt) nên không lệch hydration. */
 export function useCutsceneAuto(): [boolean, () => void] {
   const on = useSyncExternalStore(
     bd2CutsceneAutoSetting.subscribe,
-    () => bd2CutsceneAutoSetting.get() !== "off",
-    () => true,
+    () => bd2CutsceneAutoSetting.get() === "on",
+    () => false,
   );
   return [on, () => bd2CutsceneAutoSetting.set(on ? "off" : "on")];
 }

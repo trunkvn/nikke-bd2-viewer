@@ -131,7 +131,7 @@ function Showcase({
     // ở dev) không làm mất lần tự phát.
     const t = window.setTimeout(() => {
       autoFor.current = character.id;
-      if (hasUltimate && bd2CutsceneAutoSetting.get() !== "off") {
+      if (hasUltimate && bd2CutsceneAutoSetting.get() === "on") {
         autoPending.current = `${skin.id}:ultimate`;
         setCatRaw({ skinId: skin.id, cat: "ultimate" });
       }
