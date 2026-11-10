@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { GameTabs } from "../GameTabs";
 
 /** Header của Brown Dust 2: thanh trắng mờ, một dòng, viền dưới mảnh. */
 export function BD2Header() {
@@ -16,19 +17,9 @@ export function BD2Header() {
           <span className="font-display text-[15px] font-bold tracking-tight">Brown Dust 2</span>
         </Link>
 
-        <nav className="ml-auto flex items-center gap-1 text-sm font-semibold text-muted">
-          <Link href="/bd2" className="rounded-lg px-3 py-1.5 text-foreground outline-none transition hover:bg-white/10 focus-visible:ring-2 focus-visible:ring-accent">
-            Characters
-          </Link>
-          {/* NIKKE có layout gốc riêng nên chuyển sang đó là tải trang mới. */}
-          <Link
-            href="/"
-            title="Chuyển sang NIKKE"
-            className="hidden items-center gap-1 rounded-lg px-3 py-1.5 outline-none transition hover:bg-white/10 hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent sm:flex"
-          >
-            NIKKE <span aria-hidden>↗</span>
-          </Link>
-        </nav>
+        <div className="ml-auto">
+          <GameTabs current="bd2" variant="bd2" />
+        </div>
       </div>
     </header>
   );

@@ -28,6 +28,7 @@ export const metadata: Metadata = {
   title: { default: "NIKKE Viewer — Interactive Character Gallery", template: "%s — NIKKE Viewer" },
   description: DESCRIPTION,
   applicationName: "NIKKE Viewer",
+  manifest: "/nikke/manifest.webmanifest",
   robots: NO_INDEX,
   openGraph: { type: "website", siteName: "NIKKE Viewer", locale: "vi_VN", title: "NIKKE Viewer", description: DESCRIPTION },
   twitter: { card: "summary_large_image", title: "NIKKE Viewer", description: DESCRIPTION },

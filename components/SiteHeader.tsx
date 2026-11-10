@@ -1,10 +1,11 @@
 import Link from "next/link";
+import { GameTabs } from "./GameTabs";
 
 export function SiteHeader() {
   return (
     <header data-site-header className="sticky top-0 z-40 border-b border-white/10 bg-bg/80 backdrop-blur-md">
       <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-4 px-4">
-        <Link href="/" className="group flex items-center gap-3 outline-none">
+        <Link href="/nikke" className="group flex items-center gap-3 outline-none">
           {/* Logo mark tự vẽ: ô cắt góc + vạch chéo, không dùng logo gốc của game. */}
           <span
             aria-hidden
@@ -18,22 +19,9 @@ export function SiteHeader() {
           </span>
         </Link>
 
-        <nav className="ml-auto flex items-center gap-1 font-mono text-xs uppercase tracking-widest">
-          <Link
-            href="/"
-            className="px-3 py-2 text-white/70 outline-none transition hover:text-accent focus-visible:text-accent"
-          >
-            Gallery
-          </Link>
-          {/* Brown Dust 2 có layout gốc riêng nên chuyển sang đó là tải trang mới. */}
-          <Link
-            href="/bd2"
-            title="Chuyển sang Brown Dust 2"
-            className="hidden items-center gap-1.5 px-3 py-2 text-white/70 outline-none transition hover:text-accent focus-visible:text-accent sm:flex"
-          >
-            Brown Dust 2 <span aria-hidden>↗</span>
-          </Link>
-        </nav>
+        <div className="ml-auto">
+          <GameTabs current="nikke" variant="nikke" />
+        </div>
       </div>
     </header>
   );
