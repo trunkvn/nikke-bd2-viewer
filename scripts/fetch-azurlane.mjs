@@ -60,6 +60,10 @@ async function thumb(url, dest) {
   return true;
 }
 
+// Voice (scripts/azurlane/voice.mjs): bundle → mã voice, mã voice → { cue: { src, text } }.
+const VOICE_FILE = join(ROOT, "data", "azurlane.voice.local.json");
+const VOICE = existsSync(VOICE_FILE) ? JSON.parse(readFileSync(VOICE_FILE, "utf8")) : { bundles: {}, sets: {} };
+
 const all = await ships();
 const present = readdirSync(ASSET_DIR, { withFileTypes: true }).filter((e) => e.isDirectory() && existsSync(join(ASSET_DIR, e.name, "info.json"))).map((e) => e.name);
 const skipped = present.filter((b) => !BUNDLES[b]);
@@ -98,6 +102,7 @@ for (const bundle of present.filter((b) => BUNDLES[b])) {
     thumb: ok ? `/assets/azurlane/${bundle}/thumb.webp` : "",
     motions: Object.keys(info.motions),
     hitAreas: info.hitAreas,
+    ...(VOICE.sets[VOICE.bundles[bundle]] ? { voice: VOICE.sets[VOICE.bundles[bundle]] } : {}),
   });
   byShip.set(s.id, entry);
 }
