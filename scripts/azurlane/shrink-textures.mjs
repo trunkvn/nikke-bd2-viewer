@@ -10,7 +10,9 @@
  *   node scripts/azurlane/shrink-textures.mjs --dry-run     # chỉ báo cáo
  *   node scripts/azurlane/shrink-textures.mjs               # thu nhỏ (kèm sao lưu)
  *   node scripts/azurlane/shrink-textures.mjs --restore     # trả bản gốc từ thư mục sao lưu
- *   node scripts/azurlane/shrink-textures.mjs --max 1536    # ngưỡng khác (mặc định 2048)
+ *   node scripts/azurlane/shrink-textures.mjs --max 1536 --quality 85 --force   # ngưỡng/chất lượng khác (mặc định 2048, 90)
+ *
+ * Luôn nén từ bản gốc (trong thư mục sao lưu nếu đã có) nên đổi ngưỡng nhiều lần không bị nén chồng nén.
  */
 import { copyFileSync, existsSync, mkdirSync, readdirSync, renameSync, statSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
@@ -25,6 +27,8 @@ const argv = process.argv.slice(2);
 const dry = argv.includes("--dry-run");
 const restore = argv.includes("--restore");
 const max = Number(argv[argv.indexOf("--max") + 1]) || 2048;
+const quality = Number(argv[argv.indexOf("--quality") + 1]) || 90;
+const force = argv.includes("--force"); // nén lại cả texture đã đúng kích thước (khi đổi --quality)
 
 const bundles = readdirSync(ASSETS, { withFileTypes: true }).filter((e) => e.isDirectory()).map((e) => e.name);
 let before = 0, after = 0, count = 0;
@@ -36,13 +40,17 @@ for (const b of bundles) {
       if (existsSync(saved)) { copyFileSync(saved, file); count++; }
       continue;
     }
-    const meta = await sharp(file).metadata();
-    if (Math.max(meta.width, meta.height) <= max) continue;
+    const src = existsSync(saved) ? saved : file; // bản gốc nếu đã sao lưu
+    const orig = await sharp(src).metadata();
+    const target = Math.min(max, Math.max(orig.width, orig.height));
+    const now = await sharp(file).metadata();
+    if (Math.max(now.width, now.height) === target && (src === file || !force)) continue; // đã đúng kích thước
+    if (src === file && target === Math.max(orig.width, orig.height)) continue; // chưa sao lưu và nhỏ hơn ngưỡng: không đụng
     const size = statSync(file).size;
-    const scale = max / Math.max(meta.width, meta.height);
-    const buf = await sharp(file)
-      .resize(Math.round(meta.width * scale), Math.round(meta.height * scale), { kernel: "lanczos3" })
-      .webp({ quality: 90, alphaQuality: 100, smartSubsample: true, exact: true }) // exact: giữ RGB dưới vùng trong suốt để viền các mảnh không lem
+    const scale = target / Math.max(orig.width, orig.height);
+    const buf = await sharp(src)
+      .resize(Math.round(orig.width * scale), Math.round(orig.height * scale), { kernel: "lanczos3" })
+      .webp({ quality, alphaQuality: 100, smartSubsample: true, exact: true }) // exact: giữ RGB dưới vùng trong suốt để viền các mảnh không lem
       .toBuffer();
     before += size; after += buf.length; count++;
     if (dry) continue;

@@ -135,7 +135,7 @@ node scripts/fetch-azurlane.mjs
 Kiểm tra mọi skin có vẽ được không: `node scripts/azurlane/render-thumbs.mjs --check --base http://127.0.0.1:3000`
 (chạy song song được: `--shard k/n --port <cổng riêng>`, khởi động các tiến trình lệch nhau vài giây). Sau khi `sync.mjs` xong, thư mục `ClientAssets` trong `.azl-cache` (gần 3 GB) xoá được; chạy lại `sync.mjs` sẽ tải lại.
 
-Giảm dung lượng: `node scripts/azurlane/shrink-textures.mjs` thu nhỏ texture lớn hơn 2048 (130 tấm 4096×4096) về 2048: 369 MB → 135 MB và bộ nhớ GPU mỗi tấm 67 → 17 MB. Hình hơi mềm hơn khi phóng to. Bản gốc được chép vào `.azl-cache/texture-backup/`, trả lại bằng `--restore`; `--dry-run` chỉ báo cáo. Chạy lại sau mỗi lần trích model mới.
+Giảm dung lượng: `node scripts/azurlane/shrink-textures.mjs --max 1536 --quality 85` thu nhỏ texture Live2D (130 tấm 4096×4096 và 108 tấm 2048) về tối đa 1536 px: texture từ 479 MB xuống khoảng 134 MB, thư mục `public/assets/azurlane` từ 1,65 GB xuống 1,33 GB, bộ nhớ GPU mỗi tấm 4096 từ 67 MB xuống 9 MB. Hình mềm hơn khi phóng to (mặc định không tham số là 2048, chất lượng 90, nhẹ tay hơn). Bản gốc được chép vào `.azl-cache/texture-backup/`, đổi mức bằng `--max/--quality --force` (luôn nén từ bản gốc), trả lại bằng `--restore`; `--dry-run` chỉ báo cáo. Chạy lại sau mỗi lần trích model mới. Phần còn lại là file `.moc3` (642 MB) không thu nhỏ được.
 
 **Voice:** `node scripts/azurlane/voice.mjs EN` (sync.mjs tự chạy, bỏ qua bằng `--no-voice`). Voice nằm trong các gói `cue/cv-<mã>.b` (định dạng ACB của CRIWARE, âm thanh
 HCA không mã hoá). Mã gói là `voice_key` của skin trong bảng `ship_skin_words` của [AzurLaneData](https://github.com/AzurLaneTools/AzurLaneData) (skin có `voice_key` 0 dùng voice của tàu gốc);
