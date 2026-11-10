@@ -71,6 +71,15 @@ const LABEL: Record<string, string> = {
 };
 export const motionLabel = (name: string) => LABEL[name] ?? name;
 
+/**
+ * Tách motion thành bộ chuẩn (có ở mọi mô hình, có nhãn) và bộ mở rộng. Skin dạng "cv" có thêm hàng chục motion `idleN`, `touch_idleN`, `touch_dragN`
+ * (trạng thái và tương tác riêng của skin đó), nên chúng được gom vào một nhóm thu gọn thay vì phủ kín bảng.
+ */
+export function splitMotions(names: string[]): { main: string[]; extra: string[] } {
+  const ordered = orderMotions(names);
+  return { main: ordered.filter((n) => n in LABEL), extra: ordered.filter((n) => !(n in LABEL)) };
+}
+
 /** Thứ tự hiển thị các motion: đứng yên, chạm, màn hình chính, còn lại. */
 export function orderMotions(names: string[]): string[] {
   const rank = (n: string) => (n === "idle" ? 0 : n.startsWith("touch_") ? 1 : n.startsWith("main_") ? 2 : n === "login" ? 3 : 4);

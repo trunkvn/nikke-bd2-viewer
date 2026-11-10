@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { getFullscreen, subscribeFullscreen, toggleFullscreen } from "@/lib/fullscreen";
-import { motionLabel, orderMotions, rarityStyle, type AzurShip } from "@/lib/azurlaneShared";
+import { motionLabel, rarityStyle, splitMotions, type AzurShip } from "@/lib/azurlaneShared";
 import { FullscreenButton } from "../FullscreenButton";
 import { ViewerStage } from "../ViewerStage";
 import { Live2DRenderer, type MotionCommand } from "./Live2DRenderer";
@@ -43,6 +43,8 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  const { main: mainMotions, extra: extraMotions } = splitMotions(skin.motions);
 
   const play = (name: string) => setCommand((c) => ({ name, nonce: (c?.nonce ?? 0) + 1 }));
   const choose = (id: string) => {
@@ -153,12 +155,26 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
             <section aria-label="Hoạt cảnh">
               <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">Hoạt cảnh</p>
               <div className="flex flex-wrap gap-1.5">
-                {orderMotions(skin.motions).map((m) => (
+                {mainMotions.map((m) => (
                   <button key={m} type="button" data-active={playing === m} onClick={() => play(m)} className={chip}>
                     {motionLabel(m)}
                   </button>
                 ))}
               </div>
+              {extraMotions.length > 0 && (
+                <details className="mt-3 rounded-md border border-line">
+                  <summary className="cursor-pointer select-none px-3 py-2 font-mono text-[11px] uppercase tracking-[0.16em] text-muted outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-accent">
+                    Hoạt cảnh mở rộng ({extraMotions.length})
+                  </summary>
+                  <div className="flex flex-wrap gap-1.5 border-t border-line p-2.5">
+                    {extraMotions.map((m) => (
+                      <button key={m} type="button" data-active={playing === m} onClick={() => play(m)} className="azl-chip px-2 py-1 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-accent">
+                        {m}
+                      </button>
+                    ))}
+                  </div>
+                </details>
+              )}
             </section>
             <p className="text-xs leading-relaxed text-muted">Nhấp vào đầu, người hoặc điểm đặc biệt của nhân vật để xem phản ứng. Kéo để di chuyển, cuộn để phóng to.</p>
           </div>
