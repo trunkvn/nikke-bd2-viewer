@@ -101,12 +101,11 @@ if "--select" in sys.argv:
         if not (r["rarity"] in TOP or r["en"] in ELITE_PICK):
             continue
         bs = sorted(r["bundles"], key=natural)
-        known = r["l2dSkins"]
-        exact = len(bs) == len(known)
-        for i, b in enumerate(bs):
+        for b in bs:
             if b in have or b in SKIP:
                 continue
-            current.append({"bundle": b, "ship": r["en"], "skin": known[i] if exact else None})
+            # Tên skin lấy từ bảng ship_skin_template của game lúc chạy fetch-azurlane.mjs (cột painting = tên bundle); không đoán theo thứ tự bundle.
+            current.append({"bundle": b, "ship": r["en"], "skin": None})
             added += 1
     sel_file.write_text(json.dumps(current, ensure_ascii=False, indent=1) + "\n")
     print(f"selection.json: {len(current)} bundle ({added} mới)")

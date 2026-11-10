@@ -16,20 +16,17 @@
  */
 import { spawnSync } from "node:child_process";
 import { copyFileSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
-import { homedir, tmpdir } from "node:os";
+import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
+import { CACHE, skinForBundle, skinTemplate, skinWords } from "./lib.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const argv = process.argv.slice(2);
 const client = argv.find((a) => /^[A-Z]{2}$/.test(a)) ?? "EN";
 const force = argv.includes("--force");
-const CACHE = process.env.AZL_CACHE ?? join(homedir(), "Developer", "Personal", ".azl-cache");
-const DATA_DIR = join(CACHE, "azl-data");
 const OUT_DIR = join(ROOT, "public", "assets", "azurlane", "voice");
 const OUT_DATA = join(ROOT, "data", "azurlane.voice.local.json");
-const UA = "interactive-anime-local-fetch (personal fan project)";
-const RAW = "https://raw.githubusercontent.com/AzurLaneTools/AzurLaneData/main";
 
 const sh = (cmd, args, opts = {}) => spawnSync(cmd, args, { encoding: "utf8", ...opts });
 for (const [cmd, probe] of [["vgmstream-cli", ["-h"]], ["ffmpeg", ["-version"]]]) {
@@ -40,26 +37,8 @@ for (const [cmd, probe] of [["vgmstream-cli", ["-h"]], ["ffmpeg", ["-version"]]]
 }
 
 // 1. dữ liệu AzurLaneData
-mkdirSync(DATA_DIR, { recursive: true });
-async function table(name, path) {
-  const file = join(DATA_DIR, `${name}.json`);
-  if (!existsSync(file)) {
-    const res = await fetch(`${RAW}/${path}`, { headers: { "User-Agent": UA } });
-    if (!res.ok) throw new Error(`${res.status} ${path}`);
-    writeFileSync(file, Buffer.from(await res.arrayBuffer()));
-  }
-  return JSON.parse(readFileSync(file, "utf8"));
-}
-const template = await table("ship_skin_template", "EN/ShareCfg/ship_skin_template.json");
-const words = await table("ship_skin_words", "EN/sharecfgdata/ship_skin_words.json");
-// Vài skin có thể dùng chung một tên `painting` (ví dụ skin gốc và bản trong sự kiện): chọn skin có nhiều lời thoại nhất.
-const richness = (s) => ["login", "main", "touch", "touch2", "home", "detail"].filter((f) => String(words[s.id]?.[f] ?? "").trim()).length;
-const skinOf = new Map();
-for (const s of Object.values(template)) {
-  const k = String(s.painting).toLowerCase();
-  const cur = skinOf.get(k);
-  if (!cur || richness(s) > richness(cur)) skinOf.set(k, s);
-}
+const template = await skinTemplate();
+const words = await skinWords();
 const baseWordsOf = (group, key) => {
   const base = Object.values(template).find((s) => String(s.ship_group) === group && words[s.id]?.voice_key === key);
   return base ? words[base.id] : undefined;
@@ -68,8 +47,8 @@ const baseWordsOf = (group, key) => {
 const selection = JSON.parse(readFileSync(join(ROOT, "scripts", "azurlane", "selection.json"), "utf8"));
 const bundleKey = {};
 const keyWords = {};
-for (const { bundle } of selection) {
-  const skin = skinOf.get(bundle.toLowerCase());
+for (const { bundle, ship } of selection) {
+  const skin = skinForBundle(template, bundle, ship);
   const own = skin && words[skin.id];
   if (!own) {
     console.warn(`! ${bundle}: không thấy skin trong dữ liệu`);

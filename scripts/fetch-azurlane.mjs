@@ -11,11 +11,12 @@
  *
  *   node scripts/fetch-azurlane.mjs
  */
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from "node:fs";
 import { homedir } from "node:os";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import sharp from "sharp";
+import { skinForBundle, skinTemplate } from "./azurlane/lib.mjs";
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
 const ASSET_DIR = join(ROOT, "public", "assets", "azurlane");
@@ -65,14 +66,21 @@ const VOICE_FILE = join(ROOT, "data", "azurlane.voice.local.json");
 const VOICE = existsSync(VOICE_FILE) ? JSON.parse(readFileSync(VOICE_FILE, "utf8")) : { bundles: {}, sets: {} };
 
 const all = await ships();
+const template = await skinTemplate();
+// Dữ liệu lần trước: nếu tên chính thức khác tên đã gán (tên cũ lấy từ AzurAPI theo thứ tự bundle, sai ở vài tàu) thì ảnh thẻ cũ có thể là của skin khác, bỏ để lấy lại.
+const PREVIOUS = existsSync(OUT) ? JSON.parse(readFileSync(OUT, "utf8")) : [];
+const previousName = new Map(PREVIOUS.flatMap((s) => s.skins.map((k) => [k.id, k.name])));
 const present = readdirSync(ASSET_DIR, { withFileTypes: true }).filter((e) => e.isDirectory() && existsSync(join(ASSET_DIR, e.name, "info.json"))).map((e) => e.name);
 const skipped = present.filter((b) => !BUNDLES[b]);
 if (skipped.length) console.log(`Bỏ qua (chưa khai báo trong BUNDLES): ${skipped.join(", ")}`);
 
 const byShip = new Map();
 for (const bundle of present.filter((b) => BUNDLES[b])) {
-  const { ship: en, skin: officialName } = BUNDLES[bundle];
-  const skinName = officialName ?? neutralName(bundle);
+  const { ship: en, skin: selectedName } = BUNDLES[bundle];
+  // Tên chính thức: bảng ship_skin_template của game (AzurLaneData). Không có trong bảng (skin quá mới) thì dùng tên trong selection.json, rồi "Skin <số>".
+  const skinName = skinForBundle(template, bundle, en)?.name ?? selectedName ?? neutralName(bundle);
+  const before = previousName.get(bundle);
+  if (before && before !== skinName && !/^Skin |^Default$/.test(before) && !/\(cv \d+\)$/.test(before)) rmSync(join(ASSET_DIR, bundle, "thumb.webp"), { force: true });
   const s = all.find((x) => x.names.en === en);
   if (!s) {
     console.warn(`! Không thấy tàu "${en}" trong AzurAPI (${bundle})`);

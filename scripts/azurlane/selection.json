@@ -2,137 +2,137 @@
  {
   "bundle": "lingbo",
   "ship": "Ayanami",
-  "skin": "Default"
+  "skin": null
  },
  {
   "bundle": "lafei",
   "ship": "Laffey",
-  "skin": "Default"
+  "skin": null
  },
  {
   "bundle": "lafei_4",
   "ship": "Laffey",
-  "skin": "White Rabbit Welcomes the Spring"
+  "skin": null
  },
  {
   "bundle": "biaoqiang",
   "ship": "Javelin",
-  "skin": "Default"
+  "skin": null
  },
  {
   "bundle": "biaoqiang_3",
   "ship": "Javelin",
-  "skin": "Beach Picnic!"
+  "skin": null
  },
  {
   "bundle": "mingshi",
   "ship": "Akashi",
-  "skin": "Default"
+  "skin": null
  },
  {
   "bundle": "z23",
   "ship": "Z23",
-  "skin": "Default"
+  "skin": null
  },
  {
   "bundle": "xuefeng",
   "ship": "Yukikaze",
-  "skin": "Default"
+  "skin": null
  },
  {
   "bundle": "aierdeliqi_4",
   "ship": "Eldridge",
-  "skin": "New Year's Outing"
+  "skin": null
  },
  {
   "bundle": "aidang_2",
   "ship": "Atago",
-  "skin": "Summer March"
+  "skin": null
  },
  {
   "bundle": "kalangshitade_2",
   "ship": "Kronshtadt",
-  "skin": "Begin the Rush!"
+  "skin": null
  },
  {
   "bundle": "qianwei_2",
   "ship": "Vanguard",
-  "skin": "Half-Hearted Masquerade"
+  "skin": null
  },
  {
   "bundle": "daofeng_4",
   "ship": "Shimakaze",
-  "skin": "World's Speediest Bunny Waitress"
+  "skin": null
  },
  {
   "bundle": "daofeng_5",
   "ship": "Shimakaze",
-  "skin": "The White Rabbit of Wonderland"
+  "skin": null
  },
  {
   "bundle": "yichui_2",
   "ship": "Ibuki",
-  "skin": "Winter Sylph's Reverie"
+  "skin": null
  },
  {
   "bundle": "luoen_4",
   "ship": "Roon",
-  "skin": "Viridescent Lullaby"
+  "skin": null
  },
  {
   "bundle": "chicheng_5",
   "ship": "Akagi",
-  "skin": "Dawn-Phoenix's Summons"
+  "skin": null
  },
  {
   "bundle": "beierfasite_2",
   "ship": "Belfast",
-  "skin": "Iridescent Rosa"
+  "skin": null
  },
  {
   "bundle": "luoma_2",
   "ship": "Roma",
-  "skin": "White Heron of Darkest Night"
+  "skin": null
  },
  {
   "bundle": "xianghe_2",
   "ship": "Shoukaku",
-  "skin": "The Crane that Dances With the Wind"
+  "skin": null
  },
  {
   "bundle": "zhala_2",
   "ship": "Zara",
-  "skin": "Poolside Coincidence"
+  "skin": null
  },
  {
   "bundle": "tierbici_2",
   "ship": "Tirpitz",
-  "skin": "Snow-Melting Summer"
+  "skin": null
  },
  {
   "bundle": "lvzuofu_2",
   "ship": "Lützow",
-  "skin": "Everlasting Blood Banquet"
+  "skin": null
  },
  {
   "bundle": "aisaikesi_4",
   "ship": "Essex",
-  "skin": "Craft Fairytail"
+  "skin": null
  },
  {
   "bundle": "jiluofu_3",
   "ship": "Kirov",
-  "skin": "Drifting Justice"
+  "skin": null
  },
  {
   "bundle": "tiancheng_3",
   "ship": "Amagi",
-  "skin": "Wending Waters, Serene Lotus"
+  "skin": null
  },
  {
   "bundle": "tiancheng_cv_2",
   "ship": "Amagi",
-  "skin": "Nhà thờ hoa hồng (cv 2)"
+  "skin": null
  },
  {
   "bundle": "tiancheng_cv_3",
@@ -212,7 +212,7 @@
  {
   "bundle": "lupuleixite_2",
   "ship": "Prinz Rupprecht",
-  "skin": "The Gate Dragon's Advent"
+  "skin": null
  },
  {
   "bundle": "luyijiushi_2",
@@ -237,12 +237,12 @@
  {
   "bundle": "baerdimo_5",
   "ship": "Baltimore",
-  "skin": "Evening Breeze Minuet"
+  "skin": null
  },
  {
   "bundle": "baerdimo_6",
   "ship": "Baltimore",
-  "skin": "Finish Line Flagbearer"
+  "skin": null
  },
  {
   "bundle": "bisimai_2",
@@ -257,37 +257,37 @@
  {
   "bundle": "bulaimodun_2",
   "ship": "Bremerton",
-  "skin": "Kung Fu Cruiser"
+  "skin": null
  },
  {
   "bundle": "bulaimodun_4",
   "ship": "Bremerton",
-  "skin": "Day-Off Date"
+  "skin": null
  },
  {
   "bundle": "bulaimodun_5",
   "ship": "Bremerton",
-  "skin": "Relaxation Consultation"
+  "skin": null
  },
  {
   "bundle": "banrenma_2",
   "ship": "Centaur",
-  "skin": "Beachside Undine"
+  "skin": null
  },
  {
   "bundle": "kalvbudisi_2",
   "ship": "Charybdis",
-  "skin": "Red Chamber of Healing"
+  "skin": null
  },
  {
   "bundle": "aierdeliqi_5",
   "ship": "Eldridge",
-  "skin": "Kitty Idol"
+  "skin": null
  },
  {
   "bundle": "aimudeng_2",
   "ship": "Emden",
-  "skin": "White-Black Partita"
+  "skin": null
  },
  {
   "bundle": "qiye_7",
@@ -307,17 +307,17 @@
  {
   "bundle": "qibolin_2",
   "ship": "Graf Zeppelin",
-  "skin": "Beachside Urd"
+  "skin": null
  },
  {
   "bundle": "hemin_2",
   "ship": "Hermione",
-  "skin": "Pure White Angel"
+  "skin": null
  },
  {
   "bundle": "hemin_3",
   "ship": "Hermione",
-  "skin": "Pure White Holiday"
+  "skin": null
  },
  {
   "bundle": "yanusi_3",
@@ -347,42 +347,42 @@
  {
   "bundle": "edu_3",
   "ship": "Le Malin",
-  "skin": "Mercredi at the Secret Base"
+  "skin": null
  },
  {
   "bundle": "edu_4",
   "ship": "Le Malin",
-  "skin": "Listless Lapin"
+  "skin": null
  },
  {
   "bundle": "beikaluolaina_2",
   "ship": "North Carolina",
-  "skin": "The Heart's Desire"
+  "skin": null
  },
  {
   "bundle": "beianpudunii_2",
   "ship": "Northampton II",
-  "skin": "Swimming Star"
+  "skin": null
  },
  {
   "bundle": "nengdai_2",
   "ship": "Noshiro",
-  "skin": "Uncharted Festival Grounds?"
+  "skin": null
  },
  {
   "bundle": "nengdai_3",
   "ship": "Noshiro",
-  "skin": "Unwinding in the Sunshine"
+  "skin": null
  },
  {
   "bundle": "shitelasai_2",
   "ship": "Peter Strasser",
-  "skin": "Chronos's Kalendae"
+  "skin": null
  },
  {
   "bundle": "bola_2",
   "ship": "Pola",
-  "skin": "Seaside Coincidence"
+  "skin": null
  },
  {
   "bundle": "adaerbote_2",
@@ -412,27 +412,27 @@
  {
   "bundle": "haiyinlixi_2",
   "ship": "Prinz Heinrich",
-  "skin": "Rabbit on Watch"
+  "skin": null
  },
  {
   "bundle": "linuo_3",
   "ship": "Reno",
-  "skin": "Reno Bunnino"
+  "skin": null
  },
  {
   "bundle": "lisailiu_2",
   "ship": "Richelieu",
-  "skin": "Fleuron of the Waves"
+  "skin": null
  },
  {
   "bundle": "lisailiu_3",
   "ship": "Richelieu",
-  "skin": "Evergreen Prophecy"
+  "skin": null
  },
  {
   "bundle": "longfeng_2",
   "ship": "Ryuuhou",
-  "skin": "Firebird's New Year Dance"
+  "skin": null
  },
  {
   "bundle": "tianlangxing_3",
@@ -447,12 +447,12 @@
  {
   "bundle": "junhe_4",
   "ship": "Suruga",
-  "skin": "Hundred Flowers' Auspice"
+  "skin": null
  },
  {
   "bundle": "junhe_5",
   "ship": "Suruga",
-  "skin": "Uneventful Holiday Greetings"
+  "skin": null
  },
  {
   "bundle": "dafeng_2",
@@ -482,32 +482,32 @@
  {
   "bundle": "xuefeng_3",
   "ship": "Yukikaze",
-  "skin": "Winter's Snowy Wind"
+  "skin": null
  },
  {
   "bundle": "z46_2",
   "ship": "Z46",
-  "skin": "Her First Summer"
+  "skin": null
  },
  {
   "bundle": "z46_3",
   "ship": "Z46",
-  "skin": "Girls' Relay"
+  "skin": null
  },
  {
   "bundle": "z46_4",
   "ship": "Z46",
-  "skin": "Star-Lit★Chocolate"
+  "skin": null
  },
  {
   "bundle": "huangjiafangzhou_3",
   "ship": "Ark Royal",
-  "skin": "Guardian of the Ball"
+  "skin": null
  },
  {
   "bundle": "heitaizi_2",
   "ship": "Black Prince",
-  "skin": "White Princess"
+  "skin": null
  },
  {
   "bundle": "kelifulan_3",
@@ -522,22 +522,22 @@
  {
   "bundle": "dunkeerke_2",
   "ship": "Dunkerque",
-  "skin": "Summer Sucré"
+  "skin": null
  },
  {
   "bundle": "chuixue_3",
   "ship": "Fubuki",
-  "skin": "Music Pixy"
+  "skin": null
  },
  {
   "bundle": "guangrong_3",
   "ship": "Glorious",
-  "skin": "Pungent Plum"
+  "skin": null
  },
  {
   "bundle": "genaisennao_2",
   "ship": "Gneisenau",
-  "skin": "Nightmarish Succubus"
+  "skin": null
  },
  {
   "bundle": "jianye_2",
@@ -577,26 +577,26 @@
  {
   "bundle": "xukufu_2",
   "ship": "Surcouf",
-  "skin": "Shopping Time!"
+  "skin": null
  },
  {
   "bundle": "xukufu_3",
   "ship": "Surcouf",
-  "skin": "Loisirs Balnéaires"
+  "skin": null
  },
  {
   "bundle": "dujiaoshou_4",
   "ship": "Unicorn",
-  "skin": "Long-Awaited Date"
+  "skin": null
  },
  {
   "bundle": "dujiaoshou_6",
   "ship": "Unicorn",
-  "skin": "Angelic Night"
+  "skin": null
  },
  {
   "bundle": "xixuegui_4",
   "ship": "Vampire",
-  "skin": "Night Princess's Regalia"
+  "skin": null
  }
 ]
