@@ -48,3 +48,10 @@ next-env.d.ts
 /data/bd2.local.json
 /data/bd2.local.json.bak
 /data/bd2.sequences.local.json
+
+# Azur Lane: môi trường Python của công cụ tải asset (dữ liệu thô nằm ngoài dự án)
+/tools/azl-venv/
+
+# Azur Lane: lõi Live2D Cubism của Live2D Inc. (phần mềm độc quyền, chỉ tải về local qua scripts/azurlane/fetch-cubism-core.mjs, không đưa vào git)
+/public/vendor/
+/data/azurlane.local.json
