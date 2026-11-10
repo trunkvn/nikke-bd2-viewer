@@ -1,0 +1,794 @@
+{
+ "Admiral Nakhimov": {
+  "rarity": "Decisive",
+  "nation": "Northern Parliament",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Admiral Zenker": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Battlecruiser",
+  "stars": 6
+ },
+ "Akagi": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Akashi": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Repair",
+  "stars": 6
+ },
+ "Albion": {
+  "rarity": "Super Rare",
+  "nation": "Royal Navy",
+  "hull": "Light Carrier",
+  "stars": 6
+ },
+ "Allen M. Sumner": {
+  "rarity": "Super Rare",
+  "nation": "Eagle Union",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Alsace": {
+  "rarity": "Ultra Rare",
+  "nation": "Iris Libre",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Amagi": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Battlecruiser",
+  "stars": 6
+ },
+ "Amagi(CV)": {
+  "rarity": "Ultra Rare",
+  "nation": "Sakura Empire",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Anchorage": {
+  "rarity": "Priority",
+  "nation": "Eagle Union",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Ark Royal": {
+  "rarity": "Elite",
+  "nation": "Royal Navy",
+  "hull": "Aircraft Carrier",
+  "stars": 5
+ },
+ "Asama": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Atago": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Ayanami": {
+  "rarity": "Elite",
+  "nation": "Sakura Empire",
+  "hull": "Destroyer",
+  "stars": 5
+ },
+ "Azuma": {
+  "rarity": "Decisive",
+  "nation": "Sakura Empire",
+  "hull": "Large Cruiser",
+  "stars": 6
+ },
+ "Baltimore": {
+  "rarity": "Super Rare",
+  "nation": "Eagle Union",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Belfast": {
+  "rarity": "Super Rare",
+  "nation": "Royal Navy",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Bismarck": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Black Prince": {
+  "rarity": "Elite",
+  "nation": "Royal Navy",
+  "hull": "Light Cruiser",
+  "stars": 5
+ },
+ "Bois Belleau": {
+  "rarity": "Super Rare",
+  "nation": "Iris Libre",
+  "hull": "Light Carrier",
+  "stars": 6
+ },
+ "Bremerton": {
+  "rarity": "Super Rare",
+  "nation": "Eagle Union",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Brest": {
+  "rarity": "Decisive",
+  "nation": "Iris Libre",
+  "hull": "Large Cruiser",
+  "stars": 6
+ },
+ "Centaur": {
+  "rarity": "Super Rare",
+  "nation": "Royal Navy",
+  "hull": "Light Carrier",
+  "stars": 6
+ },
+ "Chang Wu": {
+  "rarity": "Super Rare",
+  "nation": "Dragon Empery",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Charybdis": {
+  "rarity": "Super Rare",
+  "nation": "Royal Navy",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Cheshire": {
+  "rarity": "Priority",
+  "nation": "Royal Navy",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Chien Wu": {
+  "rarity": "Super Rare",
+  "nation": "Dragon Empery",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Clemenceau": {
+  "rarity": "Super Rare",
+  "nation": "Vichya Dominion",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Cleveland": {
+  "rarity": "Elite",
+  "nation": "Eagle Union",
+  "hull": "Light Cruiser",
+  "stars": 5
+ },
+ "Cowpens": {
+  "rarity": "Super Rare",
+  "nation": "Eagle Union",
+  "hull": "Light Carrier",
+  "stars": 6
+ },
+ "De Zeven Provinciën": {
+  "rarity": "Super Rare",
+  "nation": "Other",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Dunkerque": {
+  "rarity": "Elite",
+  "nation": "Vichya Dominion",
+  "hull": "Battlecruiser",
+  "stars": 5
+ },
+ "Eldridge": {
+  "rarity": "Super Rare",
+  "nation": "Eagle Union",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Emden": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Enterprise": {
+  "rarity": "Super Rare",
+  "nation": "Eagle Union",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Essex": {
+  "rarity": "Super Rare",
+  "nation": "Eagle Union",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Formidable": {
+  "rarity": "Super Rare",
+  "nation": "Royal Navy",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Friedrich Carl": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Friedrich der Große": {
+  "rarity": "Decisive",
+  "nation": "Iron Blood",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Fritz Rumey": {
+  "rarity": "Ultra Rare",
+  "nation": "Iron Blood",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Fubuki": {
+  "rarity": "Elite",
+  "nation": "Sakura Empire",
+  "hull": "Destroyer",
+  "stars": 5
+ },
+ "Glorious": {
+  "rarity": "Elite",
+  "nation": "Royal Navy",
+  "hull": "Aircraft Carrier",
+  "stars": 5
+ },
+ "Gneisenau": {
+  "rarity": "Elite",
+  "nation": "Iron Blood",
+  "hull": "Battlecruiser",
+  "stars": 5
+ },
+ "Golden Hind": {
+  "rarity": "Super Rare",
+  "nation": "Tempesta",
+  "hull": "Other",
+  "stars": 6
+ },
+ "Gorizia": {
+  "rarity": "Super Rare",
+  "nation": "Sardegna Empire",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Gouden Leeuw": {
+  "rarity": "Decisive",
+  "nation": "Other",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Graf Zeppelin": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Guam": {
+  "rarity": "Ultra Rare",
+  "nation": "Eagle Union",
+  "hull": "Large Cruiser",
+  "stars": 6
+ },
+ "Hakuhou": {
+  "rarity": "Ultra Rare",
+  "nation": "Sakura Empire",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Hakuryuu": {
+  "rarity": "Decisive",
+  "nation": "Sakura Empire",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Hatsuzuki": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Hermione": {
+  "rarity": "Super Rare",
+  "nation": "Royal Navy",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Hindenburg": {
+  "rarity": "Decisive",
+  "nation": "Iron Blood",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Ibuki": {
+  "rarity": "Priority",
+  "nation": "Sakura Empire",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Illustrious": {
+  "rarity": "Super Rare",
+  "nation": "Royal Navy",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Implacable": {
+  "rarity": "Ultra Rare",
+  "nation": "Royal Navy",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Janus": {
+  "rarity": "Super Rare",
+  "nation": "Royal Navy",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Javelin": {
+  "rarity": "Elite",
+  "nation": "Royal Navy",
+  "hull": "Destroyer",
+  "stars": 5
+ },
+ "Jean Bart": {
+  "rarity": "Super Rare",
+  "nation": "Vichya Dominion",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Kashino": {
+  "rarity": "Elite",
+  "nation": "Sakura Empire",
+  "hull": "Munition Ship",
+  "stars": 5
+ },
+ "Kazagumo": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Kearsarge": {
+  "rarity": "Decisive",
+  "nation": "Eagle Union",
+  "hull": "Other",
+  "stars": 6
+ },
+ "Kirov": {
+  "rarity": "Super Rare",
+  "nation": "Northern Parliament",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Kronshtadt": {
+  "rarity": "Ultra Rare",
+  "nation": "Northern Parliament",
+  "hull": "Large Cruiser",
+  "stars": 6
+ },
+ "Kursk": {
+  "rarity": "Super Rare",
+  "nation": "Northern Parliament",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Laffey": {
+  "rarity": "Elite",
+  "nation": "Eagle Union",
+  "hull": "Destroyer",
+  "stars": 5
+ },
+ "Laffey II": {
+  "rarity": "Ultra Rare",
+  "nation": "Eagle Union",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Le Malin": {
+  "rarity": "Super Rare",
+  "nation": "Vichya Dominion",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Lexington II": {
+  "rarity": "Ultra Rare",
+  "nation": "Eagle Union",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Lion": {
+  "rarity": "Ultra Rare",
+  "nation": "Royal Navy",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Lützow": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Battlecruiser",
+  "stars": 6
+ },
+ "Mainz": {
+  "rarity": "Priority",
+  "nation": "Iron Blood",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Marie Rose": {
+  "rarity": "Super Rare",
+  "nation": "Venus Vacation",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Masséna": {
+  "rarity": "Super Rare",
+  "nation": "Iris Libre",
+  "hull": "Battlecruiser",
+  "stars": 6
+ },
+ "Mecklenburg": {
+  "rarity": "Decisive",
+  "nation": "Iron Blood",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Mogador": {
+  "rarity": "Ultra Rare",
+  "nation": "Vichya Dominion",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Monarch": {
+  "rarity": "Priority",
+  "nation": "Royal Navy",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Musashi": {
+  "rarity": "Ultra Rare",
+  "nation": "Sakura Empire",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Napoli": {
+  "rarity": "Decisive",
+  "nation": "Sardegna Empire",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "New Jersey": {
+  "rarity": "Ultra Rare",
+  "nation": "Eagle Union",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "North Carolina": {
+  "rarity": "Super Rare",
+  "nation": "Eagle Union",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Northampton II": {
+  "rarity": "Super Rare",
+  "nation": "Eagle Union",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Noshiro": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Oumi": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Owari": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Painlevé": {
+  "rarity": "Super Rare",
+  "nation": "Iris Libre",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Pearl": {
+  "rarity": "Super Rare",
+  "nation": "Tempesta",
+  "hull": "Other",
+  "stars": 6
+ },
+ "Perseus": {
+  "rarity": "Super Rare",
+  "nation": "Royal Navy",
+  "hull": "Light Carrier",
+  "stars": 6
+ },
+ "Peter Strasser": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Pittsburgh": {
+  "rarity": "Super Rare",
+  "nation": "Eagle Union",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Pola": {
+  "rarity": "Super Rare",
+  "nation": "Sardegna Empire",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Prinz Adalbert": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Prinz Eugen": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Prinz Heinrich": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Prinz Rupprecht": {
+  "rarity": "Priority",
+  "nation": "Iron Blood",
+  "hull": "Battlecruiser",
+  "stars": 6
+ },
+ "Queen Anne's Revenge": {
+  "rarity": "Super Rare",
+  "nation": "Tempesta",
+  "hull": "Other",
+  "stars": 6
+ },
+ "Raffaello": {
+  "rarity": "Ultra Rare",
+  "nation": "Sardegna Empire",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Regensburg": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Reno": {
+  "rarity": "Super Rare",
+  "nation": "Eagle Union",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Richelieu": {
+  "rarity": "Super Rare",
+  "nation": "Iris Libre",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Roma": {
+  "rarity": "Super Rare",
+  "nation": "Sardegna Empire",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Roon": {
+  "rarity": "Priority",
+  "nation": "Iron Blood",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Ryuuhou": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Light Carrier",
+  "stars": 6
+ },
+ "Saint Louis": {
+  "rarity": "Priority",
+  "nation": "Iris Libre",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Sakawa": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Shimakaze": {
+  "rarity": "Ultra Rare",
+  "nation": "Sakura Empire",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Shimanto": {
+  "rarity": "Priority",
+  "nation": "Sakura Empire",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Shinano": {
+  "rarity": "Ultra Rare",
+  "nation": "Sakura Empire",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Shoukaku": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Sirius": {
+  "rarity": "Super Rare",
+  "nation": "Royal Navy",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Sovetsky Soyuz": {
+  "rarity": "Ultra Rare",
+  "nation": "Northern Parliament",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "St. Louis": {
+  "rarity": "Elite",
+  "nation": "Eagle Union",
+  "hull": "Light Cruiser",
+  "stars": 5
+ },
+ "Strasbourg": {
+  "rarity": "Super Rare",
+  "nation": "Vichya Dominion",
+  "hull": "Battlecruiser",
+  "stars": 6
+ },
+ "Surcouf": {
+  "rarity": "Elite",
+  "nation": "Iris Libre",
+  "hull": "Submarine",
+  "stars": 5
+ },
+ "Suruga": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Taihou": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Takao": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Tirpitz": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Trafalgar": {
+  "rarity": "Ultra Rare",
+  "nation": "Royal Navy",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Ulrich von Hutten": {
+  "rarity": "Ultra Rare",
+  "nation": "Iron Blood",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Unicorn": {
+  "rarity": "Elite",
+  "nation": "Royal Navy",
+  "hull": "Light Carrier",
+  "stars": 5
+ },
+ "Unzen": {
+  "rarity": "Ultra Rare",
+  "nation": "Sakura Empire",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Vampire": {
+  "rarity": "Elite",
+  "nation": "Royal Navy",
+  "hull": "Destroyer",
+  "stars": 5
+ },
+ "Vanguard": {
+  "rarity": "Ultra Rare",
+  "nation": "Royal Navy",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Vittorio Veneto": {
+  "rarity": "Super Rare",
+  "nation": "Sardegna Empire",
+  "hull": "Battleship",
+  "stars": 6
+ },
+ "Watarase": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Light Cruiser",
+  "stars": 6
+ },
+ "Yorktown II": {
+  "rarity": "Ultra Rare",
+  "nation": "Eagle Union",
+  "hull": "Aircraft Carrier",
+  "stars": 6
+ },
+ "Yukikaze": {
+  "rarity": "Super Rare",
+  "nation": "Sakura Empire",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Z23": {
+  "rarity": "Elite",
+  "nation": "Iron Blood",
+  "hull": "Destroyer",
+  "stars": 5
+ },
+ "Z46": {
+  "rarity": "Super Rare",
+  "nation": "Iron Blood",
+  "hull": "Destroyer",
+  "stars": 6
+ },
+ "Zara": {
+  "rarity": "Super Rare",
+  "nation": "Sardegna Empire",
+  "hull": "Heavy Cruiser",
+  "stars": 6
+ },
+ "Ägir": {
+  "rarity": "Decisive",
+  "nation": "Iron Blood",
+  "hull": "Large Cruiser",
+  "stars": 6
+ }
+}

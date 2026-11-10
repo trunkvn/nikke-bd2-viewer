@@ -598,5 +598,370 @@
   "bundle": "xixuegui_4",
   "ship": "Vampire",
   "skin": null
+ },
+ {
+  "bundle": "naximofu_2",
+  "ship": "Admiral Nakhimov",
+  "skin": null
+ },
+ {
+  "bundle": "zengkehaijunshangjiang_2",
+  "ship": "Admiral Zenker",
+  "skin": null
+ },
+ {
+  "bundle": "aerbien_3",
+  "ship": "Albion",
+  "skin": null
+ },
+ {
+  "bundle": "aersasi_2",
+  "ship": "Alsace",
+  "skin": null
+ },
+ {
+  "bundle": "aersasi_3",
+  "ship": "Alsace",
+  "skin": null
+ },
+ {
+  "bundle": "ankeleiqi_2",
+  "ship": "Anchorage",
+  "skin": null
+ },
+ {
+  "bundle": "ankeleiqi_3",
+  "ship": "Anchorage",
+  "skin": null
+ },
+ {
+  "bundle": "ankeleiqi_4",
+  "ship": "Anchorage",
+  "skin": null
+ },
+ {
+  "bundle": "qianjian_2",
+  "ship": "Asama",
+  "skin": null
+ },
+ {
+  "bundle": "beilaosenlin_2",
+  "ship": "Bois Belleau",
+  "skin": null
+ },
+ {
+  "bundle": "zhangwu_2",
+  "ship": "Chang Wu",
+  "skin": null
+ },
+ {
+  "bundle": "jianwu_2",
+  "ship": "Chien Wu",
+  "skin": null
+ },
+ {
+  "bundle": "kelaimengsuo_2",
+  "ship": "Clemenceau",
+  "skin": null
+ },
+ {
+  "bundle": "kebensi_2",
+  "ship": "Cowpens",
+  "skin": null
+ },
+ {
+  "bundle": "qisheng_2",
+  "ship": "De Zeven Provinciën",
+  "skin": null
+ },
+ {
+  "bundle": "kewei_4",
+  "ship": "Formidable",
+  "skin": null
+ },
+ {
+  "bundle": "kewei_6",
+  "ship": "Formidable",
+  "skin": null
+ },
+ {
+  "bundle": "feiteliekaer_3",
+  "ship": "Friedrich Carl",
+  "skin": null
+ },
+ {
+  "bundle": "feiteliedadi_3",
+  "ship": "Friedrich der Große",
+  "skin": null
+ },
+ {
+  "bundle": "feiteliedadi_4",
+  "ship": "Friedrich der Große",
+  "skin": null
+ },
+ {
+  "bundle": "fulici_2",
+  "ship": "Fritz Rumey",
+  "skin": null
+ },
+ {
+  "bundle": "jinluhao_2",
+  "ship": "Golden Hind",
+  "skin": null
+ },
+ {
+  "bundle": "geliqiya_2",
+  "ship": "Gorizia",
+  "skin": null
+ },
+ {
+  "bundle": "jinshi_2",
+  "ship": "Gouden Leeuw",
+  "skin": null
+ },
+ {
+  "bundle": "guandao_2",
+  "ship": "Guam",
+  "skin": null
+ },
+ {
+  "bundle": "guandao_3",
+  "ship": "Guam",
+  "skin": null
+ },
+ {
+  "bundle": "baifeng_2",
+  "ship": "Hakuhou",
+  "skin": null
+ },
+ {
+  "bundle": "bailong_3",
+  "ship": "Hakuryuu",
+  "skin": null
+ },
+ {
+  "bundle": "chuyue_2",
+  "ship": "Hatsuzuki",
+  "skin": null
+ },
+ {
+  "bundle": "xingdengbao_2",
+  "ship": "Hindenburg",
+  "skin": null
+ },
+ {
+  "bundle": "xingdengbao_3",
+  "ship": "Hindenburg",
+  "skin": null
+ },
+ {
+  "bundle": "guanghui_7",
+  "ship": "Illustrious",
+  "skin": null
+ },
+ {
+  "bundle": "yuanchou_3",
+  "ship": "Implacable",
+  "skin": null
+ },
+ {
+  "bundle": "fengyun_4",
+  "ship": "Kazagumo",
+  "skin": null
+ },
+ {
+  "bundle": "qiershazhi_2",
+  "ship": "Kearsarge",
+  "skin": null
+ },
+ {
+  "bundle": "kuersike_2",
+  "ship": "Kursk",
+  "skin": null
+ },
+ {
+  "bundle": "lafeiii_3",
+  "ship": "Laffey II",
+  "skin": null
+ },
+ {
+  "bundle": "liekexingdunii_2",
+  "ship": "Lexington II",
+  "skin": null
+ },
+ {
+  "bundle": "shi_2",
+  "ship": "Lion",
+  "skin": null
+ },
+ {
+  "bundle": "meiyinci_3",
+  "ship": "Mainz",
+  "skin": null
+ },
+ {
+  "bundle": "maliluosi_3_doa",
+  "ship": "Marie Rose",
+  "skin": null
+ },
+ {
+  "bundle": "masaina_2",
+  "ship": "Masséna",
+  "skin": null
+ },
+ {
+  "bundle": "meikelunbao_2",
+  "ship": "Mecklenburg",
+  "skin": null
+ },
+ {
+  "bundle": "mojiaduoer_2",
+  "ship": "Mogador",
+  "skin": null
+ },
+ {
+  "bundle": "mojiaduoer_3",
+  "ship": "Mogador",
+  "skin": null
+ },
+ {
+  "bundle": "junzhu_5",
+  "ship": "Monarch",
+  "skin": null
+ },
+ {
+  "bundle": "wuzang_3",
+  "ship": "Musashi",
+  "skin": null
+ },
+ {
+  "bundle": "nabulesi_2",
+  "ship": "Napoli",
+  "skin": null
+ },
+ {
+  "bundle": "xinzexi_3",
+  "ship": "New Jersey",
+  "skin": null
+ },
+ {
+  "bundle": "xinzexi_5",
+  "ship": "New Jersey",
+  "skin": null
+ },
+ {
+  "bundle": "jinjiang_2",
+  "ship": "Oumi",
+  "skin": null
+ },
+ {
+  "bundle": "weizhang_3",
+  "ship": "Owari",
+  "skin": null
+ },
+ {
+  "bundle": "banerwei_3",
+  "ship": "Painlevé",
+  "skin": null
+ },
+ {
+  "bundle": "zhenzhuhao_2",
+  "ship": "Pearl",
+  "skin": null
+ },
+ {
+  "bundle": "yingxianzuo_3",
+  "ship": "Perseus",
+  "skin": null
+ },
+ {
+  "bundle": "pizibao_2",
+  "ship": "Pittsburgh",
+  "skin": null
+ },
+ {
+  "bundle": "anninvwang_2",
+  "ship": "Queen Anne's Revenge",
+  "skin": null
+ },
+ {
+  "bundle": "lafeier_2",
+  "ship": "Raffaello",
+  "skin": null
+ },
+ {
+  "bundle": "leigensibao_2",
+  "ship": "Regensburg",
+  "skin": null
+ },
+ {
+  "bundle": "jiuyun_2",
+  "ship": "Sakawa",
+  "skin": null
+ },
+ {
+  "bundle": "siwanshi_3",
+  "ship": "Shimanto",
+  "skin": null
+ },
+ {
+  "bundle": "suweiaitongmeng_2",
+  "ship": "Sovetsky Soyuz",
+  "skin": null
+ },
+ {
+  "bundle": "suweiaitongmeng_3",
+  "ship": "Sovetsky Soyuz",
+  "skin": null
+ },
+ {
+  "bundle": "sitelasibao_2",
+  "ship": "Strasbourg",
+  "skin": null
+ },
+ {
+  "bundle": "gaoxiong_7",
+  "ship": "Takao",
+  "skin": null
+ },
+ {
+  "bundle": "telafaerjia_2",
+  "ship": "Trafalgar",
+  "skin": null
+ },
+ {
+  "bundle": "wuerlixi_2",
+  "ship": "Ulrich von Hutten",
+  "skin": null
+ },
+ {
+  "bundle": "wuerlixi_3",
+  "ship": "Ulrich von Hutten",
+  "skin": null
+ },
+ {
+  "bundle": "yunxian_2",
+  "ship": "Unzen",
+  "skin": null
+ },
+ {
+  "bundle": "yunxian_3",
+  "ship": "Unzen",
+  "skin": null
+ },
+ {
+  "bundle": "weineituo_2",
+  "ship": "Vittorio Veneto",
+  "skin": null
+ },
+ {
+  "bundle": "dulianglai_2",
+  "ship": "Watarase",
+  "skin": null
+ },
+ {
+  "bundle": "yuekechengii_3",
+  "ship": "Yorktown II",
+  "skin": null
  }
 ]
