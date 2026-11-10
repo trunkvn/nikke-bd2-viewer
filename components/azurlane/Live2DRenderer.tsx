@@ -56,6 +56,9 @@ export function Live2DRenderer({
   onReady,
   speech,
   onSpeechEnd,
+  quietLoading = false,
+  compareUrl,
+  compareLayout = "row",
 }: {
   modelUrl: string;
   label: string;
@@ -70,6 +73,14 @@ export function Live2DRenderer({
   speech?: Speech | null;
   /** Báo khi câu thoại phát xong (hoặc không phát được). */
   onSpeechEnd?: () => void;
+  /** Không hiện chữ "Đang tải" (dùng cho xem trước trên thẻ). */
+  quietLoading?: boolean;
+  /**
+   * Mô hình thứ hai để so sánh: vẽ chung một canvas với mô hình chính (hai canvas WebGL riêng thì shader dùng chung của Cubism hỏng ở canvas tạo trước),
+   * chia khung làm đôi theo `compareLayout`. Hoạt cảnh (`command`) chạy cho cả hai; phụ đề, voice và báo trạng thái chỉ theo mô hình chính.
+   */
+  compareUrl?: string;
+  compareLayout?: "row" | "column";
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const transformRef = useViewerTransform();
@@ -78,6 +89,10 @@ export function Live2DRenderer({
   const [errorMsg, setErrorMsg] = useState("");
   const playRef = useRef<((name: string) => void) | null>(null);
   const tapRef = useRef<((x: number, y: number) => void) | null>(null);
+  const layoutRef = useRef(compareLayout);
+  useEffect(() => {
+    layoutRef.current = compareLayout;
+  });
   const speakRef = useRef<((src: string) => void) | null>(null);
   const stopSpeakRef = useRef<(() => void) | null>(null);
   const cbRef = useRef({ onMotions, onPlaying, onReady, onSpeechEnd });
@@ -126,25 +141,36 @@ export function Live2DRenderer({
           autoDensity: true,
           resolution: Math.min(window.devicePixelRatio || 1, 2),
         });
-        const model = await Live2DModel.from(modelUrl, { autoInteract: false });
-        if (cancelled) {
-          model.destroy();
+        // pixi chỉ theo dõi kích thước cửa sổ; khung đổi cỡ (chế độ so sánh, toàn màn hình) thì phải tự báo.
+        const ro = new ResizeObserver(() => app.resize());
+        ro.observe(host);
+        const urls = compareUrl ? [modelUrl, compareUrl] : [modelUrl];
+        const loaded = await Promise.allSettled(urls.map((u) => Live2DModel.from(u, { autoInteract: false })));
+        const models = loaded.flatMap((r) => (r.status === "fulfilled" ? [r.value] : []));
+        const failed = loaded.find((r) => r.status === "rejected");
+        if (cancelled || failed) {
+          ro.disconnect();
+          for (const m of models) m.destroy();
           app.destroy(false, { children: true, texture: true, baseTexture: true });
           canvas.remove();
+          if (failed && !cancelled) throw (failed as PromiseRejectedResult).reason;
           return;
         }
-        app.stage.addChild(model);
+        const model = models[0];
+        for (const m of models) app.stage.addChild(m);
 
         const internal = model.internalModel;
-        internal.motionManager.groups.idle = "idle"; // nhóm motion tự lặp khi rảnh (mặc định của thư viện là "Idle")
-        const names = Object.keys((internal.settings as { motions?: Record<string, unknown> }).motions ?? {});
+        const motionNames = models.map((m) => {
+          m.internalModel.motionManager.groups.idle = "idle"; // nhóm motion tự lặp khi rảnh (mặc định của thư viện là "Idle")
+          return Object.keys((m.internalModel.settings as { motions?: Record<string, unknown> }).motions ?? {});
+        });
+        const names = motionNames[0];
         cbRef.current.onMotions?.(names);
         internal.motionManager.on("motionStart", (group: string) => cbRef.current.onPlaying?.(group));
 
-        // Khung hình: vừa khít vùng còn trống rồi nhân với zoom, dịch theo kéo thả (đọc mỗi frame, không re-render).
-        const ow = internal.originalWidth;
-        const oh = internal.originalHeight;
-        model.anchor.set(0.5, 0.5);
+        // Khung hình: vừa khít phần còn trống rồi nhân với zoom, dịch theo kéo thả (đọc mỗi frame, không re-render).
+        // Hai mô hình thì mỗi cái một nửa (cạnh nhau hoặc trên/dưới); zoom và kéo áp chung cho cả hai.
+        for (const m of models) m.anchor.set(0.5, 0.5);
         app.ticker.add(() => {
           const w = app.screen.width;
           const h = app.screen.height;
@@ -152,24 +178,34 @@ export function Live2DRenderer({
           const ins = insetsRef.current;
           const availW = Math.max(1, w - ins.left - ins.right);
           const availH = Math.max(1, h - ins.top - ins.bottom);
-          model.scale.set(Math.min(availW / ow, availH / oh) * 0.94 * t.scale);
-          model.position.set(ins.left + availW / 2 + t.x, ins.top + availH / 2 + t.y);
+          const column = models.length > 1 && layoutRef.current === "column";
+          const slotW = models.length > 1 && !column ? availW / models.length : availW;
+          const slotH = column ? availH / models.length : availH;
+          models.forEach((m, i) => {
+            const { originalWidth: ow, originalHeight: oh } = m.internalModel;
+            m.scale.set(Math.min(slotW / ow, slotH / oh) * 0.94 * t.scale);
+            m.position.set(ins.left + (column ? availW / 2 : slotW * (i + 0.5)) + t.x, ins.top + (column ? slotH * (i + 0.5) : availH / 2) + t.y);
+          });
         });
 
-        const play = (name: string) => {
-          if (names.includes(name)) void model.motion(name, undefined, MotionPriority.FORCE);
+        const motion = (m: (typeof models)[number], list: string[], name: string) => {
+          if (list.includes(name)) void m.motion(name, undefined, MotionPriority.FORCE);
         };
-        playRef.current = play;
+        playRef.current = (name) => models.forEach((m, i) => motion(m, motionNames[i], name));
         tapRef.current = (cx, cy) => {
           const r = canvas.getBoundingClientRect();
           const x = cx - r.left;
           const y = cy - r.top;
-          const hit = model.hitTest(x, y);
-          const area = TOUCH.find(([id]) => hit.includes(id));
-          if (area) return play(area[1]);
-          if (model.getBounds().contains(x, y)) {
-            const mains = names.filter((n) => n.startsWith("main_"));
-            if (mains.length) play(mains[Math.floor(Math.random() * mains.length)]);
+          for (let i = models.length - 1; i >= 0; i--) {
+            const m = models[i];
+            const hit = m.hitTest(x, y);
+            const area = TOUCH.find(([id]) => hit.includes(id));
+            if (area) return motion(m, motionNames[i], area[1]);
+            if (m.getBounds().contains(x, y)) {
+              const mains = motionNames[i].filter((n) => n.startsWith("main_"));
+              if (mains.length) motion(m, motionNames[i], mains[Math.floor(Math.random() * mains.length)]);
+              return;
+            }
           }
         };
 
@@ -225,7 +261,7 @@ export function Live2DRenderer({
 
         const onMove = (e: PointerEvent) => {
           const r = canvas.getBoundingClientRect();
-          model.focus(e.clientX - r.left, e.clientY - r.top);
+          for (const m of models) m.focus(e.clientX - r.left, e.clientY - r.top);
         };
         window.addEventListener("pointermove", onMove);
 
@@ -237,13 +273,14 @@ export function Live2DRenderer({
 
         cleanup = () => {
           window.removeEventListener("pointermove", onMove);
+          ro.disconnect();
           playRef.current = null;
           tapRef.current = null;
           stopSpeech();
           speakRef.current = null;
           stopSpeakRef.current = null;
-          void audioCtx?.close();
-          model.destroy();
+          audioCtx?.close().catch(() => {});
+          for (const m of models) m.destroy();
           const gl = "gl" in app.renderer ? (app.renderer as { gl: WebGLRenderingContext }).gl : null;
           app.destroy(false, { children: true, texture: true, baseTexture: true });
           gl?.getExtension("WEBGL_lose_context")?.loseContext();
@@ -263,12 +300,12 @@ export function Live2DRenderer({
       cleanup();
       setStatus("loading");
     };
-  }, [modelUrl, label, transformRef, insetsRef]);
+  }, [modelUrl, compareUrl, label, transformRef, insetsRef]);
 
   return (
     <>
       <div ref={hostRef} className="absolute inset-0" />
-      {status !== "ready" && (
+      {status !== "ready" && !quietLoading && (
         <div className="absolute inset-0 flex items-center justify-center p-6 text-center font-mono text-xs uppercase tracking-[0.2em] text-white/60">
           {status === "loading" ? <span className="animate-blink">Đang tải mô hình…</span> : <span className="text-red-400">Không tải được Live2D: {errorMsg}</span>}
         </div>

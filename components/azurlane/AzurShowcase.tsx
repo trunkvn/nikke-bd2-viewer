@@ -24,12 +24,15 @@ const subscribeDesktop = (cb: () => void) => {
 /**
  * Trang một tàu: khung viewer Live2D toàn trang, bảng tên, dock chọn trang phục và hoạt cảnh.
  * Chạm (nhấp) vào đầu, người hoặc điểm đặc biệt của tàu để phát motion tương ứng; kéo để di chuyển, cuộn/chụm để phóng to.
- * Phím: ← → đổi tàu, C đổi trang phục, F toàn màn hình.
+ * So sánh: hiện hai trang phục cạnh nhau (A, B), hoạt cảnh bấm ở dock chạy cho cả hai.
+ * Phím: ← → đổi tàu, C đổi trang phục, S bật/tắt so sánh, F toàn màn hình.
  */
 export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; next: Nav }) {
   const router = useRouter();
   const [skinId, setSkinId] = useState(ship.skins[0].id);
   const skin = ship.skins.find((s) => s.id === skinId) ?? ship.skins[0];
+  const [compareOn, setCompareOn] = useState(false);
+  const [cmpId, setCmpId] = useState<string | null>(null);
   const [playing, setPlaying] = useState<string | null>(null);
   const [command, setCommand] = useState<MotionCommand | null>(null);
   const [speech, setSpeech] = useState<Speech | null>(null);
@@ -48,6 +51,9 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
     ro.observe(el);
     return () => ro.disconnect();
   }, []);
+
+  const compare = compareOn && ship.skins.length > 1;
+  const cmpSkin = compare ? (ship.skins.find((s) => s.id === cmpId && s.id !== skin.id) ?? ship.skins.find((s) => s.id !== skin.id) ?? null) : null;
 
   const { main: mainMotions, extra: extraMotions } = splitMotions(skin.motions);
 
@@ -80,6 +86,7 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
       if (e.key === "ArrowLeft" && goPrev) router.push(`/azurlane/characters/${goPrev}`);
       else if (e.key === "ArrowRight" && goNext) router.push(`/azurlane/characters/${goNext}`);
       else if (k === "f") toggleFullscreen();
+      else if (k === "s" && skinIds.length > 1) setCompareOn((v) => !v);
       else if (k === "c" && skinIds.length > 1) {
         setSkinId(skinIds[(skinIds.indexOf(skin.id) + 1) % skinIds.length]);
         setPlaying(null);
@@ -95,6 +102,21 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
   const insets = isDesktop
     ? { top: isFullscreen ? 24 : 70, right: 70, bottom: 24, left: isFullscreen ? 0 : 430 }
     : { top: isFullscreen ? 24 : 150, right: 60, bottom: isFullscreen ? 24 : dockH + 24, left: 0 };
+  // So sánh: một khung, hai mô hình chung một canvas (Live2DRenderer): cạnh nhau trên máy tính, trên/dưới trên điện thoại.
+  const layout = isDesktop ? "row" : "column";
+  const cmpInsets = !isDesktop && !isFullscreen ? { ...insets, top: 56 } : insets;
+  const slotLabel = (tag: string, name: string, i: number) => {
+    // Nhãn đặt ở đầu mỗi nửa của vùng còn trống (cùng công thức chia như Live2DRenderer).
+    const style: React.CSSProperties = isDesktop
+      ? { top: 12, left: `calc(${cmpInsets.left}px + (100% - ${cmpInsets.left + cmpInsets.right}px) * ${(i + 0.5) / 2})`, transform: "translateX(-50%)" }
+      : { left: "50%", transform: "translateX(-50%)", top: `calc(${cmpInsets.top}px + (100% - ${cmpInsets.top + cmpInsets.bottom}px) * ${i / 2})` };
+    return (
+      <span key={tag} className="azl-glass absolute max-w-[40%] truncate px-3 py-1 text-[12px] font-semibold" style={style}>
+        <span className="mr-1.5 text-accent">{tag}</span>
+        {name}
+      </span>
+    );
+  };
   const chip = "azl-chip px-3 py-1.5 text-[13px] outline-none focus-visible:ring-2 focus-visible:ring-accent";
 
   return (
@@ -102,8 +124,9 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
       <ViewerStage
         className="absolute inset-0"
         cssTransform={false}
-        insets={insets}
+        insets={compare ? cmpInsets : insets}
         backdrop={<div className="absolute inset-0 bg-[radial-gradient(60%_55%_at_55%_45%,rgba(56,189,248,0.22),transparent_72%),linear-gradient(180deg,#0f2447,#081426)]" />}
+        overlay={compare && cmpSkin ? <>{slotLabel("A", skin.name, 0)}{slotLabel("B", cmpSkin.name, 1)}</> : undefined}
         toolbar={
           <>
             {hasVoice && <VoiceToggle enabled={voiceOn} onToggle={() => voiceEnabledSetting.set(voiceOn ? "off" : "on")} />}
@@ -112,9 +135,11 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
         }
       >
         <Live2DRenderer
-          key={skin.model}
+          key={`${skin.model}|${compare && cmpSkin ? cmpSkin.model : ""}`}
           modelUrl={skin.model}
-          label={`${ship.name} — ${skin.name}`}
+          compareUrl={compare && cmpSkin ? cmpSkin.model : undefined}
+          compareLayout={layout}
+          label={`${ship.name} — ${skin.name}${compare && cmpSkin ? ` / ${cmpSkin.name}` : ""}`}
           command={command}
           onPlaying={onMotionStart}
           speech={activeSpeech}
@@ -139,7 +164,7 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
               </Link>
             )}
           </nav>
-          <div className="azl-glass animate-fade-up w-fit max-w-full px-4 py-3">
+          <div className={`azl-glass animate-fade-up w-fit max-w-full px-4 py-3 ${compare ? "max-lg:hidden" : ""}`}>
             <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-accent">
               {ship.hull} · {ship.nation} ·{" "}
               <span style={{ color: rarityStyle(ship.rarity).color }}>{ship.rarity}</span>
@@ -164,24 +189,25 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
           <div ref={dockRef} className="azl-glass max-h-[36dvh] space-y-3 overflow-y-auto p-3 lg:max-h-[46dvh] lg:space-y-4 lg:p-4">
             {ship.skins.length > 1 && (
               <section aria-label="Trang phục">
-                <p className="mb-2 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">Trang phục</p>
-                <div className="flex gap-2">
-                  {ship.skins.map((s) => (
-                    <button
-                      key={s.id}
-                      type="button"
-                      title={s.name}
-                      aria-label={s.name}
-                      aria-pressed={s.id === skin.id}
-                      onClick={() => choose(s.id)}
-                      className={`relative h-[62px] w-[46px] shrink-0 overflow-hidden rounded-md border-2 bg-white/10 outline-none transition focus-visible:ring-2 focus-visible:ring-accent ${
-                        s.id === skin.id ? "border-accent" : "border-transparent opacity-75 hover:opacity-100"
-                      }`}
-                    >
-                      {s.thumb && <Image src={s.thumb} alt="" fill sizes="46px" className="object-cover object-top" />}
-                    </button>
-                  ))}
+                <div className="mb-2 flex items-center justify-between gap-2">
+                  <p className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted">{compare ? "Trang phục A" : "Trang phục"}</p>
+                  <button
+                    type="button"
+                    aria-pressed={compare}
+                    title="So sánh hai trang phục (S)"
+                    onClick={() => setCompareOn((v) => !v)}
+                    className="azl-chip px-2.5 py-1 text-[12px] outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                  >
+                    So sánh
+                  </button>
                 </div>
+                <SkinRow skins={ship.skins} activeId={skin.id} onPick={choose} />
+                {compare && cmpSkin && (
+                  <>
+                    <p className="mb-2 mt-3 font-mono text-[10px] uppercase tracking-[0.2em] text-muted">Trang phục B</p>
+                    <SkinRow skins={ship.skins.filter((x) => x.id !== skin.id)} activeId={cmpSkin.id} onPick={setCmpId} />
+                  </>
+                )}
               </section>
             )}
             <section aria-label="Hoạt cảnh">
@@ -212,6 +238,29 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+/** Hàng ảnh chọn trang phục. */
+function SkinRow({ skins, activeId, onPick }: { skins: AzurShip["skins"]; activeId: string; onPick: (id: string) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2">
+      {skins.map((s) => (
+        <button
+          key={s.id}
+          type="button"
+          title={s.name}
+          aria-label={s.name}
+          aria-pressed={s.id === activeId}
+          onClick={() => onPick(s.id)}
+          className={`relative h-[62px] w-[46px] shrink-0 overflow-hidden rounded-md border-2 bg-white/10 outline-none transition focus-visible:ring-2 focus-visible:ring-accent ${
+            s.id === activeId ? "border-accent" : "border-transparent opacity-75 hover:opacity-100"
+          }`}
+        >
+          {s.thumb && <Image src={s.thumb} alt="" fill sizes="46px" className="object-cover object-top" />}
+        </button>
+      ))}
     </div>
   );
 }
