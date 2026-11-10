@@ -1,20 +1,20 @@
 import type { MetadataRoute } from "next";
 
-// Manifest của NIKKE (cài lên màn hình chính). Brown Dust 2 có manifest riêng ở /bd2/manifest.webmanifest.
+// Manifest của trang chủ. Mỗi game có manifest riêng (/nikke/manifest.webmanifest, /bd2/manifest.webmanifest) với phạm vi hẹp hơn.
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "NIKKE Viewer",
-    short_name: "NIKKE",
-    description: "Showcase nhân vật NIKKE: gallery, viewer Spine tương tác, đổi skin và animation.",
+    name: "Interactive Anime",
+    short_name: "Anime",
+    description: "Showcase nhân vật các game anime: viewer Live2D (Spine) tương tác.",
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#06080c",
-    theme_color: "#06080c",
+    background_color: "#0a0b10",
+    theme_color: "#0a0b10",
     icons: [
-      { src: "/icons/nikke-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
-      { src: "/icons/nikke-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
-      { src: "/icons/nikke-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
+      { src: "/icons/home-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
+      { src: "/icons/home-512.png", sizes: "512x512", type: "image/png", purpose: "any" },
+      { src: "/icons/home-512.png", sizes: "512x512", type: "image/png", purpose: "maskable" },
     ],
   };
 }

@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+/*
+ * Trang chủ: trung tính, tối, để các game (mỗi game có giao diện riêng) nổi lên bằng màu nhấn của chúng.
+ * Phông: Plus Jakarta Sans (như Brown Dust 2) cho chữ thân, Chakra Petch (như NIKKE) cho tiêu đề, nối hai thế giới.
+ */
+:root {
+  --bg: #0a0b10;
+  --panel: #12141b;
+  --foreground: #eceef4;
+  --muted: #98a0b4;
+  --line: rgba(255, 255, 255, 0.09);
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-panel: var(--panel);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --font-sans: var(--font-jakarta), system-ui, sans-serif;
+  --font-display: var(--font-chakra), var(--font-jakarta), system-ui, sans-serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg);
+  color: var(--foreground);
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+  position: relative;
+}
+
+/* Hai quầng sáng mờ ở đỉnh trang: vàng (NIKKE) bên trái, chàm (Brown Dust 2) bên phải. */
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(700px 380px at 12% -8%, rgba(245, 217, 10, 0.1), transparent 70%),
+    radial-gradient(760px 420px at 88% -10%, rgba(111, 111, 232, 0.16), transparent 70%), var(--bg);
+}
+
+::selection {
+  background: #fff;
+  color: #000;
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+}
+.animate-fade-up {
+  animation: fade-up 480ms cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-fade-up {
+    animation: none;
+  }
+}
