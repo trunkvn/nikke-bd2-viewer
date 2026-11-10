@@ -10,7 +10,9 @@ Tách mô hình Live2D của Azur Lane từ các bundle Unity (đã tải bằng
     info.json              tóm tắt (số tham số, thời lượng, loop từng motion)
 
 Bundle là prefab "Cubism SDK for Unity": tham số là các GameObject dưới "Parameters/", AnimationClip lưu ở dạng "muscle clip" nén
-(streamed + dense + constant) nên phải giải mã rồi đổi đường cong Hermite của Unity sang Bezier của Cubism.
+(streamed + dense + constant) nên phải giải mã rồi đổi đường cong Hermite của Unity sang Bezier của Cubism. Hai loại đường cong được giữ lại:
+tham số (Parameters/<id>.Value -> Target "Parameter") và độ mờ của Part (Parts/<id>.Opacity -> Target "PartOpacity"; các skin dạng cảnh dùng nó để
+bật/tắt cả nhóm lớp, ví dụ nền đen che khung).
 
   tools/azl-venv/bin/python scripts/azurlane/extract-live2d.py <thư mục bundle live2d> <thư mục ra> [tên ...]
 
@@ -85,8 +87,12 @@ def to_segments(keys, duration):
     return segs, nseg, npts
 
 
+ATTR_VALUE = zlib.crc32(b"Value")  # CubismParameter.Value
+ATTR_OPACITY = zlib.crc32(b"Opacity")  # CubismPart.Opacity
+
+
 def clip_to_motion3(t, names):
-    """AnimationClip (typetree) -> dict motion3.json. `names`: {hash đường dẫn: id tham số}."""
+    """AnimationClip (typetree) -> dict motion3.json. `names`: {hash đường dẫn: ("Parameter" | "PartOpacity", id)}."""
     mc = t["m_MuscleClip"]
     clip = mc["m_Clip"]["data"]
     duration = float(mc["m_StopTime"]) - float(mc["m_StartTime"])
@@ -95,8 +101,10 @@ def clip_to_motion3(t, names):
     bindings = t["m_ClipBindingConstant"]["genericBindings"]
     ids = []
     for b in bindings:
-        pid = names.get(b["path"])
-        ids.append(pid)
+        # Chỉ lấy đúng loại: tham số (thuộc tính Value) và độ mờ của Part (thuộc tính Opacity); các loại khác (bật/tắt GameObject...) bỏ qua.
+        tgt = names.get(b["path"])
+        ok = tgt and ((tgt[0] == "Parameter" and b["attribute"] == ATTR_VALUE) or (tgt[0] == "PartOpacity" and b["attribute"] == ATTR_OPACITY))
+        ids.append(tgt if ok else None)
     total = sc["curveCount"] + dc["m_CurveCount"] + len(cc["data"])
     if total != len(bindings):
         raise ValueError(f"số đường cong ({total}) khác số binding ({len(bindings)})")
@@ -127,7 +135,7 @@ def clip_to_motion3(t, names):
         if ids[idx]:
             curves.append((ids[idx], [0, v, 0, duration, v], 1, 2))
 
-    out_curves = [{"Target": "Parameter", "Id": i, "Segments": [round(x, 5) if isinstance(x, float) else x for x in s]} for i, s, _, _ in curves]
+    out_curves = [{"Target": i[0], "Id": i[1], "Segments": [round(x, 5) if isinstance(x, float) else x for x in s]} for i, s, _, _ in curves]
     return {
         "Version": 3,
         "Meta": {
@@ -177,8 +185,10 @@ def extract(bundle: Path, out: Path):
     for g in gos.values():
         p = rel_path(g)
         if p.startswith("Parameters/"):
-            hash_to_param[zlib.crc32(p.encode())] = g.m_Name
+            hash_to_param[zlib.crc32(p.encode())] = ("Parameter", g.m_Name)
             param_ids.append(g.m_Name)
+        elif p.startswith("Parts/"):
+            hash_to_param[zlib.crc32(p.encode())] = ("PartOpacity", g.m_Name)
     drawable_ids = {g.m_Name for g in gos.values() if rel_path(g).startswith("Drawables/")}
 
     name = bundle.name
