@@ -4,7 +4,7 @@ Gallery + viewer tương tác cho nhân vật NIKKE và Brown Dust 2 (Next.js 16
 
 - `/` — **trang chủ**: chọn game (thẻ game kèm ảnh nhân vật và số liệu).
 - `/nikke` — NIKKE (giao diện tối, góc cạnh, sci-fi). Link cũ `/characters/<tên>` tự chuyển sang `/nikke/characters/<tên>`.
-- `/bd2` — Brown Dust 2, giao diện "Sakura Night": nền tím đêm có quầng hồng, viền vàng mảnh với góc trang trí, thẻ kính, nút dạng lá, tên nhân vật chữ có chân nghiêng (Cormorant Garamond), thẻ ánh kim khi rê chuột, cánh hoa anh đào rơi ở trang danh sách. Nền viewer mặc định là "Đêm anh đào" (đổi được bằng phím B).
+- `/bd2` — Brown Dust 2, giao diện "Sakura Night": nền tím đêm có quầng hồng, viền vàng mảnh với góc trang trí, thẻ kính, nút dạng lá, thẻ ánh kim khi rê chuột; dùng cùng bộ phông với NIKKE (Chakra Petch cho tiêu đề, Inter cho chữ thân, Geist Mono cho nhãn nhỏ). Nền viewer mặc định là "Đêm anh đào" (đổi được bằng phím B).
 
 Mỗi trang có **layout gốc riêng** (route group `app/(home)`, `app/(nikke)`, `app/(bd2)`) nên phông, màu, header hoàn toàn khác nhau;
 chuyển qua lại là tải trang mới, bằng thanh tab ở đầu trang (Trang chủ · NIKKE · Brown Dust 2 · Azur Lane sắp có). Phần dùng chung là
