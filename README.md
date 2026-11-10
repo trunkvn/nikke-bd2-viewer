@@ -132,23 +132,23 @@ node scripts/fetch-azurlane.mjs
 `sync.mjs` chỉ tải đúng các bundle trong `selection.json` (bộ lọc `whitelist` của azlassets; để trống nó sẽ tải toàn bộ, hơn 30 GB), tách chúng ra
 `public/assets/azurlane/` (texture WebP, khoảng 28% dung lượng PNG) rồi dựng `data/azurlane.local.json`. Dữ liệu thô tải về nằm ngoài dự án, trong
 `~/Developer/Personal/.azl-cache`.
-Kiểm tra mọi skin có vẽ được không: `node scripts/azurlane/render-thumbs.mjs --check --base http://127.0.0.1:3000`.
+Kiểm tra mọi skin có vẽ được không: `node scripts/azurlane/render-thumbs.mjs --check --base http://127.0.0.1:3000`
+(chạy song song được: `--shard k/n --port <cổng riêng>`, khởi động các tiến trình lệch nhau vài giây). Sau khi `sync.mjs` xong, thư mục `ClientAssets` trong `.azl-cache` (gần 3 GB) xoá được; chạy lại `sync.mjs` sẽ tải lại.
 
 **Voice:** `node scripts/azurlane/voice.mjs EN` (sync.mjs tự chạy, bỏ qua bằng `--no-voice`). Voice nằm trong các gói `cue/cv-<mã>.b` (định dạng ACB của CRIWARE, âm thanh
 HCA không mã hoá). Mã gói là `voice_key` của skin trong bảng `ship_skin_words` của [AzurLaneData](https://github.com/AzurLaneTools/AzurLaneData) (skin có `voice_key` 0 dùng voice của tàu gốc);
 bảng đó cũng cho phụ đề tiếng Anh. Script tải đúng các gói cần, giải mã bằng `vgmstream-cli` (`brew install vgmstream`) và nén Opus/WebM bằng `ffmpeg`
-vào `public/assets/azurlane/voice/<mã>/<cue>.webm` (khoảng 40 MB cho 70 tàu). Viewer phát câu thoại khi hoạt cảnh tương ứng bắt đầu (bấm nút hoặc chạm vào nhân vật),
+vào `public/assets/azurlane/voice/<mã>/<cue>.webm` (khoảng 87 MB cho 130 tàu). Viewer phát câu thoại khi hoạt cảnh tương ứng bắt đầu (bấm nút hoặc chạm vào nhân vật),
 miệng nhép theo âm lượng, có phụ đề và nút loa (dùng chung cài đặt bật/tắt tiếng với NIKKE và BD2). Ghép hoạt cảnh với câu thoại theo tên, chưa đối chiếu từng cái trong game
 (`lib/azurlaneShared.ts`). Nếu HCA bị mã hoá bằng khoá thì script dừng ở gói đó (không dò khoá).
 
-**Thêm một tàu:** thêm dòng `{ "bundle": "...", "ship": "<tên EN>", "skin": null }` vào `selection.json` (hoặc chạy lại `--select`), rồi `node scripts/azurlane/sync.mjs EN`.
-Tìm tên bundle của một tàu bằng `tools/azl-venv/bin/python scripts/azurlane/match-bundles.py EN`.
+**Thêm một tàu:** thêm dòng `{ "bundle": "...", "ship": "<tên EN>", "skin": null }` vào `selection.json` (hoặc chạy lại `select.py`), rồi `node scripts/azurlane/sync.mjs EN`.
+Tìm tên bundle của một tàu trong `scripts/azurlane/ships.json` (tàu) và bảng `ship_skin_template` (cột `painting`).
 
-**Chọn tàu:** `selection.json` do `tools/azl-venv/bin/python scripts/azurlane/match-bundles.py EN --select` sinh ra (sửa tay được). Tiêu chí hiện tại: mọi tàu
+**Chọn tàu:** `selection.json` và `ships.json` do `tools/azl-venv/bin/python scripts/azurlane/select.py EN` sinh ra (sửa tay được). Tiêu chí hiện tại: mọi tàu
 Super Rare trở lên (Super Rare, Priority, Decisive, Ultra Rare) cộng một số tàu Elite được nhiều người thích (sửa `TOP` và `ELITE_PICK` trong script). Script
-ghép tàu của AzurAPI với bundle theo pinyin tên Trung (82 tàu có Live2D ghép được ở server EN). Tên skin lấy từ bảng `ship_skin_template` của game (qua AzurLaneData; cột `painting` = tên bundle), dựng lúc chạy `fetch-azurlane.mjs`; `selection.json` để `skin: null`. (Không đoán tên theo
-thứ tự bundle: cách đó sai ở Bremerton, Hermione và Suruga.) Skin quá mới chưa có trong bảng dùng tên tự đặt hoặc "Skin <số>", ảnh thẻ dựng từ chính Live2D. AzurAPI dừng cập nhật từ 2/2023 nên khoảng 75 nhóm bundle
-(phần lớn là tàu ra sau đó) chưa ghép được tên và chưa có trong danh sách. Bundle bị **mã hoá** (skin mới nhất, ví dụ `chaijun_6`) không tách được và được bỏ qua: không
+ghép bundle với tàu qua các bảng của game (`painting` → `ship_group`), hiện được 130 tàu, 191 skin (188 có voice). Tên skin lấy từ bảng `ship_skin_template` của game (qua AzurLaneData; cột `painting` = tên bundle), dựng lúc chạy `fetch-azurlane.mjs`; `selection.json` để `skin: null`. (Không đoán tên theo
+thứ tự bundle: cách đó sai ở Bremerton, Hermione và Suruga.) Skin quá mới chưa có trong bảng dùng tên tự đặt hoặc "Skin <số>", ảnh thẻ dựng từ chính Live2D. Bundle bị **mã hoá** (skin mới nhất: `chaijun_6`, `feiteliedadi_3` và `feiteliedadi_4`) không tách được và được bỏ qua: không
 dò khoá vì đó là vượt qua cơ chế bảo vệ của game.
 
 **Skin dạng "cv" (ví dụ Amagi):** các skin mới có tên bundle `<tàu>_cv_<số>` dùng định dạng Cubism mới (moc3 bản 4 và 5, hàng trăm tham số, 2 texture) và có thêm
