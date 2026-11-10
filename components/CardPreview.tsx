@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import type { SpineRender } from "@/data/types";
 import { SpineRenderer } from "./SpineRenderer";
 import { ViewerStage } from "./ViewerStage";
@@ -17,6 +17,24 @@ let stopCurrent: (() => void) | null = null;
  * Chỉ bật với chuột (cảm ứng không có hover, và vuốt cuộn trang không được kích hoạt nạp nặng) và khi không yêu cầu giảm chuyển động.
  */
 export function CardPreview({ render, label }: { render: SpineRender; label: string }) {
+  return (
+    <HoverPreview>
+      <PreviewSpine render={render} label={label} />
+    </HoverPreview>
+  );
+}
+
+function PreviewSpine({ render, label }: { render: SpineRender; label: string }) {
+  const markReady = usePreviewReady();
+  return <SpineRenderer render={render} label={label} interactive={false} quietLoading onReady={markReady} />;
+}
+
+const ReadyContext = createContext<() => void>(() => {});
+/** Cho renderer bên trong HoverPreview: gọi khi khung hình đầu đã vẽ để ảnh tĩnh của thẻ mờ đi. */
+export const usePreviewReady = () => useContext(ReadyContext);
+
+/** Phần dùng chung của mọi loại xem trước (Spine, Live2D): lo hover, một preview mỗi lúc, mờ ảnh tĩnh; `children` vẽ model khi cần. */
+export function HoverPreview({ children }: { children: ReactNode }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const [on, setOn] = useState(false);
   // Khi model đã vẽ xong khung đầu tiên, ảnh tĩnh của thẻ mờ đi (qua data-preview trên thẻ, ảnh có `group-data-[preview=ready]:opacity-0`);
@@ -65,7 +83,7 @@ export function CardPreview({ render, label }: { render: SpineRender; label: str
     >
       {on && (
         <ViewerStage locked cssTransform={false} className="absolute inset-0">
-          <SpineRenderer render={render} label={label} interactive={false} quietLoading onReady={markReady} />
+          <ReadyContext.Provider value={markReady}>{children}</ReadyContext.Provider>
         </ViewerStage>
       )}
     </div>

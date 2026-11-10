@@ -41,11 +41,13 @@ export type AzurCard = {
   rarity: string;
   stars?: number;
   thumb: string;
+  /** model3.json của skin đầu tiên, dùng cho xem trước khi rê chuột. */
+  model: string;
   skins: number;
 };
 
 export function toAzurCard(s: AzurShip): AzurCard {
-  return { slug: s.slug, name: s.name, nation: s.nation, hull: s.hull, rarity: s.rarity, stars: s.stars, thumb: s.skins[0]?.thumb ?? "", skins: s.skins.length };
+  return { slug: s.slug, name: s.name, nation: s.nation, hull: s.hull, rarity: s.rarity, stars: s.stars, thumb: s.skins[0]?.thumb ?? "", model: s.skins[0]?.model ?? "", skins: s.skins.length };
 }
 
 
