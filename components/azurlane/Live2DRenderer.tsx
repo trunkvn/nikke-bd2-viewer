@@ -11,6 +11,8 @@ declare global {
 }
 
 export type MotionCommand = { name: string; nonce: number };
+/** Câu thoại cần phát (nonce đổi thì phát lại). */
+export type Speech = { src: string; text?: string; nonce: number };
 
 const CORE_URL = "/vendor/live2dcubismcore.min.js";
 let corePromise: Promise<void> | null = null;
@@ -42,6 +44,7 @@ const TOUCH: [string, string][] = [
  *  - Mô hình tự phát motion "idle" lặp lại, chớp mắt và vật lý theo khai báo trong model3.json.
  *  - Mô hình nhìn theo con trỏ chuột. Nhấp vào vùng TouchHead / TouchBody / TouchSpecial thì phát motion tương ứng; nhấp vào chỗ khác
  *    trên người thì phát ngẫu nhiên một câu ở màn hình chính (main_1..3).
+ *  - `speech`: phát câu thoại, miệng nhép theo âm lượng (thư viện 0.4.0 chưa có sẵn nhép miệng nên đo âm lượng bằng Web Audio và ghi vào ParamMouthOpenY).
  *  - Thư viện Pixi và Cubism chỉ được nạp khi component này chạy (trang nhân vật), không nằm trong bundle các trang khác.
  */
 export function Live2DRenderer({
@@ -51,6 +54,8 @@ export function Live2DRenderer({
   onMotions,
   onPlaying,
   onReady,
+  speech,
+  onSpeechEnd,
 }: {
   modelUrl: string;
   label: string;
@@ -61,6 +66,10 @@ export function Live2DRenderer({
   /** Báo motion bắt đầu phát (kể cả idle tự lặp). */
   onPlaying?: (name: string) => void;
   onReady?: () => void;
+  /** Câu thoại đang cần phát; null thì dừng. */
+  speech?: Speech | null;
+  /** Báo khi câu thoại phát xong (hoặc không phát được). */
+  onSpeechEnd?: () => void;
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const transformRef = useViewerTransform();
@@ -69,9 +78,11 @@ export function Live2DRenderer({
   const [errorMsg, setErrorMsg] = useState("");
   const playRef = useRef<((name: string) => void) | null>(null);
   const tapRef = useRef<((x: number, y: number) => void) | null>(null);
-  const cbRef = useRef({ onMotions, onPlaying, onReady });
+  const speakRef = useRef<((src: string) => void) | null>(null);
+  const stopSpeakRef = useRef<(() => void) | null>(null);
+  const cbRef = useRef({ onMotions, onPlaying, onReady, onSpeechEnd });
   useEffect(() => {
-    cbRef.current = { onMotions, onPlaying, onReady };
+    cbRef.current = { onMotions, onPlaying, onReady, onSpeechEnd };
   });
 
   useViewerTap((pt) => tapRef.current?.(pt.clientX, pt.clientY));
@@ -79,6 +90,11 @@ export function Live2DRenderer({
   useEffect(() => {
     if (command) playRef.current?.(command.name);
   }, [command]);
+
+  useEffect(() => {
+    if (speech) speakRef.current?.(speech.src);
+    else stopSpeakRef.current?.();
+  }, [speech]);
 
   useEffect(() => {
     let cancelled = false;
@@ -156,6 +172,57 @@ export function Live2DRenderer({
             if (mains.length) play(mains[Math.floor(Math.random() * mains.length)]);
           }
         };
+
+        // Câu thoại: phát bằng <audio> qua Web Audio để đo âm lượng, rồi mỗi frame (sau khi animation cập nhật) ghi độ mở miệng.
+        let audio: HTMLAudioElement | null = null;
+        let analyser: AnalyserNode | null = null;
+        let audioCtx: AudioContext | null = null;
+        let mouth = 0;
+        const samples = new Uint8Array(256);
+        const stopSpeech = () => {
+          if (audio) {
+            audio.onended = null;
+            audio.onerror = null;
+            audio.pause();
+            audio = null;
+          }
+          analyser = null;
+          mouth = 0;
+        };
+        internal.on("afterMotionUpdate", () => {
+          if (!analyser) return;
+          analyser.getByteTimeDomainData(samples);
+          let sum = 0;
+          for (const v of samples) sum += ((v - 128) / 128) ** 2;
+          mouth += (Math.min(1, Math.sqrt(sum / samples.length) * 5) - mouth) * 0.5;
+          (internal.coreModel as unknown as { setParameterValueById(id: string, value: number): void }).setParameterValueById("ParamMouthOpenY", mouth);
+        });
+        speakRef.current = (src) => {
+          stopSpeech();
+          const a = new Audio(src);
+          const end = () => {
+            if (audio !== a) return;
+            stopSpeech();
+            cbRef.current.onSpeechEnd?.();
+          };
+          try {
+            audioCtx ??= new AudioContext();
+            const node = audioCtx.createAnalyser();
+            node.fftSize = 256;
+            audioCtx.createMediaElementSource(a).connect(node);
+            node.connect(audioCtx.destination);
+            analyser = node;
+            void audioCtx.resume();
+          } catch {
+            // Không có Web Audio: vẫn phát tiếng, chỉ không nhép miệng.
+          }
+          audio = a;
+          a.onended = end;
+          a.onerror = end;
+          a.play().catch(end); // trình duyệt chặn tự phát khi chưa có thao tác nào
+        };
+        stopSpeakRef.current = stopSpeech;
+
         const onMove = (e: PointerEvent) => {
           const r = canvas.getBoundingClientRect();
           model.focus(e.clientX - r.left, e.clientY - r.top);
@@ -172,6 +239,10 @@ export function Live2DRenderer({
           window.removeEventListener("pointermove", onMove);
           playRef.current = null;
           tapRef.current = null;
+          stopSpeech();
+          speakRef.current = null;
+          stopSpeakRef.current = null;
+          void audioCtx?.close();
           model.destroy();
           const gl = "gl" in app.renderer ? (app.renderer as { gl: WebGLRenderingContext }).gl : null;
           app.destroy(false, { children: true, texture: true, baseTexture: true });

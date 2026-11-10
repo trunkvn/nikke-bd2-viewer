@@ -5,10 +5,12 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { getFullscreen, subscribeFullscreen, toggleFullscreen } from "@/lib/fullscreen";
-import { motionLabel, rarityStyle, splitMotions, type AzurShip } from "@/lib/azurlaneShared";
+import { voiceEnabledSetting } from "@/lib/voiceSettings";
+import { motionLabel, rarityStyle, splitMotions, voiceFor, type AzurShip } from "@/lib/azurlaneShared";
 import { FullscreenButton } from "../FullscreenButton";
+import { VoiceToggle } from "../VoiceToggle";
 import { ViewerStage } from "../ViewerStage";
-import { Live2DRenderer, type MotionCommand } from "./Live2DRenderer";
+import { Live2DRenderer, type MotionCommand, type Speech } from "./Live2DRenderer";
 
 type Nav = { slug: string; name: string } | null;
 
@@ -30,6 +32,9 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
   const skin = ship.skins.find((s) => s.id === skinId) ?? ship.skins[0];
   const [playing, setPlaying] = useState<string | null>(null);
   const [command, setCommand] = useState<MotionCommand | null>(null);
+  const [speech, setSpeech] = useState<Speech | null>(null);
+  const voiceOn = useSyncExternalStore(voiceEnabledSetting.subscribe, () => voiceEnabledSetting.get() !== "off", () => true);
+  const hasVoice = !!skin.voice && Object.keys(skin.voice).length > 0;
   const isDesktop = useSyncExternalStore(subscribeDesktop, () => window.matchMedia(desktopQuery).matches, () => true);
   const isFullscreen = useSyncExternalStore(subscribeFullscreen, getFullscreen, () => false);
 
@@ -51,7 +56,17 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
     setSkinId(id);
     setPlaying(null);
     setCommand(null);
+    setSpeech(null);
   };
+  // Mỗi khi một hoạt cảnh bắt đầu (bấm nút, chạm vào nhân vật) thì phát câu thoại tương ứng; idle tự lặp thì không động tới câu đang nói.
+  const onMotionStart = (name: string) => {
+    setPlaying(name);
+    if (name === "idle") return;
+    const line = voiceOn ? voiceFor(name, skin.voice) : undefined;
+    setSpeech(line ? { src: line.src, text: line.text, nonce: (speech?.nonce ?? 0) + 1 } : null);
+  };
+  // Tắt tiếng giữa chừng thì câu đang nói dừng ngay (không cần đồng bộ state).
+  const activeSpeech = voiceOn ? speech : null;
 
   const goPrev = prev?.slug;
   const goNext = next?.slug;
@@ -69,6 +84,7 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
         setSkinId(skinIds[(skinIds.indexOf(skin.id) + 1) % skinIds.length]);
         setPlaying(null);
         setCommand(null);
+        setSpeech(null);
       }
     };
     window.addEventListener("keydown", onKey);
@@ -88,14 +104,21 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
         cssTransform={false}
         insets={insets}
         backdrop={<div className="absolute inset-0 bg-[radial-gradient(60%_55%_at_55%_45%,rgba(56,189,248,0.22),transparent_72%),linear-gradient(180deg,#0f2447,#081426)]" />}
-        toolbar={<FullscreenButton active={isFullscreen} onToggle={toggleFullscreen} />}
+        toolbar={
+          <>
+            {hasVoice && <VoiceToggle enabled={voiceOn} onToggle={() => voiceEnabledSetting.set(voiceOn ? "off" : "on")} />}
+            <FullscreenButton active={isFullscreen} onToggle={toggleFullscreen} />
+          </>
+        }
       >
         <Live2DRenderer
           key={skin.model}
           modelUrl={skin.model}
           label={`${ship.name} — ${skin.name}`}
           command={command}
-          onPlaying={setPlaying}
+          onPlaying={onMotionStart}
+          speech={activeSpeech}
+          onSpeechEnd={() => setSpeech(null)}
         />
       </ViewerStage>
 
@@ -124,6 +147,15 @@ export function AzurShowcase({ ship, prev, next }: { ship: AzurShip; prev: Nav; 
             <h1 className="mt-1 font-display text-3xl font-bold uppercase leading-none tracking-tight sm:text-5xl">{ship.name}</h1>
             <p className="mt-1.5 text-sm font-medium text-muted">{skin.name}</p>
           </div>
+        </div>
+      )}
+
+      {activeSpeech?.text && !isFullscreen && (
+        <div className="pointer-events-none absolute inset-x-0 flex justify-center px-3" style={{ bottom: isDesktop ? 24 : dockH + 24, paddingLeft: isDesktop ? 430 : 12, paddingRight: isDesktop ? 70 : 12 }}>
+          <p className="azl-glass max-w-xl px-4 py-2.5 text-center text-sm leading-snug">
+            <span className="mr-2 font-display font-semibold uppercase tracking-wider text-accent">{ship.name}</span>
+            {activeSpeech.text}
+          </p>
         </div>
       )}
 

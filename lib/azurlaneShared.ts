@@ -14,7 +14,11 @@ export type AzurSkin = {
   /** Tên các motion (nhóm trong model3.json): idle, touch_head, login... */
   motions: string[];
   hitAreas: string[];
+  /** Voice theo tên cue (login, main_1, touch_1...), kèm phụ đề tiếng Anh. Không có thì skin không có voice. */
+  voice?: Record<string, VoiceLine>;
 };
+
+export type VoiceLine = { src: string; text?: string };
 
 export type AzurShip = {
   id: string;
@@ -104,3 +108,32 @@ const RARITY_STYLE: Record<string, { abbr: string; color: string }> = {
   "Ultra Rare": { abbr: "UR", color: "#ff7ad9" },
 };
 export const rarityStyle = (r: string) => RARITY_STYLE[r] ?? { abbr: r, color: "#9aa5b1" };
+
+/**
+ * Câu thoại ứng với một hoạt cảnh: tên motion Live2D và tên cue voice của game cùng theo loại câu thoại (đăng nhập, màn hình chính, chạm...).
+ * Chạm đầu dùng câu "touch_head" nếu có (không thì "touch" thường), chạm người dùng "touch", chạm đặc biệt dùng "touch2"; ghép này suy ra từ tên, chưa đối chiếu từng cái trong game.
+ */
+const CUES: Record<string, string[]> = {
+  login: ["login"],
+  home: ["home"],
+  touch_head: ["touch_head", "touch_1"],
+  touch_body: ["touch_1"],
+  touch_special: ["touch_2"],
+  mission: ["task"],
+  mission_complete: ["mission_complete"],
+  complete: ["expedition"],
+  mail: ["mail"],
+  wedding: ["propose"],
+};
+
+/** Câu voice của một motion (undefined nếu motion không có câu thoại hoặc skin không có voice). `main_N` dùng đúng câu thứ N, thiếu thì lấy một câu main khác. */
+export function voiceFor(motion: string, voice: Record<string, VoiceLine> | undefined): VoiceLine | undefined {
+  if (!voice) return undefined;
+  const main = /^main_(\d+)$/.exec(motion);
+  if (main) {
+    const mains = Object.keys(voice).filter((c) => /^main_\d+$/.test(c));
+    return voice[motion] ?? (mains.length ? voice[mains[Math.floor(Math.random() * mains.length)]] : undefined);
+  }
+  for (const cue of CUES[motion] ?? []) if (voice[cue]) return voice[cue];
+  return undefined;
+}
