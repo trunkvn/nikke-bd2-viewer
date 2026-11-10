@@ -1,19 +1,32 @@
 "use client";
 
-import { useDeferredValue, useMemo, useState } from "react";
+import { usePathname, useSearchParams } from "next/navigation";
+import { Suspense, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { RARITIES, rarityRank, type AzurCard } from "@/lib/azurlaneShared";
 import { AzurShipCard } from "./AzurCard";
 
 const normalize = (s: string) => s.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
 
-/** Trang danh sách tàu: tìm theo tên, lọc theo hệ (nation) và loại tàu (hull), sắp theo tên. */
-export function AzurGallery({ cards }: { cards: AzurCard[] }) {
-  const [query, setQuery] = useState("");
-  const [nation, setNation] = useState<string | null>(null);
-  const [hull, setHull] = useState<string | null>(null);
-  const [rarity, setRarity] = useState<string | null>(null);
-  const [sort, setSort] = useState<"name" | "rarity">("name");
+type Query = { q: string; nation: string | null; hull: string | null; rarity: string | null; sort: "name" | "rarity" };
+const EMPTY: Query = { q: "", nation: null, hull: null, rarity: null, sort: "name" };
+
+/** Trang danh sách tàu: tìm theo tên, lọc theo hệ (nation), loại tàu (hull) và độ hiếm, sắp theo tên hoặc độ hiếm. Bộ lọc nằm trên URL. */
+function Gallery({ cards, initial = EMPTY, onChange }: { cards: AzurCard[]; initial?: Query; onChange?: (q: Query) => void }) {
+  const [query, setQuery] = useState(initial.q);
+  const [nation, setNation] = useState(initial.nation);
+  const [hull, setHull] = useState(initial.hull);
+  const [rarity, setRarity] = useState(initial.rarity);
+  const [sort, setSort] = useState(initial.sort);
   const deferred = useDeferredValue(query);
+  // Ghi bộ lọc lên URL (replace, không thêm lịch sử); bỏ qua lần đầu vì URL đã đúng.
+  const first = useRef(true);
+  useEffect(() => {
+    if (first.current) {
+      first.current = false;
+      return;
+    }
+    onChange?.({ q: query, nation, hull, rarity, sort });
+  }, [query, nation, hull, rarity, sort, onChange]);
 
   const nations = useMemo(() => [...new Set(cards.map((c) => c.nation))].sort(), [cards]);
   const hulls = useMemo(() => [...new Set(cards.map((c) => c.hull))].sort(), [cards]);
@@ -106,5 +119,44 @@ export function AzurGallery({ cards }: { cards: AzurCard[] }) {
         </div>
       )}
     </main>
+  );
+}
+
+const parse = (p: URLSearchParams): Query => ({
+  q: p.get("q") ?? "",
+  nation: p.get("nation"),
+  hull: p.get("hull"),
+  rarity: p.get("rarity"),
+  sort: p.get("sort") === "rarity" ? "rarity" : "name",
+});
+
+function UrlGallery({ cards }: { cards: AzurCard[] }) {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+  const [initial] = useState(() => parse(new URLSearchParams(searchParams.toString())));
+  const pathRef = useRef(pathname);
+  useEffect(() => {
+    pathRef.current = pathname;
+  });
+  const [onChange] = useState(() => (q: Query) => {
+    const params = new URLSearchParams();
+    if (q.q.trim()) params.set("q", q.q.trim());
+    if (q.nation) params.set("nation", q.nation);
+    if (q.hull) params.set("hull", q.hull);
+    if (q.rarity) params.set("rarity", q.rarity);
+    if (q.sort !== "name") params.set("sort", q.sort);
+    const qs = params.toString();
+    // Phải truyền null (đúng như docs): truyền lại history.state của router sẽ khiến Next bỏ qua việc đồng bộ.
+    window.history.replaceState(null, "", qs ? `${pathRef.current}?${qs}` : pathRef.current);
+  });
+  return <Gallery cards={cards} initial={initial} onChange={onChange} />;
+}
+
+export function AzurGallery({ cards }: { cards: AzurCard[] }) {
+  return (
+    // Fallback là bản mặc định (chưa lọc) trong lúc chờ đọc URL, nên không bị nhảy bố cục.
+    <Suspense fallback={<Gallery cards={cards} />}>
+      <UrlGallery cards={cards} />
+    </Suspense>
   );
 }
