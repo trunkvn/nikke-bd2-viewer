@@ -8,9 +8,12 @@
     "start": "next start",
     "share": "node scripts/share.mjs --no-password",
     "tunnel": "cloudflared tunnel --no-autoupdate --url http://localhost:3000",
-    "lint": "eslint"
+    "lint": "eslint",
+    "assets:voice": "node --no-warnings scripts/build-voice-manifest.mjs",
+    "assets:r2": "node --env-file-if-exists=.env.local scripts/r2-sync.mjs"
   },
   "dependencies": {
+    "aws4fetch": "^1.0.20",
     "next": "16.4.5",
     "react": "19.3.0",
     "react-dom": "19.3.0",
