@@ -139,3 +139,28 @@ export function voiceFor(motion: string, voice: Record<string, VoiceLine> | unde
   for (const cue of CUES[motion] ?? []) if (voice[cue]) return voice[cue];
   return undefined;
 }
+
+/** Nhãn tiếng Việt cho từng câu thoại (tên cue của game); `main_N` là câu thứ N ở màn hình chính. */
+const CUE_LABEL: Record<string, string> = {
+  login: "Đăng nhập",
+  home: "Về cảng",
+  touch_head: "Chạm đầu",
+  touch_1: "Chạm người",
+  touch_2: "Chạm đặc biệt",
+  mail: "Thư",
+  mission_complete: "Xong nhiệm vụ",
+  task: "Nhắc nhiệm vụ",
+  expedition: "Hoàn thành",
+  propose: "Lời thề",
+  detail: "Giới thiệu",
+  profile: "Hồ sơ",
+};
+export const voiceLabel = (cue: string) => {
+  const main = /^main_(\d+)$/.exec(cue);
+  return main ? `Màn hình chính ${main[1]}` : (CUE_LABEL[cue] ?? cue);
+};
+/** Thứ tự hiển thị các câu thoại: đăng nhập, màn hình chính, chạm, còn lại. */
+export const orderCues = (cues: string[]) => {
+  const rank = (c: string) => (c === "login" ? 0 : c.startsWith("main_") ? 1 : c.startsWith("touch_") ? 2 : 3);
+  return [...cues].sort((a, b) => rank(a) - rank(b) || a.localeCompare(b, undefined, { numeric: true }));
+};

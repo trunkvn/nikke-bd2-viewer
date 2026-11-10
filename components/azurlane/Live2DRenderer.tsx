@@ -56,6 +56,7 @@ export function Live2DRenderer({
   onReady,
   speech,
   onSpeechEnd,
+  onSpeechBlocked,
   quietLoading = false,
   compareUrl,
   compareLayout = "row",
@@ -73,6 +74,8 @@ export function Live2DRenderer({
   speech?: Speech | null;
   /** Báo khi câu thoại phát xong (hoặc không phát được). */
   onSpeechEnd?: () => void;
+  /** Báo khi trình duyệt chặn tự phát tiếng (chưa có thao tác nào của người dùng); câu thoại vẫn đang chờ. */
+  onSpeechBlocked?: () => void;
   /** Không hiện chữ "Đang tải" (dùng cho xem trước trên thẻ). */
   quietLoading?: boolean;
   /**
@@ -95,10 +98,12 @@ export function Live2DRenderer({
   });
   const speakRef = useRef<((src: string) => void) | null>(null);
   const stopSpeakRef = useRef<(() => void) | null>(null);
-  const cbRef = useRef({ onMotions, onPlaying, onReady, onSpeechEnd });
+  const cbRef = useRef({ onMotions, onPlaying, onReady, onSpeechEnd, onSpeechBlocked });
   useEffect(() => {
-    cbRef.current = { onMotions, onPlaying, onReady, onSpeechEnd };
+    cbRef.current = { onMotions, onPlaying, onReady, onSpeechEnd, onSpeechBlocked };
   });
+  // Câu thoại mới nhất; nếu đến trước khi mô hình nạp xong thì phát ngay khi sẵn sàng.
+  const speechRef = useRef<Speech | null>(null);
 
   useViewerTap((pt) => tapRef.current?.(pt.clientX, pt.clientY));
 
@@ -107,6 +112,7 @@ export function Live2DRenderer({
   }, [command]);
 
   useEffect(() => {
+    speechRef.current = speech ?? null;
     if (speech) speakRef.current?.(speech.src);
     else stopSpeakRef.current?.();
   }, [speech]);
@@ -248,16 +254,23 @@ export function Live2DRenderer({
             audioCtx.createMediaElementSource(a).connect(node);
             node.connect(audioCtx.destination);
             analyser = node;
-            void audioCtx.resume();
+            audioCtx.resume().catch(() => {});
           } catch {
             // Không có Web Audio: vẫn phát tiếng, chỉ không nhép miệng.
           }
           audio = a;
           a.onended = end;
           a.onerror = end;
-          a.play().catch(end); // trình duyệt chặn tự phát khi chưa có thao tác nào
+          a.play().catch((err: unknown) => {
+            // Trình duyệt chặn tự phát khi chưa có thao tác nào: giữ câu thoại để phát lại ở cử chỉ đầu tiên.
+            if (err instanceof DOMException && err.name === "NotAllowedError" && audio === a) {
+              stopSpeech();
+              cbRef.current.onSpeechBlocked?.();
+            } else end();
+          });
         };
         stopSpeakRef.current = stopSpeech;
+        if (speechRef.current) speakRef.current(speechRef.current.src);
 
         const onMove = (e: PointerEvent) => {
           const r = canvas.getBoundingClientRect();

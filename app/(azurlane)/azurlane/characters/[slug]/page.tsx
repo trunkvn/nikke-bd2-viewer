@@ -31,7 +31,7 @@ async function ShipContent({ params }: { params: Props["params"] }) {
 
   return (
     <main>
-      <AzurShowcase ship={ship} prev={prev} next={next} />
+      <AzurShowcase key={ship.id} ship={ship} prev={prev} next={next} />
     </main>
   );
 }
