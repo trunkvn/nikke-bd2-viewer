@@ -14,9 +14,9 @@ const STYLES: Record<Variant, { nav: string; item: string; active: string; idle:
   },
   bd2: {
     nav: "flex items-center gap-0.5 text-[13px] font-semibold sm:gap-1 sm:text-sm",
-    item: "rounded-lg px-2.5 py-1.5 outline-none transition focus-visible:ring-2 focus-visible:ring-accent sm:px-3",
-    active: "bg-white/10 text-foreground",
-    idle: "text-muted hover:bg-white/10 hover:text-foreground",
+    item: "rounded-[3px_10px_3px_10px] px-2.5 py-1.5 outline-none transition focus-visible:ring-2 focus-visible:ring-accent sm:px-3",
+    active: "bg-gradient-to-b from-[#f3dc9a] to-[#b98f3e] text-[#2a1c05]",
+    idle: "text-muted hover:bg-accent/15 hover:text-accent",
     soon: "cursor-not-allowed text-muted/40",
   },
   home: {

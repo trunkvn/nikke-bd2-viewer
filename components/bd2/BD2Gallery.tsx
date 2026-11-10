@@ -3,6 +3,7 @@
 import { useDeferredValue, useMemo, useState } from "react";
 import type { Bd2Card } from "@/lib/bd2Cards";
 import { BD2Card } from "./BD2Card";
+import { SakuraPetals } from "./SakuraPetals";
 
 type Sort = "az" | "new" | "costumes";
 const SORTS: { id: Sort; label: string }[] = [
@@ -48,10 +49,15 @@ export function BD2Gallery({ cards }: { cards: Bd2Card[] }) {
   }, [cards, deferred, stars, sort, onlyUltimate, onlyDating]);
 
   return (
-    <main className="mx-auto max-w-7xl px-4 pb-20 pt-10 sm:pt-14">
-      <header className="mb-8 flex flex-col gap-1">
-        <h1 className="font-display text-4xl font-extrabold tracking-tight sm:text-5xl">Characters</h1>
-        <p className="text-sm text-muted">
+    <main className="relative z-[1] mx-auto max-w-7xl px-4 pb-20 pt-10 sm:pt-14">
+      <SakuraPetals />
+      <span aria-hidden className="pointer-events-none absolute right-4 top-2 hidden select-none font-title text-[88px] leading-none text-accent/10 [writing-mode:vertical-rl] md:block">桜夜</span>
+      <header className="relative mb-8 flex flex-col gap-1.5">
+        <h1 className="bd2-gold-text font-title text-5xl font-bold italic leading-none sm:text-6xl">Characters</h1>
+        <p className="flex items-center gap-2 text-sm text-muted">
+          <span aria-hidden className="text-accent">
+            ✦
+          </span>
           {cards.length} nhân vật · {totalCostumes} trang phục
         </p>
       </header>

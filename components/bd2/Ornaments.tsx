@@ -6,7 +6,12 @@ export function Stars({ value, max = 5, size = 14, className = "" }: { value: nu
     <span className={`inline-flex items-center gap-px ${className}`} role="img" aria-label={`${value} sao`}>
       {Array.from({ length: max }, (_, i) => (
         <svg key={i} viewBox="0 0 24 24" width={size} height={size} aria-hidden>
-          <path d={STAR_PATH} fill={i < value ? "var(--star)" : "rgba(255,255,255,0.16)"} strokeLinejoin="round" />
+          <path
+            d={STAR_PATH}
+            fill={i < value ? "var(--star)" : "rgba(255,255,255,0.16)"}
+            strokeLinejoin="round"
+            style={i < value ? { filter: "drop-shadow(0 0 3px rgba(246,205,91,0.65))" } : undefined}
+          />
         </svg>
       ))}
     </span>

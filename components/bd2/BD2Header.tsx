@@ -7,14 +7,12 @@ export function BD2Header() {
     <header data-site-header className="sticky top-0 z-40 border-b border-line bg-bg/80 backdrop-blur-xl">
       <div className="mx-auto flex h-14 w-full max-w-7xl items-center gap-6 px-4">
         <Link href="/bd2" className="group flex items-center gap-2.5 outline-none">
-          {/* Dấu hiệu tự vẽ (không dùng logo gốc của game). */}
-          <span
-            aria-hidden
-            className="grid h-7 w-7 place-items-center rounded-lg bg-foreground text-[13px] font-extrabold text-bg transition group-hover:text-white group-focus-visible:text-white group-hover:bg-accent group-focus-visible:bg-accent"
-          >
-            B
+          {/* Dấu hiệu tự vẽ (không dùng logo gốc của game): hình thoi viền vàng, chữ B bên trong. */}
+          <span aria-hidden className="relative grid h-8 w-8 place-items-center transition duration-300 group-hover:rotate-[18deg] group-focus-visible:rotate-[18deg]">
+            <span className="absolute inset-[3px] rotate-45 rounded-[4px] border border-accent bg-gradient-to-br from-accent/30 to-transparent" />
+            <span className="relative font-title text-[19px] font-bold italic leading-none text-accent">B</span>
           </span>
-          <span className="font-display text-[15px] font-bold tracking-tight">Brown Dust 2</span>
+          <span className="font-title text-[22px] font-bold italic leading-none tracking-wide text-[#fff4d6]">Brown Dust 2</span>
         </Link>
 
         <div className="ml-auto">
