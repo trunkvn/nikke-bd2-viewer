@@ -135,7 +135,13 @@ node scripts/azurlane/fetch-cubism-core.mjs
 node scripts/fetch-azurlane.mjs
 ```
 Thêm tàu mới: tải và tách bundle của nó (bước 3 và 4), thêm một dòng vào bảng `BUNDLES` trong `scripts/fetch-azurlane.mjs` (tên bundle là pinyin tên Trung của tàu cộng số skin, ví dụ `lafei_4`), rồi chạy lại bước 6.
-Hiện có 8 tàu (10 skin) làm thử; máy chủ EN có 271 bundle Live2D, khoảng 3,1 GB. Gán skin cho Eldridge (`_4` là "New Year's Outing") là suy đoán theo thứ tự trong AzurAPI.
+Hiện có 22 tàu (25 skin) chọn làm thử, ưu tiên tàu hiếm; máy chủ EN có 271 bundle Live2D, khoảng 3,1 GB.
+`scripts/azurlane/match-bundles.py` ghép tàu của AzurAPI với bundle theo pinyin tên Trung (74 tàu có Live2D khớp được ở server EN) để chọn tàu cần thêm.
+Chỉ nên thêm tàu mà số bundle khớp đúng số skin Live2D mà AzurAPI biết (dữ liệu AzurAPI dừng ở 2/2023 nên skin mới hơn chưa có tên). Khi một tàu có hai
+skin, bundle có số nhỏ hơn là skin đứng trước trong AzurAPI (đã đối chiếu bằng mắt ở Shimakaze và Eldridge).
+
+**Độ hiếm:** Normal, Rare, Elite, Super Rare là bốn bậc thường; Ultra Rare là bậc đặc biệt cao hơn; Priority và Decisive là tàu nghiên cứu (cùng cỡ với
+Super Rare trở lên). Gallery lọc và sắp xếp theo độ hiếm; thẻ có huy hiệu viết tắt (N, R, E, SR, PR, DR, UR).
 
 ## Icon, metadata và ảnh chia sẻ
 
