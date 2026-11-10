@@ -4,10 +4,11 @@ Gallery + viewer tương tác cho nhân vật NIKKE và Brown Dust 2 (Next.js 16
 
 - `/` — **trang chủ**: chọn game (thẻ game kèm ảnh nhân vật và số liệu).
 - `/nikke` — NIKKE (giao diện tối, góc cạnh, sci-fi). Link cũ `/characters/<tên>` tự chuyển sang `/nikke/characters/<tên>`.
+- `/azurlane` — Azur Lane (xanh hải quân, điểm nhấn xanh da trời): mô hình **Live2D (Cubism)**, không phải Spine như hai game kia.
 - `/bd2` — Brown Dust 2, giao diện "Sakura Night": nền tím đêm có quầng hồng, viền vàng mảnh với góc trang trí, thẻ kính, nút dạng lá, thẻ ánh kim khi rê chuột; dùng cùng bộ phông với NIKKE (Chakra Petch cho tiêu đề, Inter cho chữ thân, Geist Mono cho nhãn nhỏ). Nền viewer mặc định là "Đêm anh đào" (đổi được bằng phím B).
 
-Mỗi trang có **layout gốc riêng** (route group `app/(home)`, `app/(nikke)`, `app/(bd2)`) nên phông, màu, header hoàn toàn khác nhau;
-chuyển qua lại là tải trang mới, bằng thanh tab ở đầu trang (Trang chủ · NIKKE · Brown Dust 2 · Azur Lane sắp có). Phần dùng chung là
+Mỗi trang có **layout gốc riêng** (route group `app/(home)`, `app/(nikke)`, `app/(bd2)`, `app/(azurlane)`) nên phông, màu, header hoàn toàn khác nhau;
+chuyển qua lại là tải trang mới, bằng thanh tab ở đầu trang (Trang chủ · NIKKE · Brown Dust 2 · Azur Lane). Phần dùng chung là
 engine viewer (Spine, zoom/kéo, toàn màn hình).
 
 **Thêm một game mới** (ví dụ Azur Lane): thêm một mục vào `lib/games.ts` (đổi `live: true` khi có dữ liệu), tạo route group `app/(azurlane)/azurlane/...`
@@ -102,6 +103,39 @@ node scripts/fetch-bd2.mjs --no-posters        # bỏ qua bước render thumbna
 - Phím tắt: `←` `→` chuyển nhân vật, `C` đổi trang phục, `F` toàn màn hình, `B` đổi nền, `I` thông tin.
 
 Asset thuộc bản quyền Neowiz / Neon Eyes; `data/bd2.local.json` và `public/assets/` đã nằm trong `.gitignore`.
+
+## Azur Lane (Live2D)
+
+Mô hình của Azur Lane là **Live2D Cubism** (`.moc3`) đóng trong các bundle Unity, không phải Spine. Mỗi mô hình có khoảng 14 motion tên theo tình huống:
+`idle`, `login`, `home`, `main_1/2/3`, `touch_head`, `touch_body`, `touch_special`, `mission`, `mission_complete`, `complete`, `mail`, `wedding`
+(một số có thêm `gold`/`oil`/`diamond` hoặc `effect`). Ba vùng chạm `TouchHead`, `TouchBody`, `TouchSpecial` phát motion cùng tên khi bạn nhấp vào.
+Nhãn tiếng Việt của các motion là suy đoán theo loại câu thoại của tàu trong game (xem `lib/azurlaneShared.ts`).
+
+Asset thuộc Manjuu / Yostar: chỉ dùng local. `public/assets/` và `data/*.local.json` đã gitignore.
+Dữ liệu thô tải từ máy chủ game để **ngoài dự án** (`~/Developer/Personal/.azl-cache`), vì cả chục GB trong thư mục dự án làm Tailwind và VS Code quét chậm.
+
+**Dựng lần đầu** (cần `uv`: `brew install uv`):
+```bash
+# 1. Công cụ tải: azlassets (tải bundle từ máy chủ game), cài trong môi trường ảo của dự án
+uv venv --python 3.12 tools/azl-venv && uv pip install --python tools/azl-venv/bin/python azlassets
+
+# 2. Xem danh sách bundle (chỉ tải file văn bản, không tải asset). Live2D là loại "L2D": thư mục live2d/<tên pinyin>_<số skin>
+cd ~/Developer/Personal/.azl-cache && ~/…/interactive-anime/tools/azl-venv/bin/python ~/…/interactive-anime/scripts/azurlane/list-bundles.py EN
+
+# 3. Chỉ tải các bundle muốn có: sửa config/userconfig.toml trong thư mục dữ liệu (whitelist, ví dụ "live2d/lafe[i]"; ký tự [] để khớp đúng tên)
+#    rồi: ~/…/interactive-anime/tools/azl-venv/bin/azl download EN        # KHÔNG để whitelist trống, nếu không nó tải toàn bộ (hơn 30 GB)
+
+# 4. Tách ra thư mục model chuẩn (moc3, texture, physics, motion3.json, model3.json) vào public/assets/azurlane/
+tools/azl-venv/bin/python -I scripts/azurlane/extract-live2d.py ~/Developer/Personal/.azl-cache/ClientAssets/EN/AssetBundles/live2d public/assets/azurlane
+
+# 5. Lõi Live2D Cubism (phần mềm độc quyền của Live2D Inc., tải về local, không đưa vào git)
+node scripts/azurlane/fetch-cubism-core.mjs
+
+# 6. Ghép bundle với tên tàu/skin (AzurAPI), tải ảnh thẻ, ghi data/azurlane.local.json
+node scripts/fetch-azurlane.mjs
+```
+Thêm tàu mới: tải và tách bundle của nó (bước 3 và 4), thêm một dòng vào bảng `BUNDLES` trong `scripts/fetch-azurlane.mjs` (tên bundle là pinyin tên Trung của tàu cộng số skin, ví dụ `lafei_4`), rồi chạy lại bước 6.
+Hiện có 8 tàu (10 skin) làm thử; máy chủ EN có 271 bundle Live2D, khoảng 3,1 GB. Gán skin cho Eldridge (`_4` là "New Year's Outing") là suy đoán theo thứ tự trong AzurAPI.
 
 ## Icon, metadata và ảnh chia sẻ
 
