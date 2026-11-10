@@ -5,6 +5,7 @@
  * Cần một server đang chạy (pnpm dev hoặc pnpm start) và Chrome. Sau đó chạy lại node scripts/fetch-azurlane.mjs để ghi ảnh vào dữ liệu.
  *
  *   node scripts/azurlane/render-thumbs.mjs [--base http://127.0.0.1:3000] [--all]    # mặc định chỉ skin chưa có ảnh
+ *   ... --shard 0/3 --port 9971   # chạy song song 3 tiến trình: --shard 0/3, 1/3, 2/3, mỗi cái một --port
  *   node scripts/azurlane/render-thumbs.mjs --check [--base ...]                        # mở MỌI skin, báo skin nào không vẽ được (không ghi ảnh)
  *
  * Biến môi trường: AZL_CHROME = đường dẫn Chrome (mặc định bản macOS).
@@ -21,13 +22,16 @@ const BASE = argv.includes("--base") ? argv[argv.indexOf("--base") + 1] : "http:
 const check = argv.includes("--check");
 const all = argv.includes("--all") || check;
 const CHROME = process.env.AZL_CHROME ?? "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome";
-const PORT = 9971;
+// Chạy song song: --shard k/n (mỗi tiến trình lấy các skin có chỉ số chia n dư k) và --port khác nhau cho mỗi tiến trình.
+const shardArg = argv.includes("--shard") ? argv[argv.indexOf("--shard") + 1] : "0/1";
+const [SHARD, SHARDS] = shardArg.split("/").map(Number);
+const PORT = argv.includes("--port") ? Number(argv[argv.indexOf("--port") + 1]) : 9971;
 const W = 1440;
 const H = 900;
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const ships = JSON.parse(readFileSync(join(ROOT, "data", "azurlane.local.json"), "utf8"));
-const jobs = ships.flatMap((s) => s.skins.filter((k) => all || !k.thumb).map((k) => ({ ship: s, skin: k })));
+const jobs = ships.flatMap((s) => s.skins.filter((k) => all || !k.thumb).map((k) => ({ ship: s, skin: k }))).filter((_, i) => i % SHARDS === SHARD);
 if (!jobs.length) {
   console.log("Mọi skin đã có ảnh.");
   process.exit(0);
