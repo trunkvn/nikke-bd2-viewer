@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Tailwind không cần quét public/ (chỉ có asset game: 8 GB, hàng chục nghìn file). Không chặn thì build và dev đọc hết chỗ đó, tốn gấp 2-5 lần RAM và thời gian. */
+@source not "../../public";
 
 :root {
   --bg: #06080c;
