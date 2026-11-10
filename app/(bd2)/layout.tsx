@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Plus_Jakarta_Sans } from "next/font/google";
+import { Cormorant_Garamond, Plus_Jakarta_Sans } from "next/font/google";
 import { BD2Header } from "@/components/bd2/BD2Header";
 import { NO_INDEX, SITE_URL } from "@/lib/site";
 import "./bd2.css";
@@ -14,6 +14,14 @@ const jakarta = Plus_Jakarta_Sans({
 
 const DESCRIPTION = "Showcase nhân vật Brown Dust 2: gallery, viewer Spine tương tác, trang phục và biểu cảm.";
 
+// Cormorant Garamond: chữ có chân nghiêng cho tên nhân vật và tiêu đề (có tiếng Việt).
+const cormorant = Cormorant_Garamond({
+  variable: "--font-cormorant",
+  subsets: ["latin", "latin-ext", "vietnamese"],
+  weight: ["500", "600", "700"],
+  style: ["normal", "italic"],
+});
+
 export const metadata: Metadata = {
   metadataBase: SITE_URL,
   title: { default: "Brown Dust 2 — Character Gallery", template: "%s — Brown Dust 2" },
@@ -25,11 +33,11 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: "Brown Dust 2 — Character Gallery", description: DESCRIPTION },
 };
 
-export const viewport: Viewport = { themeColor: "#111218", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#120f2b", colorScheme: "dark" };
 
 export default function BD2Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={`${jakarta.variable} h-full antialiased`}>
+    <html lang="vi" className={`${jakarta.variable} ${cormorant.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <BD2Header />
         <div className="flex-1">{children}</div>

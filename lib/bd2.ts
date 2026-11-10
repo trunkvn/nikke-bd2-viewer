@@ -92,6 +92,12 @@ const STARS =
 /** Các nền dựng sẵn: dịu và trung tính để nhân vật nổi bật; mỗi nền là một giá trị CSS `background`. */
 export const BD2_BGS: Bd2Bg[] = [
   {
+    id: "sakura",
+    label: "Đêm anh đào",
+    background:
+      "radial-gradient(45% 55% at 36% 62%, rgba(255,160,210,0.32), transparent 72%), radial-gradient(60% 50% at 82% 6%, rgba(120,100,255,0.42), transparent 70%), linear-gradient(180deg, #1a1340 0%, #2b1c4f 100%)",
+  },
+  {
     id: "slate",
     label: "Than chì",
     background: "radial-gradient(70% 55% at 50% 28%, #2b3042 0%, transparent 72%), linear-gradient(180deg, #1a1d29 0%, #0e1016 100%)",
@@ -128,7 +134,7 @@ export const BD2_BGS: Bd2Bg[] = [
   },
 ];
 
-export const BD2_DEFAULT_BG = "slate";
+export const BD2_DEFAULT_BG = "sakura";
 export const bd2BgSetting = createSetting("bd2-viewer:bg", BD2_DEFAULT_BG);
 
 export const bd2BgOf = (id: string): Bd2Bg => BD2_BGS.find((b) => b.id === id) ?? BD2_BGS[0];
