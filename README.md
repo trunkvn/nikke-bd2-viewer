@@ -135,6 +135,8 @@ node scripts/fetch-azurlane.mjs
 Kiểm tra mọi skin có vẽ được không: `node scripts/azurlane/render-thumbs.mjs --check --base http://127.0.0.1:3000`
 (chạy song song được: `--shard k/n --port <cổng riêng>`, khởi động các tiến trình lệch nhau vài giây). Sau khi `sync.mjs` xong, thư mục `ClientAssets` trong `.azl-cache` (gần 3 GB) xoá được; chạy lại `sync.mjs` sẽ tải lại.
 
+Giảm dung lượng: `node scripts/azurlane/shrink-textures.mjs` thu nhỏ texture lớn hơn 2048 (130 tấm 4096×4096) về 2048: 369 MB → 135 MB và bộ nhớ GPU mỗi tấm 67 → 17 MB. Hình hơi mềm hơn khi phóng to. Bản gốc được chép vào `.azl-cache/texture-backup/`, trả lại bằng `--restore`; `--dry-run` chỉ báo cáo. Chạy lại sau mỗi lần trích model mới.
+
 **Voice:** `node scripts/azurlane/voice.mjs EN` (sync.mjs tự chạy, bỏ qua bằng `--no-voice`). Voice nằm trong các gói `cue/cv-<mã>.b` (định dạng ACB của CRIWARE, âm thanh
 HCA không mã hoá). Mã gói là `voice_key` của skin trong bảng `ship_skin_words` của [AzurLaneData](https://github.com/AzurLaneTools/AzurLaneData) (skin có `voice_key` 0 dùng voice của tàu gốc);
 bảng đó cũng cho phụ đề tiếng Anh. Script tải đúng các gói cần, giải mã bằng `vgmstream-cli` (`brew install vgmstream`) và nén Opus/WebM bằng `ffmpeg`
