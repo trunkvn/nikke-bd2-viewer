@@ -1,12 +1,18 @@
-# NIKKE & Brown Dust 2 Viewer
+# Interactive Anime
 
 Gallery + viewer tương tác cho nhân vật NIKKE và Brown Dust 2 (Next.js 16, Spine 4.0/4.1). Chạy local, không cần tài khoản.
 
-- `/` — NIKKE (giao diện tối, góc cạnh, sci-fi).
+- `/` — **trang chủ**: chọn game (thẻ game kèm ảnh nhân vật và số liệu).
+- `/nikke` — NIKKE (giao diện tối, góc cạnh, sci-fi). Link cũ `/characters/<tên>` tự chuyển sang `/nikke/characters/<tên>`.
 - `/bd2` — Brown Dust 2 (giao diện tối dịu, gọn và hiện đại: nền than chì xanh, bảng tối viền mảnh, màu nhấn chàm, chữ không chân).
 
-Mỗi game có **layout gốc riêng** (route group `app/(nikke)` và `app/(bd2)`) nên phông, màu, header hoàn toàn khác nhau;
-chuyển qua lại giữa hai game là tải trang mới. Phần dùng chung là engine viewer (Spine, zoom/kéo, toàn màn hình).
+Mỗi trang có **layout gốc riêng** (route group `app/(home)`, `app/(nikke)`, `app/(bd2)`) nên phông, màu, header hoàn toàn khác nhau;
+chuyển qua lại là tải trang mới, bằng thanh tab ở đầu trang (Trang chủ · NIKKE · Brown Dust 2 · Azur Lane sắp có). Phần dùng chung là
+engine viewer (Spine, zoom/kéo, toàn màn hình).
+
+**Thêm một game mới** (ví dụ Azur Lane): thêm một mục vào `lib/games.ts` (đổi `live: true` khi có dữ liệu), tạo route group `app/(azurlane)/azurlane/...`
+với layout gốc riêng (đặt `GameTabs` trong header để có thanh tab), thêm game vào kiểu `Game` ở `data/types.ts` và script tải dữ liệu `scripts/fetch-<game>.mjs`.
+Trang chủ và thanh tab tự có thẻ/tab mới.
 
 ```bash
 pnpm install
@@ -99,10 +105,10 @@ Asset thuộc bản quyền Neowiz / Neon Eyes; `data/bd2.local.json` và `publi
 
 ## Icon, metadata và ảnh chia sẻ
 
-Mỗi game có bộ nhận diện riêng (dấu hiệu tự vẽ, không dùng logo gốc): NIKKE là ô vàng cắt góc chữ N, Brown Dust 2 là ô chàm bo góc chữ B.
+Mỗi trang có bộ nhận diện riêng (dấu hiệu tự vẽ, không dùng logo gốc): NIKKE là ô vàng cắt góc chữ N, Brown Dust 2 là ô chàm bo góc chữ B, trang chủ là ô chuyển màu vàng sang chàm với ngôi sao bốn cánh.
 
-- Icon tab, icon iOS, `manifest` (cài lên màn hình chính, NIKKE ở `/manifest.webmanifest`, BD2 ở `/bd2/manifest.webmanifest`), `theme-color` và ảnh chia sẻ Open Graph/Twitter (`opengraph-image.tsx`) đều tách riêng theo game. Trang nhân vật có tiêu đề và mô tả theo từng nhân vật.
-- Tạo lại icon: `node scripts/generate-icons.mjs` (ghi `icon.svg`, `icon1.ico`, `apple-icon.png` trong thư mục từng game và `public/icons/*.png`).
+- Icon tab, icon iOS, `manifest` (cài lên màn hình chính: trang chủ ở `/manifest.webmanifest`, NIKKE ở `/nikke/manifest.webmanifest`, BD2 ở `/bd2/manifest.webmanifest`), `theme-color` và ảnh chia sẻ Open Graph/Twitter (`opengraph-image.tsx`) đều tách riêng theo từng trang. Trang nhân vật có tiêu đề và mô tả theo từng nhân vật.
+- Tạo lại icon: `node scripts/generate-icons.mjs` (ghi `icon.svg`, `icon1.ico`, `apple-icon.png` trong thư mục từng trang và `public/icons/*.png`).
 - Khi triển khai, đặt `NEXT_PUBLIC_SITE_URL` (ví dụ `https://anime.example.com`) để đường dẫn ảnh chia sẻ là địa chỉ đầy đủ; trên Vercel tự lấy tên miền production, còn lại là `http://localhost:3000`.
 - Site **không cho công cụ tìm kiếm lập chỉ mục** (`robots.txt` chặn hết và `noindex`), vì chứa asset game chỉ để dùng cá nhân. Muốn bật lại thì sửa `app/robots.ts` và `NO_INDEX` trong `lib/site.ts`.
 
