@@ -1,8 +1,8 @@
 @import "tailwindcss";
 
 /*
- * Brown Dust 2: "Sakura Night". Nền tím đêm với quầng hồng, viền vàng mảnh có góc trang trí, thẻ kính, tên nhân vật bằng chữ có chân
- * nghiêng, thẻ ánh kim khi rê chuột, cánh hoa anh đào rơi ở trang danh sách. Phần chữ thân vẫn không chân cho dễ đọc.
+ * Brown Dust 2: "Sakura Night". Nền tím đêm với quầng hồng, viền vàng mảnh có góc trang trí, thẻ kính, nút dạng lá, thẻ ánh kim khi
+ * rê chuột. Phông chữ dùng chung với NIKKE (Chakra Petch cho tiêu đề, Inter cho chữ thân, Geist Mono cho nhãn nhỏ).
  * Các component dùng chung với NIKKE (ViewerStage, SpineRenderer...) đọc cùng tên token (bg, accent, font-display...) và các
  * biến --stage-xxx, --tool-xxx, nên tự mang màu của trang này.
  */
@@ -38,10 +38,9 @@
   --color-line: var(--line);
   --color-gold: var(--gold);
   --color-rose: var(--rose);
-  --font-title: var(--font-cormorant), Georgia, serif;
-  --font-sans: var(--font-jakarta), system-ui, sans-serif;
-  --font-display: var(--font-jakarta), system-ui, sans-serif;
-  --font-mono: var(--font-jakarta), system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-chakra), var(--font-inter), sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
 html {
@@ -51,7 +50,7 @@ html {
 body {
   background: var(--bg);
   color: var(--foreground);
-  font-family: var(--font-jakarta), system-ui, sans-serif;
+  font-family: var(--font-inter), system-ui, sans-serif;
   position: relative;
 }
 
@@ -70,11 +69,6 @@ body::before {
 ::selection {
   background: var(--accent);
   color: #2a1c05;
-}
-
-/* Cormorant mặc định dùng số kiểu cổ (số 2 thấp như chữ thường): ép về số thẳng hàng cho "Brown Dust 2" và các con số. */
-.font-title {
-  font-variant-numeric: lining-nums;
 }
 
 /* Chữ vàng chuyển sắc cho tiêu đề lớn. */
@@ -156,34 +150,6 @@ a:focus-visible .bd2-foil {
   }
   to {
     background-position: -120% 0;
-  }
-}
-
-/* Cánh hoa anh đào rơi (chỉ ở trang danh sách, components/bd2/SakuraPetals.tsx). */
-.bd2-petals {
-  position: fixed;
-  inset: 0;
-  z-index: -1; /* trong khung xếp chồng của <main>: dưới chữ và thẻ, trên nền trang */
-  overflow: hidden;
-  pointer-events: none;
-}
-.bd2-petal {
-  position: absolute;
-  top: -24px;
-  background: linear-gradient(135deg, #ffd0e2, #ff8fb4);
-  border-radius: 100% 0 100% 0;
-  opacity: 0.8;
-  animation: bd2-petal-fall linear infinite;
-}
-@keyframes bd2-petal-fall {
-  from {
-    transform: translate3d(0, -3vh, 0) rotate(0deg);
-  }
-  50% {
-    transform: translate3d(5vw, 55vh, 0) rotate(220deg);
-  }
-  to {
-    transform: translate3d(-3vw, 108vh, 0) rotate(440deg);
   }
 }
 
@@ -296,7 +262,6 @@ html[data-fs] [data-viewer] {
   .animate-skin-in,
   .skeleton,
   .animate-blink,
-  .bd2-petal,
   .bd2-foil {
     animation: none;
   }
