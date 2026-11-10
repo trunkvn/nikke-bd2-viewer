@@ -1,0 +1,602 @@
+[
+ {
+  "bundle": "lingbo",
+  "ship": "Ayanami",
+  "skin": "Default"
+ },
+ {
+  "bundle": "lafei",
+  "ship": "Laffey",
+  "skin": "Default"
+ },
+ {
+  "bundle": "lafei_4",
+  "ship": "Laffey",
+  "skin": "White Rabbit Welcomes the Spring"
+ },
+ {
+  "bundle": "biaoqiang",
+  "ship": "Javelin",
+  "skin": "Default"
+ },
+ {
+  "bundle": "biaoqiang_3",
+  "ship": "Javelin",
+  "skin": "Beach Picnic!"
+ },
+ {
+  "bundle": "mingshi",
+  "ship": "Akashi",
+  "skin": "Default"
+ },
+ {
+  "bundle": "z23",
+  "ship": "Z23",
+  "skin": "Default"
+ },
+ {
+  "bundle": "xuefeng",
+  "ship": "Yukikaze",
+  "skin": "Default"
+ },
+ {
+  "bundle": "aierdeliqi_4",
+  "ship": "Eldridge",
+  "skin": "New Year's Outing"
+ },
+ {
+  "bundle": "aidang_2",
+  "ship": "Atago",
+  "skin": "Summer March"
+ },
+ {
+  "bundle": "kalangshitade_2",
+  "ship": "Kronshtadt",
+  "skin": "Begin the Rush!"
+ },
+ {
+  "bundle": "qianwei_2",
+  "ship": "Vanguard",
+  "skin": "Half-Hearted Masquerade"
+ },
+ {
+  "bundle": "daofeng_4",
+  "ship": "Shimakaze",
+  "skin": "World's Speediest Bunny Waitress"
+ },
+ {
+  "bundle": "daofeng_5",
+  "ship": "Shimakaze",
+  "skin": "The White Rabbit of Wonderland"
+ },
+ {
+  "bundle": "yichui_2",
+  "ship": "Ibuki",
+  "skin": "Winter Sylph's Reverie"
+ },
+ {
+  "bundle": "luoen_4",
+  "ship": "Roon",
+  "skin": "Viridescent Lullaby"
+ },
+ {
+  "bundle": "chicheng_5",
+  "ship": "Akagi",
+  "skin": "Dawn-Phoenix's Summons"
+ },
+ {
+  "bundle": "beierfasite_2",
+  "ship": "Belfast",
+  "skin": "Iridescent Rosa"
+ },
+ {
+  "bundle": "luoma_2",
+  "ship": "Roma",
+  "skin": "White Heron of Darkest Night"
+ },
+ {
+  "bundle": "xianghe_2",
+  "ship": "Shoukaku",
+  "skin": "The Crane that Dances With the Wind"
+ },
+ {
+  "bundle": "zhala_2",
+  "ship": "Zara",
+  "skin": "Poolside Coincidence"
+ },
+ {
+  "bundle": "tierbici_2",
+  "ship": "Tirpitz",
+  "skin": "Snow-Melting Summer"
+ },
+ {
+  "bundle": "lvzuofu_2",
+  "ship": "Lützow",
+  "skin": "Everlasting Blood Banquet"
+ },
+ {
+  "bundle": "aisaikesi_4",
+  "ship": "Essex",
+  "skin": "Craft Fairytail"
+ },
+ {
+  "bundle": "jiluofu_3",
+  "ship": "Kirov",
+  "skin": "Drifting Justice"
+ },
+ {
+  "bundle": "tiancheng_3",
+  "ship": "Amagi",
+  "skin": "Wending Waters, Serene Lotus"
+ },
+ {
+  "bundle": "tiancheng_cv_2",
+  "ship": "Amagi",
+  "skin": "Nhà thờ hoa hồng (cv 2)"
+ },
+ {
+  "bundle": "tiancheng_cv_3",
+  "ship": "Amagi",
+  "skin": "Nàng tiên cá dưới biển (cv 3)"
+ },
+ {
+  "bundle": "xinnong_3",
+  "ship": "Shinano",
+  "skin": null
+ },
+ {
+  "bundle": "xinnong_4",
+  "ship": "Shinano",
+  "skin": null
+ },
+ {
+  "bundle": "xinnong_5",
+  "ship": "Shinano",
+  "skin": null
+ },
+ {
+  "bundle": "xinnong_6",
+  "ship": "Shinano",
+  "skin": null
+ },
+ {
+  "bundle": "wuqi_2",
+  "ship": "Azuma",
+  "skin": null
+ },
+ {
+  "bundle": "wuqi_3",
+  "ship": "Azuma",
+  "skin": null
+ },
+ {
+  "bundle": "buleisite_2",
+  "ship": "Brest",
+  "skin": null
+ },
+ {
+  "bundle": "buleisite_3",
+  "ship": "Brest",
+  "skin": null
+ },
+ {
+  "bundle": "aijier_2",
+  "ship": "Ägir",
+  "skin": null
+ },
+ {
+  "bundle": "aijier_3",
+  "ship": "Ägir",
+  "skin": null
+ },
+ {
+  "bundle": "aijier_4",
+  "ship": "Ägir",
+  "skin": null
+ },
+ {
+  "bundle": "chaijun_3",
+  "ship": "Cheshire",
+  "skin": null
+ },
+ {
+  "bundle": "chaijun_4",
+  "ship": "Cheshire",
+  "skin": null
+ },
+ {
+  "bundle": "chaijun_5",
+  "ship": "Cheshire",
+  "skin": null
+ },
+ {
+  "bundle": "lupuleixite_2",
+  "ship": "Prinz Rupprecht",
+  "skin": "The Gate Dragon's Advent"
+ },
+ {
+  "bundle": "luyijiushi_2",
+  "ship": "Saint Louis",
+  "skin": null
+ },
+ {
+  "bundle": "luyijiushi_4",
+  "ship": "Saint Louis",
+  "skin": null
+ },
+ {
+  "bundle": "ailunsamuna_2",
+  "ship": "Allen M. Sumner",
+  "skin": null
+ },
+ {
+  "bundle": "ailunsamuna_3",
+  "ship": "Allen M. Sumner",
+  "skin": null
+ },
+ {
+  "bundle": "baerdimo_5",
+  "ship": "Baltimore",
+  "skin": "Evening Breeze Minuet"
+ },
+ {
+  "bundle": "baerdimo_6",
+  "ship": "Baltimore",
+  "skin": "Finish Line Flagbearer"
+ },
+ {
+  "bundle": "bisimai_2",
+  "ship": "Bismarck",
+  "skin": null
+ },
+ {
+  "bundle": "bisimai_4",
+  "ship": "Bismarck",
+  "skin": null
+ },
+ {
+  "bundle": "bulaimodun_2",
+  "ship": "Bremerton",
+  "skin": "Kung Fu Cruiser"
+ },
+ {
+  "bundle": "bulaimodun_4",
+  "ship": "Bremerton",
+  "skin": "Day-Off Date"
+ },
+ {
+  "bundle": "bulaimodun_5",
+  "ship": "Bremerton",
+  "skin": "Relaxation Consultation"
+ },
+ {
+  "bundle": "banrenma_2",
+  "ship": "Centaur",
+  "skin": "Beachside Undine"
+ },
+ {
+  "bundle": "kalvbudisi_2",
+  "ship": "Charybdis",
+  "skin": "Red Chamber of Healing"
+ },
+ {
+  "bundle": "aierdeliqi_5",
+  "ship": "Eldridge",
+  "skin": "Kitty Idol"
+ },
+ {
+  "bundle": "aimudeng_2",
+  "ship": "Emden",
+  "skin": "White-Black Partita"
+ },
+ {
+  "bundle": "qiye_7",
+  "ship": "Enterprise",
+  "skin": null
+ },
+ {
+  "bundle": "qiye_9",
+  "ship": "Enterprise",
+  "skin": null
+ },
+ {
+  "bundle": "qiye_10",
+  "ship": "Enterprise",
+  "skin": null
+ },
+ {
+  "bundle": "qibolin_2",
+  "ship": "Graf Zeppelin",
+  "skin": "Beachside Urd"
+ },
+ {
+  "bundle": "hemin_2",
+  "ship": "Hermione",
+  "skin": "Pure White Angel"
+ },
+ {
+  "bundle": "hemin_3",
+  "ship": "Hermione",
+  "skin": "Pure White Holiday"
+ },
+ {
+  "bundle": "yanusi_3",
+  "ship": "Janus",
+  "skin": null
+ },
+ {
+  "bundle": "yanusi_7",
+  "ship": "Janus",
+  "skin": null
+ },
+ {
+  "bundle": "rangbaer_3",
+  "ship": "Jean Bart",
+  "skin": null
+ },
+ {
+  "bundle": "rangbaer_4",
+  "ship": "Jean Bart",
+  "skin": null
+ },
+ {
+  "bundle": "rangbaer_5",
+  "ship": "Jean Bart",
+  "skin": null
+ },
+ {
+  "bundle": "edu_3",
+  "ship": "Le Malin",
+  "skin": "Mercredi at the Secret Base"
+ },
+ {
+  "bundle": "edu_4",
+  "ship": "Le Malin",
+  "skin": "Listless Lapin"
+ },
+ {
+  "bundle": "beikaluolaina_2",
+  "ship": "North Carolina",
+  "skin": "The Heart's Desire"
+ },
+ {
+  "bundle": "beianpudunii_2",
+  "ship": "Northampton II",
+  "skin": "Swimming Star"
+ },
+ {
+  "bundle": "nengdai_2",
+  "ship": "Noshiro",
+  "skin": "Uncharted Festival Grounds?"
+ },
+ {
+  "bundle": "nengdai_3",
+  "ship": "Noshiro",
+  "skin": "Unwinding in the Sunshine"
+ },
+ {
+  "bundle": "shitelasai_2",
+  "ship": "Peter Strasser",
+  "skin": "Chronos's Kalendae"
+ },
+ {
+  "bundle": "bola_2",
+  "ship": "Pola",
+  "skin": "Seaside Coincidence"
+ },
+ {
+  "bundle": "adaerbote_2",
+  "ship": "Prinz Adalbert",
+  "skin": null
+ },
+ {
+  "bundle": "adaerbote_3",
+  "ship": "Prinz Adalbert",
+  "skin": null
+ },
+ {
+  "bundle": "ougen_5",
+  "ship": "Prinz Eugen",
+  "skin": null
+ },
+ {
+  "bundle": "ougen_6",
+  "ship": "Prinz Eugen",
+  "skin": null
+ },
+ {
+  "bundle": "ougen_8",
+  "ship": "Prinz Eugen",
+  "skin": null
+ },
+ {
+  "bundle": "haiyinlixi_2",
+  "ship": "Prinz Heinrich",
+  "skin": "Rabbit on Watch"
+ },
+ {
+  "bundle": "linuo_3",
+  "ship": "Reno",
+  "skin": "Reno Bunnino"
+ },
+ {
+  "bundle": "lisailiu_2",
+  "ship": "Richelieu",
+  "skin": "Fleuron of the Waves"
+ },
+ {
+  "bundle": "lisailiu_3",
+  "ship": "Richelieu",
+  "skin": "Evergreen Prophecy"
+ },
+ {
+  "bundle": "longfeng_2",
+  "ship": "Ryuuhou",
+  "skin": "Firebird's New Year Dance"
+ },
+ {
+  "bundle": "tianlangxing_3",
+  "ship": "Sirius",
+  "skin": null
+ },
+ {
+  "bundle": "tianlangxing_5",
+  "ship": "Sirius",
+  "skin": null
+ },
+ {
+  "bundle": "junhe_4",
+  "ship": "Suruga",
+  "skin": "Hundred Flowers' Auspice"
+ },
+ {
+  "bundle": "junhe_5",
+  "ship": "Suruga",
+  "skin": "Uneventful Holiday Greetings"
+ },
+ {
+  "bundle": "dafeng_2",
+  "ship": "Taihou",
+  "skin": null
+ },
+ {
+  "bundle": "dafeng_3",
+  "ship": "Taihou",
+  "skin": null
+ },
+ {
+  "bundle": "dafeng_4",
+  "ship": "Taihou",
+  "skin": null
+ },
+ {
+  "bundle": "dafeng_6",
+  "ship": "Taihou",
+  "skin": null
+ },
+ {
+  "bundle": "dafeng_7",
+  "ship": "Taihou",
+  "skin": null
+ },
+ {
+  "bundle": "xuefeng_3",
+  "ship": "Yukikaze",
+  "skin": "Winter's Snowy Wind"
+ },
+ {
+  "bundle": "z46_2",
+  "ship": "Z46",
+  "skin": "Her First Summer"
+ },
+ {
+  "bundle": "z46_3",
+  "ship": "Z46",
+  "skin": "Girls' Relay"
+ },
+ {
+  "bundle": "z46_4",
+  "ship": "Z46",
+  "skin": "Star-Lit★Chocolate"
+ },
+ {
+  "bundle": "huangjiafangzhou_3",
+  "ship": "Ark Royal",
+  "skin": "Guardian of the Ball"
+ },
+ {
+  "bundle": "heitaizi_2",
+  "ship": "Black Prince",
+  "skin": "White Princess"
+ },
+ {
+  "bundle": "kelifulan_3",
+  "ship": "Cleveland",
+  "skin": null
+ },
+ {
+  "bundle": "kelifulan_8",
+  "ship": "Cleveland",
+  "skin": null
+ },
+ {
+  "bundle": "dunkeerke_2",
+  "ship": "Dunkerque",
+  "skin": "Summer Sucré"
+ },
+ {
+  "bundle": "chuixue_3",
+  "ship": "Fubuki",
+  "skin": "Music Pixy"
+ },
+ {
+  "bundle": "guangrong_3",
+  "ship": "Glorious",
+  "skin": "Pungent Plum"
+ },
+ {
+  "bundle": "genaisennao_2",
+  "ship": "Gneisenau",
+  "skin": "Nightmarish Succubus"
+ },
+ {
+  "bundle": "jianye_2",
+  "ship": "Kashino",
+  "skin": null
+ },
+ {
+  "bundle": "jianye_3",
+  "ship": "Kashino",
+  "skin": null
+ },
+ {
+  "bundle": "jianye_4",
+  "ship": "Kashino",
+  "skin": null
+ },
+ {
+  "bundle": "shengluyisi_2",
+  "ship": "St. Louis",
+  "skin": null
+ },
+ {
+  "bundle": "shengluyisi_3",
+  "ship": "St. Louis",
+  "skin": null
+ },
+ {
+  "bundle": "shengluyisi_4",
+  "ship": "St. Louis",
+  "skin": null
+ },
+ {
+  "bundle": "shengluyisi_5",
+  "ship": "St. Louis",
+  "skin": null
+ },
+ {
+  "bundle": "xukufu_2",
+  "ship": "Surcouf",
+  "skin": "Shopping Time!"
+ },
+ {
+  "bundle": "xukufu_3",
+  "ship": "Surcouf",
+  "skin": "Loisirs Balnéaires"
+ },
+ {
+  "bundle": "dujiaoshou_4",
+  "ship": "Unicorn",
+  "skin": "Long-Awaited Date"
+ },
+ {
+  "bundle": "dujiaoshou_6",
+  "ship": "Unicorn",
+  "skin": "Angelic Night"
+ },
+ {
+  "bundle": "xixuegui_4",
+  "ship": "Vampire",
+  "skin": "Night Princess's Regalia"
+ }
+]

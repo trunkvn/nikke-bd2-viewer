@@ -7,8 +7,7 @@
  *  - Kết quả: data/azurlane.local.json (đã gitignore).
  * Asset thuộc Manjuu / Yostar: chỉ dùng local (public/assets/ và data/*.local.json đã nằm trong .gitignore).
  *
- * Tên bundle là pinyin tên Trung của tàu + số thứ tự skin (vd "lafei_4"). Hiện bảng ghép bundle → tàu/skin ở dưới được khai báo tay cho các
- * mô hình đã chọn (xem scripts/azurlane/match-bundles.py để tìm bundle của một tàu); bundle chưa khai báo sẽ bị bỏ qua (và được liệt kê để bổ sung).
+ * Tên bundle là pinyin tên Trung của tàu + số thứ tự skin (vd "lafei_4"). Bundle nào không có trong scripts/azurlane/selection.json sẽ bị bỏ qua.
  *
  *   node scripts/fetch-azurlane.mjs
  */
@@ -25,42 +24,16 @@ const CACHE = process.env.AZL_CACHE ?? join(homedir(), "Developer", "Personal", 
 const SHIPS_URL = "https://raw.githubusercontent.com/AzurAPI/azurapi-js-setup/master/ships.json";
 const UA = "interactive-anime-local-fetch (personal fan project)";
 
-/** bundle → { ship: tên EN trong AzurAPI, skin: tên skin trong AzurAPI ("Default" cho bundle gốc) }. */
-const BUNDLES = {
-  lingbo: { ship: "Ayanami", skin: "Default" },
-  lafei: { ship: "Laffey", skin: "Default" },
-  lafei_4: { ship: "Laffey", skin: "White Rabbit Welcomes the Spring" },
-  biaoqiang: { ship: "Javelin", skin: "Default" },
-  biaoqiang_3: { ship: "Javelin", skin: "Beach Picnic!" },
-  mingshi: { ship: "Akashi", skin: "Default" },
-  z23: { ship: "Z23", skin: "Default" },
-  xuefeng: { ship: "Yukikaze", skin: "Default" },
-  // Eldridge có hai skin Live2D (_4 và _5): gán theo thứ tự trong dữ liệu (bundle tăng dần = thứ tự trong AzurAPI). Đã đối chiếu bằng mắt với
-  // Shimakaze (daofeng_4 = cô phục vụ thỏ) và Eldridge (_4 = skin Tết); chỉ nên dựa vào quy ước này khi số bundle khớp số skin Live2D trong AzurAPI.
-  aierdeliqi_4: { ship: "Eldridge", skin: "New Year's Outing" },
-  aidang_2: { ship: "Atago", skin: "Summer March" },
-  // Tàu hiếm (Ultra Rare / Priority / Super Rare) mà số bundle khớp đúng số skin Live2D trong AzurAPI (scripts/azurlane/match-bundles.py).
-  kalangshitade_2: { ship: "Kronshtadt", skin: "Begin the Rush!" },
-  qianwei_2: { ship: "Vanguard", skin: "Half-Hearted Masquerade" },
-  daofeng_4: { ship: "Shimakaze", skin: "World's Speediest Bunny Waitress" },
-  daofeng_5: { ship: "Shimakaze", skin: "The White Rabbit of Wonderland" },
-  yichui_2: { ship: "Ibuki", skin: "Winter Sylph's Reverie" },
-  luoen_4: { ship: "Roon", skin: "Viridescent Lullaby" },
-  chicheng_5: { ship: "Akagi", skin: "Dawn-Phoenix's Summons" },
-  beierfasite_2: { ship: "Belfast", skin: "Iridescent Rosa" },
-  luoma_2: { ship: "Roma", skin: "White Heron of Darkest Night" },
-  xianghe_2: { ship: "Shoukaku", skin: "The Crane that Dances With the Wind" },
-  zhala_2: { ship: "Zara", skin: "Poolside Coincidence" },
-  tierbici_2: { ship: "Tirpitz", skin: "Snow-Melting Summer" },
-  lvzuofu_2: { ship: "Lützow", skin: "Everlasting Blood Banquet" },
-  aisaikesi_4: { ship: "Essex", skin: "Craft Fairytail" },
-  jiluofu_3: { ship: "Kirov", skin: "Drifting Justice" },
-  tiancheng_3: { ship: "Amagi", skin: "Wending Waters, Serene Lotus" },
-  // Hai bundle "cv" là skin mới hơn dữ liệu AzurAPI (2/2023) nên chưa có tên chính thức: đặt tên theo cảnh, ảnh thẻ dựng từ chính Live2D
-  // (scripts/azurlane/render-thumbs.mjs). Hai bundle này dùng định dạng moc3 bản 4 và 5, có 37 và 62 hoạt cảnh.
-  tiancheng_cv_2: { ship: "Amagi", skin: "Nhà thờ hoa hồng (cv 2)" },
-  tiancheng_cv_3: { ship: "Amagi", skin: "Nàng tiên cá dưới biển (cv 3)" },
-};
+/**
+ * Danh sách bundle muốn có: scripts/azurlane/selection.json, mỗi mục { bundle, ship (tên EN trong AzurAPI), skin (tên skin trong AzurAPI hoặc null) }.
+ * Sinh tự động bằng match-bundles.py --select (có thể sửa tay). skin = null: skin chưa biết tên (mới hơn dữ liệu AzurAPI hoặc không chắc thứ tự):
+ * đặt tên trung tính "Skin <số>" và ảnh thẻ dựng từ chính Live2D (scripts/azurlane/render-thumbs.mjs).
+ */
+const SELECTION = JSON.parse(readFileSync(join(ROOT, "scripts", "azurlane", "selection.json"), "utf8"));
+const BUNDLES = Object.fromEntries(SELECTION.map((e) => [e.bundle, { ship: e.ship, skin: e.skin }]));
+
+/** "qiye_7" → "Skin 7", "tiancheng_cv_2" → "Skin cv 2". */
+const neutralName = (bundle) => `Skin ${(/^.+?_((?:cv_)?\d+(?:_[a-z0-9]+)?)$/.exec(bundle)?.[1] ?? bundle).replace(/_/g, " ")}`;
 
 const slugify = (s) => s.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
@@ -94,7 +67,8 @@ if (skipped.length) console.log(`Bỏ qua (chưa khai báo trong BUNDLES): ${ski
 
 const byShip = new Map();
 for (const bundle of present.filter((b) => BUNDLES[b])) {
-  const { ship: en, skin: skinName } = BUNDLES[bundle];
+  const { ship: en, skin: officialName } = BUNDLES[bundle];
+  const skinName = officialName ?? neutralName(bundle);
   const s = all.find((x) => x.names.en === en);
   if (!s) {
     console.warn(`! Không thấy tàu "${en}" trong AzurAPI (${bundle})`);
