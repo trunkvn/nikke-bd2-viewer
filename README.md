@@ -117,28 +117,32 @@ Dữ liệu thô tải từ máy chủ game để **ngoài dự án** (`~/Develo
 **Dựng lần đầu** (cần `uv`: `brew install uv`):
 ```bash
 # 1. Công cụ tải: azlassets (tải bundle từ máy chủ game), cài trong môi trường ảo của dự án
-uv venv --python 3.12 tools/azl-venv && uv pip install --python tools/azl-venv/bin/python azlassets
+uv venv --python 3.12 tools/azl-venv && uv pip install --python tools/azl-venv/bin/python azlassets pypinyin
 
-# 2. Xem danh sách bundle (chỉ tải file văn bản, không tải asset). Live2D là loại "L2D": thư mục live2d/<tên pinyin>_<số skin>
-cd ~/Developer/Personal/.azl-cache && ~/…/interactive-anime/tools/azl-venv/bin/python ~/…/interactive-anime/scripts/azurlane/list-bundles.py EN
-
-# 3. Chỉ tải các bundle muốn có: sửa config/userconfig.toml trong thư mục dữ liệu (whitelist, ví dụ "live2d/lafe[i]"; ký tự [] để khớp đúng tên)
-#    rồi: ~/…/interactive-anime/tools/azl-venv/bin/azl download EN        # KHÔNG để whitelist trống, nếu không nó tải toàn bộ (hơn 30 GB)
-
-# 4. Tách ra thư mục model chuẩn (moc3, texture, physics, motion3.json, model3.json) vào public/assets/azurlane/
-tools/azl-venv/bin/python -I scripts/azurlane/extract-live2d.py ~/Developer/Personal/.azl-cache/ClientAssets/EN/AssetBundles/live2d public/assets/azurlane
-
-# 5. Lõi Live2D Cubism (phần mềm độc quyền của Live2D Inc., tải về local, không đưa vào git)
+# 2. Lõi Live2D Cubism (phần mềm độc quyền của Live2D Inc., tải về local, không đưa vào git)
 node scripts/azurlane/fetch-cubism-core.mjs
 
-# 6. Ghép bundle với tên tàu/skin (AzurAPI), tải ảnh thẻ, ghi data/azurlane.local.json
+# 3. Tải, tách và dựng dữ liệu cho các tàu trong scripts/azurlane/selection.json (một lệnh)
+node scripts/azurlane/sync.mjs EN
+
+# 4. Ảnh thẻ cho skin chưa có ảnh (dựng từ chính Live2D; cần pnpm dev hoặc pnpm start đang chạy), rồi ghi vào dữ liệu
+node scripts/azurlane/render-thumbs.mjs --base http://127.0.0.1:3000
 node scripts/fetch-azurlane.mjs
 ```
-Thêm tàu mới: tải và tách bundle của nó (bước 3 và 4), thêm một dòng vào bảng `BUNDLES` trong `scripts/fetch-azurlane.mjs` (tên bundle là pinyin tên Trung của tàu cộng số skin, ví dụ `lafei_4`), rồi chạy lại bước 6.
-Hiện có 22 tàu (25 skin) chọn làm thử, ưu tiên tàu hiếm; máy chủ EN có 271 bundle Live2D, khoảng 3,1 GB.
-`scripts/azurlane/match-bundles.py` ghép tàu của AzurAPI với bundle theo pinyin tên Trung (74 tàu có Live2D khớp được ở server EN) để chọn tàu cần thêm.
-Chỉ nên thêm tàu mà số bundle khớp đúng số skin Live2D mà AzurAPI biết (dữ liệu AzurAPI dừng ở 2/2023 nên skin mới hơn chưa có tên). Khi một tàu có hai
-skin, bundle có số nhỏ hơn là skin đứng trước trong AzurAPI (đã đối chiếu bằng mắt ở Shimakaze và Eldridge).
+`sync.mjs` chỉ tải đúng các bundle trong `selection.json` (bộ lọc `whitelist` của azlassets; để trống nó sẽ tải toàn bộ, hơn 30 GB), tách chúng ra
+`public/assets/azurlane/` (texture WebP, khoảng 28% dung lượng PNG) rồi dựng `data/azurlane.local.json`. Dữ liệu thô tải về nằm ngoài dự án, trong
+`~/Developer/Personal/.azl-cache`.
+Kiểm tra mọi skin có vẽ được không: `node scripts/azurlane/render-thumbs.mjs --check --base http://127.0.0.1:3000`.
+
+**Thêm một tàu:** thêm dòng `{ "bundle": "...", "ship": "<tên EN>", "skin": null }` vào `selection.json` (hoặc chạy lại `--select`), rồi `node scripts/azurlane/sync.mjs EN`.
+Tìm tên bundle của một tàu bằng `tools/azl-venv/bin/python scripts/azurlane/match-bundles.py EN`.
+
+**Chọn tàu:** `selection.json` do `tools/azl-venv/bin/python scripts/azurlane/match-bundles.py EN --select` sinh ra (sửa tay được). Tiêu chí hiện tại: mọi tàu
+Super Rare trở lên (Super Rare, Priority, Decisive, Ultra Rare) cộng một số tàu Elite được nhiều người thích (sửa `TOP` và `ELITE_PICK` trong script). Script
+ghép tàu của AzurAPI với bundle theo pinyin tên Trung (82 tàu có Live2D ghép được ở server EN). Tên skin chính thức chỉ được gán khi số bundle bằng đúng số
+skin Live2D mà AzurAPI biết (đã đối chiếu thứ tự bằng mắt); còn lại là "Skin <số>" với ảnh dựng từ Live2D. AzurAPI dừng cập nhật từ 2/2023 nên khoảng 75 nhóm bundle
+(phần lớn là tàu ra sau đó) chưa ghép được tên và chưa có trong danh sách. Bundle bị **mã hoá** (skin mới nhất, ví dụ `chaijun_6`) không tách được và được bỏ qua: không
+dò khoá vì đó là vượt qua cơ chế bảo vệ của game.
 
 **Skin dạng "cv" (ví dụ Amagi):** các skin mới có tên bundle `<tàu>_cv_<số>` dùng định dạng Cubism mới (moc3 bản 4 và 5, hàng trăm tham số, 2 texture) và có thêm
 rất nhiều hoạt cảnh (`idleN`, `touch_idleN`, `touch_dragN`, 37 đến 62 cái); viewer gom chúng vào nhóm "Hoạt cảnh mở rộng". Nền đen quanh cảnh là do skin thiết kế. Bộ tách chuyển cả đường cong
