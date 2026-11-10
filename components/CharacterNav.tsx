@@ -15,8 +15,8 @@ export function CharacterNav({ prev, next }: { prev: Neighbor; next: Neighbor })
       const el = e.target as HTMLElement | null;
       if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.tagName === "SELECT")) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      if (e.key === "ArrowLeft" && prev) router.push(`/characters/${prev.slug}`);
-      if (e.key === "ArrowRight" && next) router.push(`/characters/${next.slug}`);
+      if (e.key === "ArrowLeft" && prev) router.push(`/nikke/characters/${prev.slug}`);
+      if (e.key === "ArrowRight" && next) router.push(`/nikke/characters/${next.slug}`);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -28,12 +28,12 @@ export function CharacterNav({ prev, next }: { prev: Neighbor; next: Neighbor })
   return (
     <nav aria-label="Chuyển nhân vật" className="flex items-center gap-2">
       {prev ? (
-        <Link href={`/characters/${prev.slug}`} className={cls} title="Nhân vật trước (←)">
+        <Link href={`/nikke/characters/${prev.slug}`} className={cls} title="Nhân vật trước (←)">
           ◂ <span className="hidden sm:inline">{prev.name}</span>
         </Link>
       ) : null}
       {next ? (
-        <Link href={`/characters/${next.slug}`} className={cls} title="Nhân vật sau (→)">
+        <Link href={`/nikke/characters/${next.slug}`} className={cls} title="Nhân vật sau (→)">
           <span className="hidden sm:inline">{next.name}</span> ▸
         </Link>
       ) : null}

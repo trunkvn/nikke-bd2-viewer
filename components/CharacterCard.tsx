@@ -14,7 +14,7 @@ export function CharacterCard({ card, eager = false }: { card: CardData; eager?:
 
   return (
     <Link
-      href={`/characters/${card.slug}`}
+      href={`/nikke/characters/${card.slug}`}
       style={accentStyle(color)}
       // content-visibility: trình duyệt bỏ qua layout/paint của thẻ ngoài màn hình (212 thẻ nhưng chỉ vẽ phần đang thấy).
       // Hiệu ứng nhấc thẻ đặt trên chính Link vì paint containment sẽ cắt phần con tràn ra ngoài khung.

@@ -11,7 +11,7 @@ import { getAllCharacters, getCharacterBySlug } from "@/lib/characters";
 import { shareMetadata } from "@/lib/site";
 import { accentStyle, elementColor, rarityColor } from "@/lib/theme";
 
-type Props = PageProps<"/characters/[slug]">;
+type Props = PageProps<"/nikke/characters/[slug]">;
 
 export function generateStaticParams() {
   return getAllCharacters("nikke").map((c) => ({ slug: c.slug }));
@@ -52,7 +52,7 @@ async function CharacterContent({ params }: { params: Props["params"] }) {
   const nav = (
     <div className="flex items-center gap-2 sm:gap-3">
       <Link
-        href="/"
+        href="/nikke"
         className="clip-chamfer-sm bg-black/50 px-3 py-2 font-mono text-xs uppercase tracking-[0.18em] text-white/70 outline-none backdrop-blur transition hover:bg-white/15 hover:text-white focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent"
       >
         ◂ Gallery
