@@ -160,6 +160,10 @@ tham số lẫn độ mờ của Part. Skin mới hơn dữ liệu AzurAPI khôn
 Ở trang tàu có nút "So sánh" (hoặc phím `S`) để xem hai trang phục A và B cạnh nhau (trên/dưới ở điện thoại): hoạt cảnh bấm ở dock chạy cho cả hai, zoom và kéo áp chung. Hai mô hình
 vẽ chung **một** canvas Pixi vì mỗi canvas WebGL riêng làm hỏng shader dùng chung của Cubism ở canvas tạo trước (mô hình ở khung đó không hiện).
 
+**Trang tàu (đủ bộ như NIKKE và BD2):** trang phục và so sánh nằm trên URL (`?skin=<bundle>`, `?compare=<bundle>`) nên chia sẻ và tải lại được; vào trang thì tàu chào bằng hoạt cảnh
+"Đăng nhập" kèm câu thoại (trình duyệt chặn tự phát tiếng thì phát ở cử chỉ đầu tiên); bảng Info (phím `I`) có tên đa ngôn ngữ, độ hiếm, danh sách câu thoại bấm để nghe và hướng dẫn thao tác;
+nút Nền (phím `B`) có 8 nền dựng sẵn, màu tuỳ chọn hoặc ảnh của bạn (lưu ở localStorage). Gallery lưu bộ lọc trên URL (`?q=`, `?nation=`, `?hull=`, `?rarity=`, `?sort=`).
+
 **Độ hiếm:** Normal, Rare, Elite, Super Rare là bốn bậc thường; Ultra Rare là bậc đặc biệt cao hơn; Priority và Decisive là tàu nghiên cứu (cùng cỡ với
 Super Rare trở lên). Gallery lọc và sắp xếp theo độ hiếm; thẻ có huy hiệu viết tắt (N, R, E, SR, PR, DR, UR).
 
