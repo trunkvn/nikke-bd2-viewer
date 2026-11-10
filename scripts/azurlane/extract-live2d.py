@@ -14,7 +14,9 @@ Bundle là prefab "Cubism SDK for Unity": tham số là các GameObject dưới 
 tham số (Parameters/<id>.Value -> Target "Parameter") và độ mờ của Part (Parts/<id>.Opacity -> Target "PartOpacity"; các skin dạng cảnh dùng nó để
 bật/tắt cả nhóm lớp, ví dụ nền đen che khung).
 
-  tools/azl-venv/bin/python scripts/azurlane/extract-live2d.py <thư mục bundle live2d> <thư mục ra> [tên ...]
+  tools/azl-venv/bin/python scripts/azurlane/extract-live2d.py <thư mục bundle live2d> <thư mục ra> [tên ...] [--png]
+
+Texture ghi dạng WebP (chất lượng 92, alpha không mất mát); thêm --png để giữ PNG gốc.
 
 Chỉ ĐỌC bundle, không chạy mã nào trong đó (UnityPy chỉ phân tích dữ liệu).
 """
@@ -220,8 +222,14 @@ def extract(bundle: Path, out: Path):
     (out / f"{name}.moc3").write_bytes(moc)
     tex_files = []
     for tname in sorted(textures):
-        f = f"{tname}.png"
-        textures[tname].save(out / f)
+        if KEEP_PNG:
+            f = f"{tname}.png"
+            textures[tname].save(out / f)
+        else:
+            # WebP chỉ còn khoảng 28% dung lượng PNG; alpha không mất mát và giữ nguyên RGB dưới vùng trong suốt (exact) để mép không bị viền.
+            f = f"{tname}.webp"
+            textures[tname].convert("RGBA").save(out / f, "WEBP", quality=92, method=4, alpha_quality=100, exact=True)
+            (out / f"{tname}.png").unlink(missing_ok=True)
         tex_files.append(f)
     physics_file = None
     if physics:
@@ -259,9 +267,12 @@ def extract(bundle: Path, out: Path):
     return info_motions
 
 
+KEEP_PNG = "--png" in sys.argv
+
 if __name__ == "__main__":
-    src, dst = Path(sys.argv[1]), Path(sys.argv[2])
-    only = set(sys.argv[3:])
+    args = [a for a in sys.argv[1:] if a != "--png"]
+    src, dst = Path(args[0]), Path(args[1])
+    only = set(args[2:])
     for b in sorted(p for p in src.iterdir() if p.is_file()):
         if only and b.name not in only:
             continue
