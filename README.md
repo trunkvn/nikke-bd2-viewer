@@ -156,6 +156,10 @@ rất nhiều hoạt cảnh (`idleN`, `touch_idleN`, `touch_dragN`, 37 đến 62
 tham số lẫn độ mờ của Part. Skin mới hơn dữ liệu AzurAPI không có tên và ảnh: đặt tên theo cảnh trong `BUNDLES`, rồi dựng ảnh thẻ từ chính Live2D bằng
 `node scripts/azurlane/render-thumbs.mjs --base http://127.0.0.1:3000` (cần `pnpm dev` hoặc `pnpm start` đang chạy) và chạy lại `node scripts/fetch-azurlane.mjs`.
 
+**Xem trước và so sánh:** rê chuột vào thẻ trong gallery thì model Live2D hiện lên đè ảnh tĩnh và chạy idle (chỉ với chuột, một cái mỗi lúc, bỏ qua khi bật giảm chuyển động; thư viện Live2D chỉ tải ở lần rê đầu tiên).
+Ở trang tàu có nút "So sánh" (hoặc phím `S`) để xem hai trang phục A và B cạnh nhau (trên/dưới ở điện thoại): hoạt cảnh bấm ở dock chạy cho cả hai, zoom và kéo áp chung. Hai mô hình
+vẽ chung **một** canvas Pixi vì mỗi canvas WebGL riêng làm hỏng shader dùng chung của Cubism ở canvas tạo trước (mô hình ở khung đó không hiện).
+
 **Độ hiếm:** Normal, Rare, Elite, Super Rare là bốn bậc thường; Ultra Rare là bậc đặc biệt cao hơn; Priority và Decisive là tàu nghiên cứu (cùng cỡ với
 Super Rare trở lên). Gallery lọc và sắp xếp theo độ hiếm; thẻ có huy hiệu viết tắt (N, R, E, SR, PR, DR, UR).
 
