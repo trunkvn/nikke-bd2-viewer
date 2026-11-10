@@ -373,7 +373,7 @@ function Showcase({
           {!isFullscreen && !compare && (
             <div className="bd2-glass animate-fade-up w-fit max-w-full px-4 py-3">
               {character.stars ? <Stars value={character.stars} max={character.stars} size={14} /> : null}
-              <h1 className="mt-1 font-title text-4xl font-bold italic leading-none text-[#fff4d6] [text-shadow:0_0_18px_rgba(255,160,210,0.45)] sm:text-6xl">{character.name}</h1>
+              <h1 className="mt-1 font-display text-3xl font-bold uppercase leading-none tracking-tight text-[#fff4d6] [text-shadow:0_0_18px_rgba(255,160,210,0.45)] sm:text-5xl">{character.name}</h1>
               <p className="mt-1.5 text-sm font-medium text-muted">{skin.name}</p>
             </div>
           )}
@@ -775,7 +775,7 @@ function Drawer({ character, activeSkin, onSelect }: { character: Character; act
   return (
     <div className="space-y-5">
       <section>
-        <h2 className="font-title text-2xl font-bold italic text-[#fff4d6]">{character.name}</h2>
+        <h2 className="font-display text-xl font-bold uppercase tracking-wide text-[#fff4d6]">{character.name}</h2>
         <div className="mt-1 flex items-center gap-2">
           {character.stars ? <Stars value={character.stars} max={character.stars} size={14} /> : null}
           <span className="text-xs text-muted">{character.skins.length} trang phục</span>

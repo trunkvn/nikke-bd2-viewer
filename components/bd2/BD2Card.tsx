@@ -50,7 +50,7 @@ export function BD2Card({ card, index }: { card: Bd2Card; index: number }) {
 
         <div className="flex items-start justify-between gap-2 px-3.5 py-3">
           <div className="min-w-0">
-            <h3 className="truncate font-title text-xl font-bold italic leading-tight text-[#fff4d6]">{card.name}</h3>
+            <h3 className="truncate font-display text-[17px] font-bold uppercase leading-tight tracking-wide text-[#fff4d6]">{card.name}</h3>
             <p className="mt-0.5 truncate text-xs text-muted">{card.costume}</p>
           </div>
           {card.stars ? <Stars value={card.stars} max={card.stars} size={12} className="mt-0.5 shrink-0" /> : null}
