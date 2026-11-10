@@ -140,6 +140,11 @@ Hiện có 22 tàu (25 skin) chọn làm thử, ưu tiên tàu hiếm; máy ch�
 Chỉ nên thêm tàu mà số bundle khớp đúng số skin Live2D mà AzurAPI biết (dữ liệu AzurAPI dừng ở 2/2023 nên skin mới hơn chưa có tên). Khi một tàu có hai
 skin, bundle có số nhỏ hơn là skin đứng trước trong AzurAPI (đã đối chiếu bằng mắt ở Shimakaze và Eldridge).
 
+**Skin dạng "cv" (ví dụ Amagi):** các skin mới có tên bundle `<tàu>_cv_<số>` dùng định dạng Cubism mới (moc3 bản 4 và 5, hàng trăm tham số, 2 texture) và có thêm
+rất nhiều hoạt cảnh (`idleN`, `touch_idleN`, `touch_dragN`, 37 đến 62 cái); viewer gom chúng vào nhóm "Hoạt cảnh mở rộng". Nền đen quanh cảnh là do skin thiết kế. Bộ tách chuyển cả đường cong
+tham số lẫn độ mờ của Part. Skin mới hơn dữ liệu AzurAPI không có tên và ảnh: đặt tên theo cảnh trong `BUNDLES`, rồi dựng ảnh thẻ từ chính Live2D bằng
+`node scripts/azurlane/render-thumbs.mjs --base http://127.0.0.1:3000` (cần `pnpm dev` hoặc `pnpm start` đang chạy) và chạy lại `node scripts/fetch-azurlane.mjs`.
+
 **Độ hiếm:** Normal, Rare, Elite, Super Rare là bốn bậc thường; Ultra Rare là bậc đặc biệt cao hơn; Priority và Decisive là tàu nghiên cứu (cùng cỡ với
 Super Rare trở lên). Gallery lọc và sắp xếp theo độ hiếm; thẻ có huy hiệu viết tắt (N, R, E, SR, PR, DR, UR).
 
