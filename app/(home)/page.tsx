@@ -1,5 +1,6 @@
 import { GameCard, type CoverArt, type GameStat } from "@/components/home/GameCard";
 import { bd2DefaultSkin, toBd2Card } from "@/lib/bd2Cards";
+import { getAllShips } from "@/lib/azurlane";
 import { getAllCharacters } from "@/lib/characters";
 import { GAMES } from "@/lib/games";
 
@@ -7,6 +8,7 @@ export default function HomePage() {
   const nikke = getAllCharacters("nikke");
   const bd2 = getAllCharacters("bd2");
   const bd2Cards = bd2.map(toBd2Card);
+  const azur = getAllShips();
 
   // Ảnh bìa: NIKKE lấy ba nhân vật SSR đầu theo tên; BD2 lấy ba trang phục mới ra mắt nhất của ba nhân vật khác nhau.
   const nikkeCovers: CoverArt[] = nikke
@@ -21,7 +23,16 @@ export default function HomePage() {
     .slice(0, 3)
     .map(({ c, skin }) => ({ src: skin.thumb, name: c.name }));
 
+  const azurCovers: CoverArt[] = azur.filter((s) => s.skins[0]?.thumb).slice(0, 3).map((s) => ({ src: s.skins[0].thumb, name: s.name }));
+
   const data: Record<string, { covers: CoverArt[]; stats: GameStat[] }> = {
+    azurlane: {
+      covers: azurCovers,
+      stats: [
+        { label: "tàu", value: azur.length },
+        { label: "trang phục", value: azur.reduce((n, s) => n + s.skins.length, 0) },
+      ],
+    },
     nikke: {
       covers: nikkeCovers,
       stats: [

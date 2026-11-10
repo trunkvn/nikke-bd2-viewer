@@ -46,8 +46,8 @@ export const GAMES: GameInfo[] = [
     short: "Azur Lane",
     abbr: "AL",
     href: "/azurlane",
-    tagline: "Sắp có.",
+    tagline: "Mô hình Live2D của tàu: chạm vào đầu, người hay điểm đặc biệt để xem phản ứng, và chuyển giữa các hoạt cảnh.",
     accent: "#38bdf8",
-    live: false,
+    live: true,
   },
 ];

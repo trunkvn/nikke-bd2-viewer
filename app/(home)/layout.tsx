@@ -17,7 +17,7 @@ const chakra = Chakra_Petch({
   weight: ["500", "600", "700"],
 });
 
-const DESCRIPTION = "Showcase nhân vật các game anime: viewer Live2D (Spine) tương tác, đổi trang phục, nghe giọng nói. NIKKE và Brown Dust 2.";
+const DESCRIPTION = "Showcase nhân vật các game anime: viewer Live2D (Spine) tương tác, đổi trang phục, nghe giọng nói. NIKKE, Brown Dust 2 và Azur Lane.";
 
 export const metadata: Metadata = {
   metadataBase: SITE_URL,
