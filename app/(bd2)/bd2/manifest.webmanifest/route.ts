@@ -8,8 +8,8 @@ const manifest: MetadataRoute.Manifest = {
   start_url: "/bd2",
   scope: "/bd2",
   display: "standalone",
-  background_color: "#111218",
-  theme_color: "#111218",
+  background_color: "#120f2b",
+  theme_color: "#120f2b",
   icons: [
     { src: "/icons/bd2-192.png", sizes: "192x192", type: "image/png", purpose: "any" },
     { src: "/icons/bd2-512.png", sizes: "512x512", type: "image/png", purpose: "any" },

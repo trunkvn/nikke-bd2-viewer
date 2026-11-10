@@ -16,22 +16,23 @@ export default function Image() {
           alignItems: "center",
           gap: 56,
           padding: "0 96px",
-          background: "radial-gradient(60% 80% at 85% 0%, rgba(111,111,232,0.4), transparent 70%), #111218",
-          color: "#ececf2",
+          background: "radial-gradient(60% 80% at 85% 0%, rgba(255,140,190,0.3), transparent 70%), radial-gradient(60% 70% at 5% 100%, rgba(110,90,255,0.35), transparent 70%), #120f2b",
+          color: "#f4eefc",
         }}
       >
         <svg width="220" height="220" viewBox="0 0 64 64">
-          <rect width="64" height="64" rx="15" fill="#6f6fe8" />
+          <rect width="64" height="64" rx="15" fill="#1b1442" />
+          <rect x="3" y="3" width="58" height="58" rx="12" fill="none" stroke="#e9cb7d" strokeOpacity="0.7" strokeWidth="1.5" />
           <path
-            fill="#ffffff"
+            fill="#e9cb7d"
             fillRule="evenodd"
             d="M20 16h15.5c6.2 0 9.8 3 9.8 8 0 3.4-1.8 5.8-4.8 7 4 1 6.3 3.9 6.3 8 0 6-4.3 9-11 9H20zM27.5 22v6h6.2c2.4 0 3.8-1 3.8-3s-1.4-3-3.8-3zM27.5 34v8h7c3 0 4.5-1.5 4.5-4s-1.5-4-4.5-4z"
           />
         </svg>
         <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
           <div style={{ fontSize: 88, fontWeight: 800, letterSpacing: -2, lineHeight: 1 }}>Brown Dust 2</div>
-          <div style={{ fontSize: 40, color: "#9d9df5" }}>Character Gallery</div>
-          <div style={{ fontSize: 30, color: "rgba(236,236,242,0.6)", marginTop: 12 }}>Spine L2D · costumes · Ultimate · Fated Guest</div>
+          <div style={{ fontSize: 40, color: "#e9cb7d" }}>Character Gallery</div>
+          <div style={{ fontSize: 30, color: "rgba(244,238,252,0.6)", marginTop: 12 }}>Spine L2D · costumes · Ultimate · Fated Guest</div>
         </div>
       </div>
     ),

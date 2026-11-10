@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Sinh bộ icon của site từ hai dấu hiệu tự vẽ (không dùng logo gốc của game):
- *   NIKKE: ô vàng cắt góc + chữ N (giống logo ở header), nền tối.  Brown Dust 2: ô chàm bo góc + chữ B.
+ *   NIKKE: ô vàng cắt góc + chữ N (giống logo ở header), nền tối.  Brown Dust 2: ô tím đêm viền vàng + chữ B vàng.
  *   Trang chủ: ô bo góc chuyển màu từ vàng sang chàm + ngôi sao bốn cánh.
  *
  * Ghi:
@@ -42,10 +42,11 @@ const MARKS = {
     shape: '<path fill="#f5d90a" d="M12 0h52v52L52 64H0V12z"/>',
   },
   bd2: {
-    ink: "#ffffff",
-    bg: "#6f6fe8",
+    ink: "#e9cb7d",
+    bg: "#1b1442",
     path: B,
-    shape: '<rect width="64" height="64" rx="15" fill="#6f6fe8"/>',
+    // Ô tím đêm bo góc, viền vàng mảnh bên trong, chữ B vàng.
+    shape: '<rect width="64" height="64" rx="15" fill="#1b1442"/><rect x="3" y="3" width="58" height="58" rx="12" fill="none" stroke="#e9cb7d" stroke-opacity=".7" stroke-width="1.5"/>',
   },
 };
 

@@ -37,7 +37,7 @@ export const GAMES: GameInfo[] = [
     abbr: "BD2",
     href: "/bd2",
     tagline: "Trang phục, biểu cảm, cutscene Ultimate, Fated Guest và so sánh hai trang phục cạnh nhau.",
-    accent: "#6f6fe8",
+    accent: "#a78bfa",
     live: true,
   },
   {
