@@ -42,6 +42,17 @@ node scripts/render-posters.mjs --force          # render lại toàn bộ thumb
 Asset thuộc bản quyền Shift Up / Level Infinite. `public/assets/` và `data/nikke.local.json` đã nằm trong
 `.gitignore`: **đừng commit hay deploy công khai**.
 
+## Chụp ảnh và hình nền (cả ba game)
+
+Nút máy ảnh trong thanh công cụ bên phải của viewer mở hộp thoại chụp ảnh với ảnh xem trước:
+
+- **Kích thước:** như đang xem, Full HD, 2K, 4K, điện thoại (1080×2340), vuông. Ảnh được *vẽ lại* ở đúng kích thước đích (Spine: một khung vẽ phụ trên cùng canvas; Live2D: đổi cỡ renderer trong một lượt), không phải phóng ảnh chụp màn hình nên 2K/4K vẫn nét. Giới hạn theo GPU (`MAX_VIEWPORT_DIMS`).
+- **Khung hình:** *Vừa chiều cao* (nhân vật lớn nhất có thể, hợp hình nền điện thoại; ảnh dọc bị cắt hai bên) hoặc *Vừa toàn bộ* (giữ nguyên những gì đang thấy, ảnh khác tỉ lệ thì thêm nền ở lề). Góc nhìn, zoom/kéo và tư thế đang chạy được giữ nguyên.
+- **Nền:** trong suốt hoặc kèm nền đang chọn. Nền dựng lại từ chính các phần tử nền đang hiển thị (gradient, màu, ảnh tự tải lên) qua SVG `foreignObject`, nên không cần khai báo riêng cho từng game. Nền có ảnh/canvas/video (tranh nền Ultimate của BD2) thì không dựng lại được: ảnh để trong suốt và hộp thoại báo rõ.
+- **Định dạng:** PNG, WebP (có độ trong suốt) hoặc JPG (luôn kèm nền). Lưu bằng *Tải ảnh về máy*, *Sao chép* (clipboard) hoặc *Chia sẻ* (bảng chia sẻ của điện thoại, nơi có thể có sẵn "đặt làm hình nền").
+- Trình duyệt không tự đặt được hình nền máy: tải ảnh đúng cỡ về rồi đặt trong cài đặt hình nền.
+- Mã: `lib/capture.ts` (cỡ, nền, xuất file), `components/CaptureDialog.tsx`, nút và đăng ký trong `components/ViewerStage.tsx` (`useViewerCapture`); mỗi renderer tự đăng ký hàm vẽ (`SpineRenderer.tsx`, `azurlane/Live2DRenderer.tsx`).
+
 ## Brown Dust 2
 
 ```bash
