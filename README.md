@@ -89,6 +89,8 @@ node scripts/fetch-bd2.mjs --no-posters        # bỏ qua bước render thumbna
 - Dock còn có **thanh tốc độ** 0.1x–2x (nhấp đúp để về 1x) và nút **Layers** (mở bảng bật/tắt từng lớp/slot của mô hình, có ô lọc).
 - **Fated Guest** (20 tranh, 19 nhân vật; bỏ qua Angelica "Neon Savior" vì dùng định dạng mới chưa dựng đúng): `node scripts/fetch-bd2-dating.mjs` (≈0.5GB, `--dry-run`, `--only dalvi,yuri`), rồi nén texture
   như trên (≈0.43GB → 0.16GB). Tranh bao quanh bằng các mảng đen rất lớn nên renderer tự tìm phần hình thật để căn khung (`fitContent`).
+  - Chuyển cảnh: các motion `motionN_k` ở mục "Khác" hiện thành "Cảnh N → N+1": bấm thì chạy một lần rồi dừng ở cảnh N+1 và cảnh đang chọn đổi theo (`then`/`from` của `PlayCommand`).
+  - Giọng cảnh hẹn hò: `tools/azl-venv/bin/python scripts/bd2/dating-voice.py` (`--dry-run`, `--only dalvi,yuri`; cần vgmstream-cli và ffmpeg; ≈36MB tải, ≈11MB sau khi nén Opus). Gói `Interaction_CharNNNNNN` của mỗi tranh là FMOD Bank không mã hoá chứa 24–100 tiếng ngắn theo cảm xúc (`Sigh1_2`, `Excitement2_3`, `Surprise1_1`...), lưu ở `public/assets/bd2/<nhân vật>/<trang phục>/dating-voice/`. Không có bảng ghép từng chạm với từng tiếng nên mỗi lần chạm một chip hoặc chuyển cảnh thì phát ngẫu nhiên một tiếng (chip chọn cảnh thì không). Nút loa dùng chung với chế độ Nhân vật.
 - **Giọng nói** (câu "BattleReady", 3 câu mỗi trang phục, tiếng Nhật + Hàn; 204/205 trang phục, ≈40MB):
   `node scripts/fetch-bd2-voice.mjs` (nguồn: repo BD2-L2D-Viewer; `--dry-run`, `--only anastasia`). Nhấp vào nhân vật thì họ làm cử động
   `motion` **và** nói một câu (mô hình có `_faceN_talk` thì nhép miệng). Nút loa và nút JP/KR nằm ở thanh công cụ của khung. Chỉ phản ứng
