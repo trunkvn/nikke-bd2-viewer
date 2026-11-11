@@ -3,7 +3,8 @@
 import { useEffect, useRef, useState } from "react";
 import type { Render } from "@/data/types";
 import { isIdleAnimation, pickIdleAnimation, reactionAnimations } from "@/lib/animations";
-import { useViewerInsets, useViewerTap, useViewerTransform } from "./ViewerStage";
+import { captureScale, type CaptureFn, type Fit } from "@/lib/capture";
+import { useViewerCapture, useViewerInsets, useViewerTap, useViewerTransform } from "./ViewerStage";
 
 type SpineRender = Extract<Render, { kind: "spine" }>;
 type Runtime = typeof import("spine-webgl-41");
@@ -148,6 +149,10 @@ export function SpineRenderer({
 }) {
   const hostRef = useRef<HTMLDivElement>(null);
   const transformRef = useViewerTransform();
+  // Chụp ảnh: yêu cầu được xử lý ở khung hình kế tiếp (vẽ lại ở kích thước đích rồi chép ra canvas 2D).
+  const captureImpl = useRef<CaptureFn | null>(null);
+  const captureReq = useRef<{ width: number; height: number; fit?: Fit; resolve: (c: HTMLCanvasElement | null) => void } | null>(null);
+  useViewerCapture(captureImpl);
   const insetsRef = useViewerInsets();
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState("");
@@ -632,6 +637,52 @@ export function SpineRenderer({
           renderer.drawSkeleton(skeleton, premultiplied);
           renderer.end();
 
+          const cap = captureReq.current;
+          if (cap) {
+            captureReq.current = null;
+            try {
+              // Cỡ ảnh không vượt quá giới hạn viewport của GPU.
+              const maxDim = gl.getParameter(gl.MAX_VIEWPORT_DIMS) as Int32Array;
+              const fit = Math.min(1, maxDim[0] / cap.width, maxDim[1] / cap.height);
+              const W = Math.max(1, Math.round(cap.width * fit));
+              const H = Math.max(1, Math.round(cap.height * fit));
+              // Vùng trống (không bị giao diện che) khớp ảnh theo `fit`, chừa lề 6%; zoom/kéo hiện tại giữ nguyên, tâm vùng trống thành tâm ảnh.
+              const kT = captureScale(W, H, availW, availH, cap.fit) * 0.94 * k;
+              canvas.width = W;
+              canvas.height = H;
+              gl.viewport(0, 0, W, H);
+              gl.clearColor(0, 0, 0, 0);
+              gl.clear(gl.COLOR_BUFFER_BIT);
+              cam.position.x = centerX - x / k;
+              cam.position.y = centerY + y / k;
+              cam.setViewport(W / kT, H / kT);
+              cam.update();
+              renderer.begin();
+              renderer.drawSkeleton(skeleton, premultiplied);
+              renderer.end();
+              const out = document.createElement("canvas");
+              out.width = W;
+              out.height = H;
+              out.getContext("2d")!.drawImage(canvas, 0, 0); // phải chép ngay trong lúc khung còn nguyên, trước khi trình duyệt ghép hình
+              // Trả canvas về cỡ hiển thị và vẽ lại khung thường để khung chụp không lọt ra màn hình.
+              canvas.width = pw;
+              canvas.height = ph;
+              gl.viewport(0, 0, pw, ph);
+              gl.clearColor(0, 0, 0, 0);
+              gl.clear(gl.COLOR_BUFFER_BIT);
+              cam.position.x = centerX - (x + offX) / k;
+              cam.position.y = centerY + (y + offY) / k;
+              cam.setViewport(cw / k, ch / k);
+              cam.update();
+              renderer.begin();
+              renderer.drawSkeleton(skeleton, premultiplied);
+              renderer.end();
+              cap.resolve(out);
+            } catch {
+              cap.resolve(null);
+            }
+          }
+
           const tap = tapRequest.current;
           if (tap) {
             tapRequest.current = null;
@@ -678,6 +729,11 @@ export function SpineRenderer({
           canvas.style.opacity = "1";
           cbRef.current.onReady?.();
         });
+        captureImpl.current = ({ width, height, fit }) =>
+          new Promise((resolve) => {
+            captureReq.current?.resolve(null);
+            captureReq.current = { width, height, fit, resolve };
+          });
 
         dispose = () => {
           cancelAnimationFrame(raf);
@@ -694,6 +750,9 @@ export function SpineRenderer({
 
     return () => {
       cancelled = true;
+      captureImpl.current = null;
+      captureReq.current?.resolve(null);
+      captureReq.current = null;
       playRef.current = null;
       skinRef.current = null;
       planRef.current = null;

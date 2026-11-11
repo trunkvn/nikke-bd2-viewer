@@ -1,7 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useViewerInsets, useViewerTap, useViewerTransform } from "../ViewerStage";
+import { captureScale, type CaptureFn } from "@/lib/capture";
+import { useViewerCapture, useViewerInsets, useViewerTap, useViewerTransform } from "../ViewerStage";
 
 declare global {
   interface Window {
@@ -88,6 +89,8 @@ export function Live2DRenderer({
   const hostRef = useRef<HTMLDivElement>(null);
   const transformRef = useViewerTransform();
   const insetsRef = useViewerInsets();
+  const captureImpl = useRef<CaptureFn | null>(null);
+  useViewerCapture(captureImpl);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState("");
   const playRef = useRef<((name: string) => void) | null>(null);
@@ -194,6 +197,50 @@ export function Live2DRenderer({
           });
         });
 
+        // Chụp ảnh: vẽ lại một khung ở kích thước đích (độ phân giải 1:1) rồi trả lại như cũ. Vùng trống (không bị giao diện che) vừa chiều cao ảnh,
+        // zoom/kéo hiện tại giữ nguyên. Tất cả diễn ra đồng bộ trong một lượt nên khung chụp không lọt ra màn hình.
+        captureImpl.current = async ({ width, height, fit: framing }) => {
+          const renderer = app.renderer as typeof app.renderer & { resolution: number; gl?: WebGLRenderingContext };
+          const cw = app.screen.width;
+          const ch = app.screen.height;
+          const ins = insetsRef.current;
+          const availW = Math.max(1, cw - ins.left - ins.right);
+          const availH = Math.max(1, ch - ins.top - ins.bottom);
+          const maxDim = renderer.gl?.getParameter(renderer.gl.MAX_VIEWPORT_DIMS) as Int32Array | undefined;
+          const fit = maxDim ? Math.min(1, maxDim[0] / width, maxDim[1] / height) : 1;
+          const W = Math.max(1, Math.round(width * fit));
+          const H = Math.max(1, Math.round(height * fit));
+          const kT = captureScale(W, H, availW, availH, framing); // mô hình đã có lề 6% sẵn
+          const cx0 = ins.left + availW / 2;
+          const cy0 = ins.top + availH / 2;
+          const saved = models.map((m) => ({ s: m.scale.x, x: m.x, y: m.y }));
+          const prevResolution = renderer.resolution;
+          try {
+            models.forEach((m, i) => {
+              m.scale.set(saved[i].s * kT);
+              m.position.set(W / 2 + (saved[i].x - cx0) * kT, H / 2 + (saved[i].y - cy0) * kT);
+            });
+            renderer.resolution = 1;
+            renderer.resize(W, H);
+            renderer.render(app.stage);
+            const out = document.createElement("canvas");
+            out.width = W;
+            out.height = H;
+            out.getContext("2d")!.drawImage(canvas, 0, 0);
+            return out;
+          } catch {
+            return null;
+          } finally {
+            renderer.resolution = prevResolution;
+            app.resize();
+            models.forEach((m, i) => {
+              m.scale.set(saved[i].s);
+              m.position.set(saved[i].x, saved[i].y);
+            });
+            renderer.render(app.stage);
+          }
+        };
+
         const motion = (m: (typeof models)[number], list: string[], name: string) => {
           if (list.includes(name)) void m.motion(name, undefined, MotionPriority.FORCE);
         };
@@ -285,6 +332,7 @@ export function Live2DRenderer({
         });
 
         cleanup = () => {
+          captureImpl.current = null;
           window.removeEventListener("pointermove", onMove);
           ro.disconnect();
           playRef.current = null;

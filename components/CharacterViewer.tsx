@@ -131,6 +131,7 @@ export function CharacterViewer({
       className={className}
       insets={insets}
       cssTransform={isImage}
+      captureName={`${name} ${skin.name}`}
       toolbar={
         <>
           {voice?.available && (

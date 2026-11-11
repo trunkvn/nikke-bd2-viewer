@@ -172,6 +172,7 @@ function Showcase({ ship, prev, next, skinParam = null, compareParam = null, onS
           cssTransform={false}
           insets={compare ? cmpInsets : insets}
           backdrop={<AzurBackdrop />}
+          captureName={`azurlane ${ship.name} ${skin.name}${compare && cmpSkin ? ` vs ${cmpSkin.name}` : ""}`}
           overlay={compare && cmpSkin ? <>{slotLabel("A", skin.name, 0)}{slotLabel("B", cmpSkin.name, 1)}</> : undefined}
           toolbar={
             <>
