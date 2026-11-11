@@ -24,7 +24,7 @@ export function BD2Layers({ slots, hidden, onChange }: { slots: string[]; hidden
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Lọc lớp…"
           aria-label="Lọc lớp"
-          className="min-w-0 flex-1 rounded-xl border border-line bg-white/10 px-3 py-1.5 text-sm text-foreground outline-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-accent"
+          className="min-w-0 flex-1 rounded-md border border-line bg-white/10 px-3 py-1.5 text-sm text-foreground outline-none placeholder:text-muted focus-visible:ring-2 focus-visible:ring-accent"
         />
         <button
           type="button"

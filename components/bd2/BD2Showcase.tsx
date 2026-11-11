@@ -362,7 +362,7 @@ function Showcase({
                     onClick={() => setCmpId(s.id)}
                     aria-pressed={s.id === cmpSkin.id}
                     title={s.name}
-                    className={`relative h-9 w-7 shrink-0 overflow-hidden rounded-lg border-2 bg-white/10 outline-none transition focus-visible:ring-2 focus-visible:ring-accent ${
+                    className={`relative h-9 w-7 shrink-0 overflow-hidden rounded-md border bg-white/10 outline-none transition focus-visible:ring-2 focus-visible:ring-accent ${
                       s.id === cmpSkin.id ? "border-accent" : "border-transparent opacity-75 hover:opacity-100"
                     }`}
                   >
@@ -395,10 +395,10 @@ function Showcase({
 
           {/* Toàn màn hình: giấu bảng tên để nhân vật rộng chỗ; nút chuyển nhân vật và dock vẫn dùng được. */}
           {!isFullscreen && !compare && (
-            <div className="bd2-glass animate-fade-up w-fit max-w-full px-4 py-3">
-              {character.stars ? <Stars value={character.stars} max={character.stars} size={14} /> : null}
-              <h1 className="mt-1 font-display text-3xl font-bold uppercase leading-none tracking-tight text-[#fff4d6] [text-shadow:0_0_18px_rgba(255,160,210,0.45)] sm:text-5xl">{character.name}</h1>
-              <p className="mt-1.5 text-sm font-medium text-muted">{skin.name}</p>
+            <div className="animate-fade-up w-fit max-w-full px-1 pt-2 [text-shadow:0_1px_14px_rgba(0,0,0,0.6)]">
+              {character.stars ? <Stars value={character.stars} max={character.stars} size={12} /> : null}
+              <h1 className="mt-1.5 font-display text-3xl font-semibold leading-none tracking-tight text-foreground sm:text-5xl">{character.name}</h1>
+              <p className="mt-2 text-sm text-muted">{skin.name}</p>
             </div>
           )}
         </div>
@@ -519,10 +519,10 @@ function Showcase({
                       onClick={() => onSelect(s.id)}
                       aria-pressed={s.id === skin.id}
                       title={s.name}
-                      className={`relative shrink-0 overflow-hidden rounded-xl border-2 bg-white/10 outline-none transition focus-visible:ring-2 focus-visible:ring-accent ${
+                      className={`relative shrink-0 overflow-hidden rounded-md border bg-white/5 outline-none transition focus-visible:ring-2 focus-visible:ring-accent ${
                         compare ? "h-[44px] w-[34px]" : "h-[56px] w-[42px] lg:h-[68px] lg:w-[52px]"
                       } ${
-                        s.id === skin.id ? "border-accent" : "border-transparent opacity-75 hover:opacity-100"
+                        s.id === skin.id ? "border-accent" : "border-line opacity-70 hover:opacity-100"
                       }`}
                     >
                       <Image src={s.thumb} alt={s.name} fill sizes="52px" className="object-cover object-top" />
@@ -787,7 +787,7 @@ function Showcase({
 }
 
 function DockLabel({ children }: { children: ReactNode }) {
-  return <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">{children}</h2>;
+  return <h2 className="text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted/80">{children}</h2>;
 }
 
 /** Nội dung ngăn INFO: hồ sơ ngắn, danh sách trang phục và hướng dẫn thao tác. */
@@ -806,7 +806,7 @@ function Drawer({ character, activeSkin, onSelect }: { character: Character; act
   return (
     <div className="space-y-5">
       <section>
-        <h2 className="font-display text-xl font-bold uppercase tracking-wide text-[#fff4d6]">{character.name}</h2>
+        <h2 className="font-display text-xl font-semibold tracking-tight text-foreground">{character.name}</h2>
         <div className="mt-1 flex items-center gap-2">
           {character.stars ? <Stars value={character.stars} max={character.stars} size={14} /> : null}
           <span className="text-xs text-muted">{character.skins.length} trang phục</span>
@@ -816,7 +816,7 @@ function Drawer({ character, activeSkin, onSelect }: { character: Character; act
       <hr className="border-line" />
 
       <section>
-        <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">Trang phục</h3>
+        <h3 className="mb-2 text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted/80">Trang phục</h3>
         <ul className="space-y-1.5">
           {character.skins.map((s) => (
             <li key={s.id}>
@@ -824,7 +824,7 @@ function Drawer({ character, activeSkin, onSelect }: { character: Character; act
                 type="button"
                 onClick={() => onSelect(s.id)}
                 data-active={s.id === activeSkin}
-                className="bd2-chip flex w-full items-center justify-between gap-3 !rounded-xl px-3 py-1.5 text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-accent"
+                className="bd2-chip flex w-full items-center justify-between gap-3 !rounded-md px-3 py-1.5 text-left text-sm outline-none focus-visible:ring-2 focus-visible:ring-accent"
               >
                 <span className="truncate">{s.name}</span>
                 <span className="shrink-0 text-[11px] font-medium opacity-70">{formatDate(s.released) ?? ""}</span>
@@ -837,7 +837,7 @@ function Drawer({ character, activeSkin, onSelect }: { character: Character; act
       <hr className="border-line" />
 
       <section>
-        <h3 className="mb-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-muted">Điều khiển</h3>
+        <h3 className="mb-2 text-[10.5px] font-medium uppercase tracking-[0.16em] text-muted/80">Điều khiển</h3>
         <ul className="space-y-2 text-[13px] text-muted">
           {hints.map(([key, text]) => (
             <li key={key} className="flex items-start gap-3">

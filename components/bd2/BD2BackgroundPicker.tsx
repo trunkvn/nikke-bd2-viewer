@@ -49,7 +49,7 @@ export function BD2BackgroundPicker() {
                 role="radio"
                 aria-checked={bg.id === active}
                 onClick={() => bd2BgSetting.set(bg.id)}
-                className={`rounded-xl border-2 p-1 text-left outline-none transition focus-visible:ring-2 focus-visible:ring-accent ${
+                className={`rounded-md border p-1 text-left outline-none transition focus-visible:ring-2 focus-visible:ring-accent ${
                   bg.id === active ? "border-accent bg-white/10" : "border-transparent hover:bg-white/10"
                 }`}
               >
