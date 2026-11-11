@@ -11,6 +11,8 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
+import type { CaptureFn } from "@/lib/capture";
+import { CaptureDialog } from "./CaptureDialog";
 
 export type Transform = { x: number; y: number; scale: number };
 
@@ -31,6 +33,8 @@ type StageApi = {
   transformRef: RefObject<Transform>;
   insetsRef: RefObject<Insets>;
   tapListeners: RefObject<Set<TapListener>>;
+  /** Renderer đăng ký hàm chụp ảnh; trả hàm gỡ đăng ký. */
+  registerCapture: (fn: CaptureFn) => () => void;
 };
 
 const StageContext = createContext<StageApi | null>(null);
@@ -52,6 +56,15 @@ export function useViewerTransform(): RefObject<Transform> {
 /** Vùng đệm hiện tại (giá trị đích); renderer tự làm mượt khi nó thay đổi. */
 export function useViewerInsets(): RefObject<Insets> {
   return useStageApi().insetsRef;
+}
+
+/**
+ * Renderer cho phép chụp ảnh: `impl.current` là hàm vẽ nhân vật ở kích thước đích (null khi chưa sẵn sàng). Có renderer đăng ký thì thanh công cụ
+ * của khung hiện nút chụp ảnh.
+ */
+export function useViewerCapture(impl: RefObject<CaptureFn | null>) {
+  const { registerCapture } = useStageApi();
+  useEffect(() => registerCapture((size) => impl.current?.(size) ?? Promise.resolve(null)), [registerCapture, impl]);
 }
 
 /** Nhận một cú "tap" (nhấp không kéo) trên khung, toạ độ theo clientX/clientY. */
@@ -93,6 +106,7 @@ export function ViewerStage({
   insets = NO_INSETS,
   className = "",
   locked = false,
+  captureName = "nhan-vat",
 }: {
   children: ReactNode;
   cssTransform?: boolean;
@@ -109,6 +123,8 @@ export function ViewerStage({
   className?: string;
   /** Khoá cử chỉ: không kéo/zoom và không có thanh công cụ (dùng cho cutscene phát như video). */
   locked?: boolean;
+  /** Tên dùng đặt tên file ảnh chụp (ví dụ "Rapi Red Hood"). */
+  captureName?: string;
 }) {
   const stageRef = useRef<HTMLDivElement>(null);
   const pointers = useRef(new Map<number, { x: number; y: number }>());
@@ -117,7 +133,22 @@ export function ViewerStage({
   const insetsRef = useRef<Insets>(insets);
   const tapListeners = useRef<Set<TapListener>>(new Set());
   const tapRef = useRef<{ x: number; y: number; at: number; moved: boolean; multi: boolean } | null>(null);
-  const api = useMemo<StageApi>(() => ({ transformRef, insetsRef, tapListeners }), []);
+  const backdropRef = useRef<HTMLDivElement>(null);
+  const [captureFn, setCaptureFn] = useState<CaptureFn | null>(null);
+  const [captureOpen, setCaptureOpen] = useState<{ stage: HTMLElement; backdrop: HTMLElement | null } | null>(null);
+  const api = useMemo<StageApi>(
+    () => ({
+      transformRef,
+      insetsRef,
+      tapListeners,
+      registerCapture: (fn) => {
+        setCaptureFn(() => fn);
+        // Lớp cũ (đang mờ đi khi đổi skin) gỡ sau lớp mới: chỉ gỡ nếu hàm đang đăng ký vẫn là của mình.
+        return () => setCaptureFn((cur: CaptureFn | null) => (cur === fn ? null : cur));
+      },
+    }),
+    [],
+  );
   const [t, setT] = useState<Transform>(INITIAL);
   const [dragging, setDragging] = useState(false);
 
@@ -242,7 +273,11 @@ export function ViewerStage({
           locked ? "cursor-default" : dragging ? "cursor-grabbing" : "cursor-grab"
         }`}
       >
-        {backdrop && <div className="pointer-events-none absolute inset-0">{backdrop}</div>}
+        {backdrop && (
+          <div ref={backdropRef} className="pointer-events-none absolute inset-0">
+            {backdrop}
+          </div>
+        )}
         <StageContext.Provider value={api}>
           <div
             className={`absolute will-change-transform ${
@@ -281,6 +316,17 @@ export function ViewerStage({
           style={{ right: right + 12 }}
         >
           {toolbar}
+          {captureFn && (
+            <ToolButton
+              label="Chụp ảnh / lưu làm hình nền"
+              onClick={() => stageRef.current && setCaptureOpen({ stage: stageRef.current, backdrop: backdropRef.current })}
+            >
+              <svg aria-hidden viewBox="0 0 24 24" className="h-[18px] w-[18px]" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M4 8h3l1.6-2.4h6.8L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" />
+                <circle cx="12" cy="13" r="3.4" />
+              </svg>
+            </ToolButton>
+          )}
           <ToolButton label="Phóng to" onClick={() => zoomButton(1.25)}>+</ToolButton>
           <ToolButton label="Thu nhỏ" onClick={() => zoomButton(0.8)}>−</ToolButton>
           <ToolButton label="Đặt lại góc nhìn" onClick={reset}>⟲</ToolButton>
@@ -288,6 +334,15 @@ export function ViewerStage({
             {Math.round(t.scale * 100)}%
           </span>
         </div>
+      )}
+      {captureOpen && captureFn && (
+        <CaptureDialog
+          capture={captureFn}
+          stage={captureOpen.stage}
+          backdrop={captureOpen.backdrop}
+          fileBase={captureName}
+          onClose={() => setCaptureOpen(null)}
+        />
       )}
     </div>
   );
