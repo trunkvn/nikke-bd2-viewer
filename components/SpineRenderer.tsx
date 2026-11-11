@@ -30,6 +30,12 @@ export type PlayCommand = {
    * `mixN_k` chồng lên `idleN`. Dựng lại từ tư thế gốc (setup pose) nên không dính trạng thái của animation trước.
    */
   base?: string;
+  /**
+   * Chuyển cảnh (Fated Guest `motionN_k`): chạy `name` một lần rồi chuyển sang `then` lặp mãi (cảnh đích `idleM`), thay vì quay về idle đầu tiên.
+   * `from` là cảnh bắt đầu (`idleN`): dùng để chọn skin đúng với lúc bắt đầu, vì animation chuyển cảnh không nói rõ nó bắt đầu ở cảnh nào.
+   */
+  then?: string;
+  from?: string;
 };
 
 export type PlanStep = { at: number; name: string; track: number; loop?: boolean };
@@ -146,7 +152,7 @@ export function SpineRenderer({
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [errorMsg, setErrorMsg] = useState("");
 
-  const playRef = useRef<((name: string, loop?: boolean, track?: number, base?: string) => void) | null>(null);
+  const playRef = useRef<((name: string, loop?: boolean, track?: number, base?: string, then?: string, from?: string) => void) | null>(null);
   const planRef = useRef<((steps: PlanStep[]) => void) | null>(null);
   const tapRequest = useRef<{ clientX: number; clientY: number } | null>(null);
   const talkRef = useRef<((on: boolean) => void) | null>(null);
@@ -183,7 +189,7 @@ export function SpineRenderer({
   useEffect(() => {
     if (!command) return;
     if (command.plan) planRef.current?.(command.plan);
-    else playRef.current?.(command.name, command.loop, command.track, command.base);
+    else playRef.current?.(command.name, command.loop, command.track, command.base, command.then, command.from);
   }, [command]);
 
   useEffect(() => {
@@ -355,7 +361,26 @@ export function SpineRenderer({
         /**
          * Idle (hoặc loop=true) thì lặp mãi; animation khác phát một lần rồi tự quay về idle.
          */
-        const play = (name: string, loop = false, track = 0, base?: string) => {
+        const play = (name: string, loop = false, track = 0, base?: string, then?: string, from?: string) => {
+          if (then && skeletonData.findAnimation(name) && skeletonData.findAnimation(then)) {
+            // Chuyển cảnh: dựng lại từ tư thế gốc ở cảnh bắt đầu, chạy `name` một lần rồi lặp cảnh đích; skin đổi sang skin của cảnh đích đúng lúc nó bắt đầu.
+            const start = from && skeletonData.findAnimation(from) ? from : name;
+            currentBase = start;
+            if (autoSkin) applySkin(bestSkinFor(start));
+            state.clearTracks();
+            skeleton.setToSetupPose();
+            const move = state.setAnimation(0, name, false);
+            const settle = state.addAnimation(0, then, true, 0);
+            move.mixDuration = 0;
+            settle.mixDuration = 0;
+            settle.listener = {
+              start: () => {
+                currentBase = then;
+                if (autoSkin) applySkin(bestSkinFor(then));
+              },
+            };
+            return;
+          }
           if (base && skeletonData.findAnimation(base)) {
             // Dựng lại từ tư thế gốc, không pha trộn: tranh Fated Guest nhiều lớp dễ dính trạng thái của animation trước.
             // `name` rỗng hoặc trùng `base` thì chỉ chạy nền.

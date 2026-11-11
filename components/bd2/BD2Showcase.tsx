@@ -155,7 +155,7 @@ function Showcase({
   const plan = category === "ultimate" && active ? planCutscene(active.list, active.durations) : null;
   const seqActive = category === "ultimate" && seq?.viewKey === viewKey ? seq : null;
 
-  const send = (name: string, opts: { track?: number; loop?: boolean; base?: string } = {}) =>
+  const send = (name: string, opts: { track?: number; loop?: boolean; base?: string; then?: string; from?: string } = {}) =>
     setCommand((c) => ({ name, nonce: (c?.nonce ?? 0) + 1, ...opts }));
 
   /** Ultimate: phát RIÊNG một animation của cutscene (lặp mãi) cùng các lớp phụ của nó. */
@@ -181,6 +181,19 @@ function Showcase({
   const playDating = (name: string, base: string, scene: number | null) => {
     setPickPart({ name: name === base ? null : name, scene });
     send(name, { track: 1, base, loop: /loop$/i.test(name) || name === base });
+  };
+
+  /**
+   * Fated Guest: `motionN_k` là chuyển động đi từ cảnh N sang cảnh N+1. Chạy một lần rồi dừng ở `idle(N+1)`, và cảnh đang chọn
+   * (danh sách "Chạm / hoạt cảnh" bên dưới) đổi theo sang N+1. Không có cảnh N+1 thì chạy lặp như animation lẻ.
+   */
+  const playMotion = (name: string) => {
+    const n = Number(/^motion(\d+)_/.exec(name)?.[1]);
+    const from = dating?.scenes.find((sc) => sc.n === n);
+    const to = dating?.scenes.find((sc) => sc.n === n + 1);
+    if (!from?.idle || !to?.idle) return playDating(name, name, null);
+    setPickPart({ name, scene: to.n });
+    send(name, { then: to.idle, from: from.idle });
   };
 
   /** Chuyển động toàn thân: idle lặp mãi, các chuyển động khác chạy một lần rồi về idle. */
@@ -255,6 +268,12 @@ function Showcase({
   const chip = "bd2-chip px-3.5 py-1.5 text-sm outline-none focus-visible:ring-2 focus-visible:ring-accent";
   const itemChip = "bd2-chip shrink-0 px-3 py-1 text-[13px] outline-none focus-visible:ring-2 focus-visible:ring-accent";
   const sceneN = pick?.scene ?? dating?.scenes[0]?.n ?? null;
+  /** `motionN_k` có cảnh đích N+1 thì là chuyển cảnh: nhãn "N → N+1" cho dễ hiểu. */
+  const isMotion = (n: string) => {
+    const from = Number(/^motion(\d+)_/.exec(n)?.[1]);
+    return !!dating?.scenes.find((sc) => sc.n === from)?.idle && !!dating?.scenes.find((sc) => sc.n === from + 1)?.idle;
+  };
+  const motionLabel = (n: string) => (isMotion(n) ? `Cảnh ${Number(/^motion(\d+)_/.exec(n)![1])} → ${Number(/^motion(\d+)_/.exec(n)![1]) + 1}` : n);
   const scene = dating?.scenes.find((sc) => sc.n === sceneN) ?? null;
 
   return (
@@ -640,8 +659,15 @@ function Showcase({
                     <DockLabel>Khác</DockLabel>
                     <div className="mt-1.5 flex flex-wrap gap-1.5">
                       {dating.others.map((n) => (
-                        <button key={n} type="button" onClick={() => playDating(n, n, null)} data-active={pick?.name === n} className={itemChip}>
-                          {n}
+                        <button
+                          key={n}
+                          type="button"
+                          onClick={() => (isMotion(n) ? playMotion(n) : playDating(n, n, null))}
+                          data-active={pick?.name === n}
+                          title={n}
+                          className={itemChip}
+                        >
+                          {motionLabel(n)}
                         </button>
                       ))}
                     </div>
