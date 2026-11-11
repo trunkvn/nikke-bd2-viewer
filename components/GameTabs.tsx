@@ -13,10 +13,10 @@ const STYLES: Record<Variant, { nav: string; item: string; active: string; idle:
     soon: "cursor-not-allowed text-white/25",
   },
   bd2: {
-    nav: "flex items-center gap-0.5 text-[13px] font-semibold sm:gap-1 sm:text-sm",
-    item: "rounded-[3px_10px_3px_10px] px-2.5 py-1.5 outline-none transition focus-visible:ring-2 focus-visible:ring-accent sm:px-3",
-    active: "bg-gradient-to-b from-[#f3dc9a] to-[#b98f3e] text-[#2a1c05]",
-    idle: "text-muted hover:bg-accent/15 hover:text-accent",
+    nav: "flex items-center gap-0.5 text-[13px] font-medium sm:gap-1 sm:text-sm",
+    item: "relative px-2.5 py-2 outline-none transition focus-visible:text-accent sm:px-3",
+    active: "text-accent after:absolute after:inset-x-2.5 after:-bottom-px after:h-px after:bg-accent sm:after:inset-x-3",
+    idle: "text-muted hover:text-accent",
     soon: "cursor-not-allowed text-muted/40",
   },
   azurlane: {
