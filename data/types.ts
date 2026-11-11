@@ -60,6 +60,8 @@ export type Skin = {
   dating?: SpineRender;
   /** Không lưu trong JSON: lib/voice.ts quét thư mục public/assets/bd2/<nhân vật>/<trang phục>/voice/ (Brown Dust 2 có giọng theo trang phục). */
   voice?: Voice;
+  /** Không lưu trong JSON: lib/voice.ts quét public/assets/bd2/<nhân vật>/<trang phục>/dating-voice/ (scripts/bd2/dating-voice.py): tiếng phản ứng ngắn của cảnh Fated Guest. */
+  datingVoice?: VoiceLine[];
   /** Các tư thế chiến đấu có sẵn của skin này (không phải skin nào cũng có). */
   poses?: Partial<Record<Exclude<Pose, "stand">, SpineRender>>;
 };

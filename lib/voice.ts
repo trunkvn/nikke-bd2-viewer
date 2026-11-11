@@ -1,6 +1,6 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";
-import type { Character, Voice, VoiceSet } from "@/data/types";
+import type { Character, Voice, VoiceLine, VoiceSet } from "@/data/types";
 
 const AUDIO_EXT = /\.(mp3|ogg|wav|m4a|aac|webm)$/i;
 const LANG_DIR = /^[a-z]{2}$/;
@@ -63,4 +63,18 @@ function loadSet(dir: string, urlBase: string): VoiceSet | undefined {
     (set[trigger] ??= []).push({ src: `${urlBase}/${encodeURIComponent(file)}`, text: captions[file] });
   }
   return set.enter || set.touch ? set : undefined;
+}
+
+/**
+ * Tiếng phản ứng của cảnh Fated Guest (Brown Dust 2): public/assets/bd2/<nhân vật>/<trang phục>/dating-voice/<Cảm xúc><n>_<k>.webm.
+ * Không có bảng ghép từng chạm với từng tiếng nên viewer phát ngẫu nhiên một tiếng; `path` như ở `loadVoiceAt`.
+ */
+export function loadDatingVoice(path: string): VoiceLine[] | undefined {
+  const dir = join(process.cwd(), "public", "assets", ...path.split("/"), "dating-voice");
+  if (!existsSync(dir)) return undefined;
+  const lines = readdirSync(dir)
+    .filter((f) => AUDIO_EXT.test(f))
+    .sort()
+    .map((f) => ({ src: `/assets/${path}/dating-voice/${encodeURIComponent(f)}` }));
+  return lines.length ? lines : undefined;
 }

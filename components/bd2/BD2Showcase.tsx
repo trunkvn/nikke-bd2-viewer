@@ -93,6 +93,9 @@ function Showcase({
         ? { ...skin, render: skin.dating }
         : skin;
   const voice = useVoice(skin.voice, skin.id);
+  // Fated Guest: tiếng phản ứng ngắn của tranh hẹn hò; mỗi lần chạm / chuyển cảnh phát ngẫu nhiên một tiếng ("xx" = không gắn ngôn ngữ, nên không hiện nút đổi ngôn ngữ).
+  const datingVoiceSet = skin.datingVoice?.length ? { xx: { touch: skin.datingVoice } } : undefined;
+  const datingVoice = useVoice(datingVoiceSet, `${skin.id}:dating`);
   const isDesktop = useMedia(DESKTOP_QUERY, true);
   const isWide = useMedia(WIDE_QUERY, true);
   const isFullscreen = useSyncExternalStore(subscribeFullscreen, getFullscreen, () => false);
@@ -181,6 +184,7 @@ function Showcase({
   const playDating = (name: string, base: string, scene: number | null) => {
     setPickPart({ name: name === base ? null : name, scene });
     send(name, { track: 1, base, loop: /loop$/i.test(name) || name === base });
+    if (name !== base) datingVoice.play("touch");
   };
 
   /**
@@ -194,6 +198,7 @@ function Showcase({
     if (!from?.idle || !to?.idle) return playDating(name, name, null);
     setPickPart({ name, scene: to.n });
     send(name, { then: to.idle, from: from.idle });
+    datingVoice.play("touch");
   };
 
   /** Chuyển động toàn thân: idle lặp mãi, các chuyển động khác chạy một lần rồi về idle. */
@@ -286,7 +291,7 @@ function Showcase({
           insets={compare ? paneInsets(false) : insets}
           captionBottom={24}
           command={command}
-          voice={category === "character" && !slim ? voice : undefined}
+          voice={category === "dating" ? datingVoice : category === "character" && !slim ? voice : undefined}
           backdrop={
             category === "ultimate" && skin.cutscene && plateOn && skin.cutscene.backgrounds.length > 0 ? (
               <UltimateBackdrop

@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { Character, CharacterSkills, CutsceneSequence, Game } from "@/data/types";
-import { loadVoice, loadVoiceAt } from "./voice";
+import { loadDatingVoice, loadVoice, loadVoiceAt } from "./voice";
 
 /** Đọc một file dữ liệu local; chưa có file thì danh sách trống. */
 function readLocal(name: string): Character[] {
@@ -27,6 +27,7 @@ function loadAll(): Character[] {
       return {
         ...s,
         voice: loadVoiceAt(`bd2/${c.slug}/${s.id}`),
+        datingVoice: s.dating ? loadDatingVoice(`bd2/${c.slug}/${s.id}`) : undefined,
         ...(s.cutscene && seq ? { cutscene: { ...s.cutscene, sequences: seq } } : {}),
       };
     }),
