@@ -5,7 +5,7 @@ Gallery + viewer tương tác cho nhân vật NIKKE và Brown Dust 2 (Next.js 16
 - `/` — **trang chủ**: chọn game (thẻ game kèm ảnh nhân vật và số liệu).
 - `/nikke` — NIKKE (giao diện tối, góc cạnh, sci-fi). Link cũ `/characters/<tên>` tự chuyển sang `/nikke/characters/<tên>`.
 - `/azurlane` — Azur Lane (xanh hải quân, điểm nhấn xanh da trời): mô hình **Live2D (Cubism)**, không phải Spine như hai game kia.
-- `/bd2` — Brown Dust 2, giao diện "Sakura Night": nền tím đêm có quầng hồng, viền vàng mảnh với góc trang trí, thẻ kính, nút dạng lá, thẻ ánh kim khi rê chuột; dùng cùng bộ phông với NIKKE (Chakra Petch cho tiêu đề, Inter cho chữ thân, Geist Mono cho nhãn nhỏ). Nền viewer mặc định là "Đêm anh đào" (đổi được bằng phím B).
+- `/bd2` — Brown Dust 2, giao diện tối giản "đêm tím, vàng mảnh": nền tím đêm phẳng chỉ có một quầng sáng nhẹ, vàng chỉ ở đường kẻ 1px và điểm nhấn (chọn, hover, focus), không khung trang trí hay hiệu ứng kim loại; thẻ nhân vật chỉ gồm ảnh trong khung viền mảnh, tên và trang phục nằm bên dưới. Dùng cùng bộ phông với NIKKE (Chakra Petch cho tiêu đề, Inter cho chữ thân, Geist Mono cho nhãn nhỏ). Nền viewer mặc định là "Đêm tím" (đổi được bằng phím B). Kiểu dáng nằm gần như hết trong `app/(bd2)/bd2.css` (token màu, `.bd2-chip`, `.bd2-glass`, `.bd2-art`).
 
 Mỗi trang có **layout gốc riêng** (route group `app/(home)`, `app/(nikke)`, `app/(bd2)`, `app/(azurlane)`) nên phông, màu, header hoàn toàn khác nhau;
 chuyển qua lại là tải trang mới, bằng thanh tab ở đầu trang (Trang chủ · NIKKE · Brown Dust 2 · Azur Lane). Phần dùng chung là

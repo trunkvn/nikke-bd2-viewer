@@ -1,31 +1,30 @@
 @import "tailwindcss";
 
 /*
- * Brown Dust 2: "Sakura Night". Nền tím đêm với quầng hồng, viền vàng mảnh có góc trang trí, thẻ kính, nút dạng lá, thẻ ánh kim khi
- * rê chuột. Phông chữ dùng chung với NIKKE (Chakra Petch cho tiêu đề, Inter cho chữ thân, Geist Mono cho nhãn nhỏ).
+ * Brown Dust 2: "Đêm tím, vàng mảnh". Tối giản: nền tím đêm phẳng chỉ có một quầng sáng rất nhẹ, vàng chỉ xuất hiện ở đường kẻ 1px,
+ * điểm nhấn (chọn, focus, hover) và dấu hiệu nhỏ; không khung trang trí, không chữ chuyển sắc, không hiệu ứng kim loại. Chất BD2 nằm ở
+ * tông tím đêm, vàng ấm và tranh nhân vật. Phông chữ dùng chung với NIKKE (Chakra Petch cho tiêu đề, Inter cho chữ thân, Geist Mono cho nhãn nhỏ).
  * Các component dùng chung với NIKKE (ViewerStage, SpineRenderer...) đọc cùng tên token (bg, accent, font-display...) và các
  * biến --stage-xxx, --tool-xxx, nên tự mang màu của trang này.
  */
 :root {
-  --bg: #120f2b;
-  --panel: #1c1642;
-  --foreground: #f4eefc;
-  --muted: #b9aadb;
-  --line: rgba(233, 203, 125, 0.22); /* viền vàng mảnh: mọi border-line đều ăn theo */
-  --accent: #e9cb7d; /* vàng: vòng chọn, focus, nút đang bật */
+  --bg: #110e26;
+  --panel: #181334;
+  --foreground: #f1ecfa;
+  --muted: #a99fc4;
+  --line: rgba(233, 203, 125, 0.16); /* viền vàng mảnh: mọi border-line đều ăn theo */
+  --accent: #e9cb7d; /* vàng: chọn, focus, hover */
   --gold: #e9cb7d;
-  --gold-deep: #b98f3e;
-  --rose: #ff9ec0;
-  --star: #f6cd5b;
+  --star: #e9cb7d;
   color-scheme: dark;
 
   /* Viewer dùng chung */
-  --stage-bg: #181238;
-  --stage-vignette: rgba(8, 4, 24, 0.5);
-  --tool-bg: rgba(14, 9, 36, 0.78);
+  --stage-bg: #15102f;
+  --stage-vignette: rgba(6, 3, 18, 0.45);
+  --tool-bg: rgba(17, 14, 38, 0.72);
   --tool-fg: #e9cb7d;
-  --tool-hover-fg: #2a1c05;
-  --tool-label: #d8cdb0;
+  --tool-hover-fg: #1d1404;
+  --tool-label: #cfc6e6;
   --tool-label-shadow: 0 0 6px rgba(0, 0, 0, 0.9), 0 0 2px #000;
 }
 
@@ -37,7 +36,6 @@
   --color-muted: var(--muted);
   --color-line: var(--line);
   --color-gold: var(--gold);
-  --color-rose: var(--rose);
   --font-sans: var(--font-inter), system-ui, sans-serif;
   --font-display: var(--font-chakra), var(--font-inter), sans-serif;
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
@@ -54,144 +52,85 @@ body {
   position: relative;
 }
 
-/* Nền đêm: quầng hồng ở góc trên phải, quầng tím ở góc dưới trái, dải chuyển tím đậm. */
+/* Nền đêm: nền tím phẳng và một quầng sáng rất nhẹ ở phía trên. */
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   z-index: -1;
   pointer-events: none;
-  background:
-    radial-gradient(60% 50% at 82% 0%, rgba(255, 140, 190, 0.2), transparent 70%),
-    radial-gradient(55% 50% at 8% 95%, rgba(110, 90, 255, 0.28), transparent 70%), linear-gradient(180deg, #120f2b, #221846 72%, #2b1c4f);
+  background: radial-gradient(70% 45% at 50% -5%, rgba(120, 100, 255, 0.14), transparent 70%), var(--bg);
 }
 
 ::selection {
   background: var(--accent);
-  color: #2a1c05;
+  color: #1d1404;
 }
 
-/* Chữ vàng chuyển sắc cho tiêu đề lớn. */
-.bd2-gold-text {
-  background: linear-gradient(180deg, #fff3cf, var(--gold) 55%, var(--gold-deep));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-}
-
-/* ───────── Hình khối dùng chung với component NIKKE: ở đây bo tròn thay vì cắt góc ───────── */
+/* ───────── Hình khối dùng chung với component NIKKE: ở đây bo nhẹ thay vì cắt góc ───────── */
 .clip-chamfer,
 .clip-chamfer-sm,
 .clip-chamfer-lg {
   clip-path: none;
-  border-radius: 12px;
+  border-radius: 8px;
 }
 .clip-chamfer-sm.tool-button {
-  border: 1px solid rgba(233, 203, 125, 0.55);
-  border-radius: 8px;
-  box-shadow: 0 8px 18px -10px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(233, 203, 125, 0.32);
+  border-radius: 6px;
 }
 
-/* Thẻ nội dung: kính mờ viền vàng mảnh, có góc trang trí ở trái trên và phải dưới. */
+/* Khối nội dung (trạng thái trống...): chỉ một đường kẻ mảnh. */
 .bd2-card {
-  position: relative;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02));
-  border: 1px solid rgba(233, 203, 125, 0.4);
+  border: 1px solid var(--line);
   border-radius: 8px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-}
-.bd2-card::before,
-.bd2-card::after {
-  content: "";
-  position: absolute;
-  z-index: 4;
-  width: 14px;
-  height: 14px;
-  border: 2px solid var(--gold);
-  pointer-events: none;
-}
-.bd2-card::before {
-  left: 5px;
-  top: 5px;
-  border-right: 0;
-  border-bottom: 0;
-}
-.bd2-card::after {
-  right: 5px;
-  bottom: 5px;
-  border-left: 0;
-  border-top: 0;
 }
 
-/* Khung ảnh của thẻ nhân vật: quầng hồng sau nhân vật trên nền tím đậm, và ánh kim chạy ngang khi hover. */
+/* Khung ảnh của thẻ nhân vật: nền tím phẳng, viền mảnh; hover sáng viền sang vàng. */
 .bd2-art {
-  background:
-    radial-gradient(70% 60% at 50% 62%, rgba(255, 150, 200, 0.3), transparent 72%),
-    linear-gradient(180deg, #2c2057, #181034);
+  background: #1b1540;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  transition: border-color 200ms;
 }
-.bd2-foil {
-  position: absolute;
-  inset: 0;
-  z-index: 2;
-  pointer-events: none;
-  opacity: 0;
-  transition: opacity 300ms;
-  background: linear-gradient(115deg, transparent 30%, rgba(255, 230, 160, 0.32) 45%, rgba(255, 160, 210, 0.28) 52%, transparent 66%);
-  background-size: 250% 100%;
-  animation: bd2-sheen 2.6s linear infinite;
-}
-.bd2-card:hover .bd2-foil,
-a:focus-visible .bd2-foil {
-  opacity: 1;
-}
-@keyframes bd2-sheen {
-  from {
-    background-position: 120% 0;
-  }
-  to {
-    background-position: -120% 0;
-  }
+a:hover .bd2-art,
+a:focus-visible .bd2-art {
+  border-color: rgba(233, 203, 125, 0.6);
 }
 
-/* Kính mờ cho các bảng nổi trên viewer (dock, ngăn INFO, tên nhân vật): viền vàng mảnh, vệt sáng ở mép trên. */
+/* Bảng nổi trên viewer (dock, ngăn INFO): nền tím đêm mờ, một viền vàng mảnh. */
 .bd2-glass {
-  background: rgba(14, 9, 36, 0.78);
-  backdrop-filter: blur(16px) saturate(1.3);
-  border-radius: 10px;
-  box-shadow:
-    0 0 0 1px rgba(233, 203, 125, 0.34),
-    inset 0 1px 0 rgba(255, 240, 200, 0.12),
-    0 14px 34px -16px rgba(0, 0, 0, 0.8);
+  background: rgba(17, 14, 38, 0.82);
+  backdrop-filter: blur(14px);
+  border: 1px solid rgba(233, 203, 125, 0.2);
+  border-radius: 8px;
 }
 
-/* Nút dạng lá (hai góc bo lớn, hai góc bo nhỏ) viền vàng mảnh; chọn = nền vàng chữ tối. */
+/* Nút: chỉ có viền mảnh; hover/chọn đổi sang vàng (chọn thêm một lớp nền vàng rất nhạt). */
 .bd2-chip {
-  border: 1px solid rgba(233, 203, 125, 0.4);
-  border-radius: 3px 12px 3px 12px;
-  background: rgba(255, 255, 255, 0.06);
-  color: #f1e6c4;
-  font-weight: 600;
+  border: 1px solid rgba(233, 203, 125, 0.22);
+  border-radius: 6px;
+  background: transparent;
+  color: #e6def4;
+  font-weight: 500;
   transition:
     background 150ms,
     color 150ms,
-    border-color 150ms,
-    box-shadow 150ms,
-    transform 150ms;
+    border-color 150ms;
 }
 .bd2-chip:hover {
-  background: rgba(233, 203, 125, 0.16);
-  border-color: rgba(233, 203, 125, 0.75);
+  border-color: rgba(233, 203, 125, 0.6);
+  color: var(--gold);
 }
 .bd2-chip:active {
-  transform: scale(0.97);
+  background: rgba(233, 203, 125, 0.08);
 }
 .bd2-chip[aria-pressed="true"],
 .bd2-chip[aria-checked="true"],
+.bd2-chip[aria-selected="true"],
 .bd2-chip[data-active="true"] {
-  background: linear-gradient(180deg, #f3dc9a, var(--gold-deep));
+  background: rgba(233, 203, 125, 0.14);
   border-color: var(--gold);
-  color: #2a1c05;
-  box-shadow: 0 0 14px -2px rgba(233, 203, 125, 0.55);
+  color: var(--gold);
 }
 
 /* ───────── Hoạt hoạ ───────── */
@@ -261,8 +200,7 @@ html[data-fs] [data-viewer] {
   .animate-fade-up,
   .animate-skin-in,
   .skeleton,
-  .animate-blink,
-  .bd2-foil {
+  .animate-blink {
     animation: none;
   }
   .bd2-chip {
