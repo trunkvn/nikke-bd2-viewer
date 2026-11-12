@@ -42,6 +42,16 @@ node scripts/render-posters.mjs --force          # render lại toàn bộ thumb
 Asset thuộc bản quyền Shift Up / Level Infinite. `public/assets/` và `data/nikke.local.json` đã nằm trong
 `.gitignore`: **đừng commit hay deploy công khai**.
 
+## Giao diện sáng / tối
+
+Nút mặt trời/mặt trăng ở header (cả bốn trang) đổi giữa giao diện sáng và tối. Lựa chọn lưu ở localStorage (khoá `theme`, dùng chung cho mọi trang); chưa chọn thì theo thiết lập sáng/tối của hệ điều hành.
+
+- Mỗi trang đặt màu bằng token CSS (`--bg`, `--panel`, `--foreground`, `--accent`...). Bộ màu tối nằm ở `:root`, bộ sáng ở `:root[data-theme="light"]` trong `globals.css` (NIKKE), `bd2.css`, `azurlane.css`, `home.css`. Muốn chỉnh màu giao diện sáng thì sửa ở các khối đó.
+- Trong component, dùng `text-foreground`, `bg-foreground/10`, `border-foreground/10`, `text-muted`... thay vì `text-white`, `bg-white/10` để màu tự đổi theo giao diện. Nét mờ vẽ bằng CSS thì dùng `rgb(var(--ink) / 0.05)`.
+- **Khung viewer nhân vật (`[data-viewer]`) luôn tối** dù trang đang sáng: nền viewer do người dùng chọn và chữ nổi trên tranh nhân vật thiết kế cho nền tối, nên khung này tự đặt lại bộ màu tối.
+- NIKKE: màu nhấn đổi theo nguyên tố nên giao diện sáng pha thêm đen qua `--accent-shade` (trong `@theme`), không ghi đè từng màu.
+- Một đoạn script nhỏ trong `<head>` (`THEME_INIT_SCRIPT` trong `lib/themeMode.ts`) đặt `data-theme` trước khi vẽ nên trang không nháy sai màu. Nút nằm ở `components/ThemeToggle.tsx`.
+
 ## Chụp ảnh và hình nền (cả ba game)
 
 Nút máy ảnh trong thanh công cụ bên phải của viewer mở hộp thoại chụp ảnh với ảnh xem trước:
