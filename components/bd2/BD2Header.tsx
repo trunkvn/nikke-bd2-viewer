@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GameTabs } from "../GameTabs";
+import { ThemeToggle } from "../ThemeToggle";
 
 /** Header của Brown Dust 2: một dòng, nền mờ, viền dưới mảnh. */
 export function BD2Header() {
@@ -17,8 +18,9 @@ export function BD2Header() {
           </span>
         </Link>
 
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-1">
           <GameTabs current="bd2" variant="bd2" />
+          <ThemeToggle />
         </div>
       </div>
     </header>

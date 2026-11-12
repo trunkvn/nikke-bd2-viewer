@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Chakra_Petch, Geist_Mono, Inter } from "next/font/google";
 import { BD2Header } from "@/components/bd2/BD2Header";
 import { NO_INDEX, SITE_URL } from "@/lib/site";
+import { THEME_INIT_SCRIPT } from "@/lib/themeMode";
 import "./bd2.css";
 
 // Layout gốc riêng của Brown Dust 2 (màu và hình khối khác NIKKE) nhưng dùng cùng bộ phông với NIKKE:
@@ -35,11 +36,14 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: "Brown Dust 2 — Character Gallery", description: DESCRIPTION },
 };
 
-export const viewport: Viewport = { themeColor: "#120f2b", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#120f2b", colorScheme: "dark light" };
 
 export default function BD2Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={`${chakra.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="vi" suppressHydrationWarning className={`${chakra.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col">
         <BD2Header />
         <div className="flex-1">{children}</div>

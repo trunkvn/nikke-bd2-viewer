@@ -7,15 +7,21 @@
  * Các component dùng chung với NIKKE (ViewerStage, SpineRenderer...) đọc cùng tên token (bg, accent, font-display...) và các
  * biến --stage-xxx, --tool-xxx, nên tự mang màu của trang này.
  */
-:root {
+:root,
+[data-viewer] {
   --bg: #110e26;
   --panel: #181334;
   --foreground: #f1ecfa;
   --muted: #a99fc4;
-  --line: rgba(233, 203, 125, 0.16); /* viền vàng mảnh: mọi border-line đều ăn theo */
+  --gold-rgb: 233 203 125; /* vàng dạng r g b để pha độ trong suốt */
+  --line: rgb(var(--gold-rgb) / 0.16); /* viền vàng mảnh: mọi border-line đều ăn theo */
   --accent: #e9cb7d; /* vàng: chọn, focus, hover */
   --gold: #e9cb7d;
   --star: #e9cb7d;
+  --chip-fg: #e6def4;
+  --art-bg: #1b1540;
+  --accent-ink: #1d1404; /* chữ trên nền màu nhấn */
+  --ink: 255 255 255; /* màu nét mờ (vạch skeleton...) */
   color-scheme: dark;
 
   /* Viewer dùng chung */
@@ -26,6 +32,28 @@
   --tool-hover-fg: #1d1404;
   --tool-label: #cfc6e6;
   --tool-label-shadow: 0 0 6px rgba(0, 0, 0, 0.9), 0 0 2px #000;
+}
+
+/* `color` được kế thừa từ body (đã sáng) nên khung viewer phải tự đặt lại chữ sáng. */
+[data-viewer] {
+  color: var(--foreground);
+}
+
+/* Giao diện sáng: giấy tím nhạt, vàng thẫm (vàng sáng không đọc được trên nền trắng). Khung viewer ([data-viewer]) luôn giữ bộ màu tối ở trên. */
+:root[data-theme="light"] {
+  --bg: #f6f3fb;
+  --panel: #ffffff;
+  --foreground: #1d1738;
+  --muted: #6a6185;
+  --gold-rgb: 140 100 14;
+  --accent: #8c640e;
+  --gold: #8c640e;
+  --star: #c99a1c;
+  --chip-fg: #3a3158;
+  --art-bg: #ece7f8;
+  --accent-ink: #ffffff;
+  --ink: 29 23 56;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -61,10 +89,13 @@ body::before {
   pointer-events: none;
   background: radial-gradient(70% 45% at 50% -5%, rgba(120, 100, 255, 0.14), transparent 70%), var(--bg);
 }
+:root[data-theme="light"] body::before {
+  background: radial-gradient(70% 45% at 50% -5%, rgba(120, 100, 255, 0.1), transparent 70%), var(--bg);
+}
 
 ::selection {
   background: var(--accent);
-  color: #1d1404;
+  color: var(--accent-ink);
 }
 
 /* ───────── Hình khối dùng chung với component NIKKE: ở đây bo nhẹ thay vì cắt góc ───────── */
@@ -75,7 +106,7 @@ body::before {
   border-radius: 8px;
 }
 .clip-chamfer-sm.tool-button {
-  border: 1px solid rgba(233, 203, 125, 0.32);
+  border: 1px solid rgb(var(--gold-rgb) / 0.32);
   border-radius: 6px;
 }
 
@@ -87,30 +118,30 @@ body::before {
 
 /* Khung ảnh của thẻ nhân vật: nền tím phẳng, viền mảnh; hover sáng viền sang vàng. */
 .bd2-art {
-  background: #1b1540;
+  background: var(--art-bg);
   border: 1px solid var(--line);
   border-radius: 6px;
   transition: border-color 200ms;
 }
 a:hover .bd2-art,
 a:focus-visible .bd2-art {
-  border-color: rgba(233, 203, 125, 0.6);
+  border-color: rgb(var(--gold-rgb) / 0.6);
 }
 
 /* Bảng nổi trên viewer (dock, ngăn INFO): nền tím đêm mờ, một viền vàng mảnh. */
 .bd2-glass {
   background: rgba(17, 14, 38, 0.82);
   backdrop-filter: blur(14px);
-  border: 1px solid rgba(233, 203, 125, 0.2);
+  border: 1px solid rgb(var(--gold-rgb) / 0.2);
   border-radius: 8px;
 }
 
 /* Nút: chỉ có viền mảnh; hover/chọn đổi sang vàng (chọn thêm một lớp nền vàng rất nhạt). */
 .bd2-chip {
-  border: 1px solid rgba(233, 203, 125, 0.22);
+  border: 1px solid rgb(var(--gold-rgb) / 0.22);
   border-radius: 6px;
   background: transparent;
-  color: #e6def4;
+  color: var(--chip-fg);
   font-weight: 500;
   transition:
     background 150ms,
@@ -118,17 +149,17 @@ a:focus-visible .bd2-art {
     border-color 150ms;
 }
 .bd2-chip:hover {
-  border-color: rgba(233, 203, 125, 0.6);
+  border-color: rgb(var(--gold-rgb) / 0.6);
   color: var(--gold);
 }
 .bd2-chip:active {
-  background: rgba(233, 203, 125, 0.08);
+  background: rgb(var(--gold-rgb) / 0.08);
 }
 .bd2-chip[aria-pressed="true"],
 .bd2-chip[aria-checked="true"],
 .bd2-chip[aria-selected="true"],
 .bd2-chip[data-active="true"] {
-  background: rgba(233, 203, 125, 0.14);
+  background: rgb(var(--gold-rgb) / 0.14);
   border-color: var(--gold);
   color: var(--gold);
 }
@@ -179,8 +210,8 @@ a:focus-visible .bd2-art {
 }
 .skeleton {
   background:
-    linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.09) 50%, transparent 70%) 0 0 / 200% 100%,
-    rgba(255, 255, 255, 0.04);
+    linear-gradient(100deg, transparent 30%, rgb(var(--ink) / 0.09) 50%, transparent 70%) 0 0 / 200% 100%,
+    rgb(var(--ink) / 0.05);
   animation: shimmer 1.6s linear infinite;
 }
 

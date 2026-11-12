@@ -8,7 +8,7 @@ export function Stars({ value, max = 5, size = 14, className = "" }: { value: nu
         <svg key={i} viewBox="0 0 24 24" width={size} height={size} aria-hidden>
           <path
             d={STAR_PATH}
-            fill={i < value ? "var(--star)" : "rgba(255,255,255,0.14)"}
+            fill={i < value ? "var(--star)" : "rgb(var(--ink) / 0.14)"}
             strokeLinejoin="round"
           />
         </svg>
