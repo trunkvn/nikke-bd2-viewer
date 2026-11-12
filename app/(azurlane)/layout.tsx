@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Chakra_Petch, Geist_Mono, Inter } from "next/font/google";
 import { AzurHeader } from "@/components/azurlane/AzurHeader";
 import { NO_INDEX, SITE_URL } from "@/lib/site";
+import { THEME_INIT_SCRIPT } from "@/lib/themeMode";
 import "./azurlane.css";
 
 // Layout gốc riêng của Azur Lane (màu và hình khối riêng) nhưng cùng bộ phông với NIKKE và Brown Dust 2.
@@ -32,11 +33,14 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: "Azur Lane — Live2D Gallery", description: DESCRIPTION },
 };
 
-export const viewport: Viewport = { themeColor: "#0a1424", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#0a1424", colorScheme: "dark light" };
 
 export default function AzurLaneLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={`${chakra.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="vi" suppressHydrationWarning className={`${chakra.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col">
         <AzurHeader />
         <div className="flex-1">{children}</div>

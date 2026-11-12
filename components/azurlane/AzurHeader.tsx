@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { GameTabs } from "../GameTabs";
+import { ThemeToggle } from "../ThemeToggle";
 
 /** Header của Azur Lane: thanh tối mờ, viền dưới xanh mảnh, logo hình mũi tàu cách điệu (tự vẽ, không dùng logo gốc). */
 export function AzurHeader() {
@@ -15,8 +16,9 @@ export function AzurHeader() {
           </span>
           <span className="hidden whitespace-nowrap font-display text-base font-bold uppercase leading-none tracking-[0.16em] sm:inline">Azur Lane</span>
         </Link>
-        <div className="ml-auto">
+        <div className="ml-auto flex items-center gap-1">
           <GameTabs current="azurlane" variant="azurlane" />
+          <ThemeToggle />
         </div>
       </div>
     </header>
