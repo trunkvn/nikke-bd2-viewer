@@ -21,7 +21,7 @@ export function Panel({
   innerClassName?: string;
 }) {
   return (
-    <div className={`${CUT[cut]} bg-white/15 p-px ${className}`}>
+    <div className={`${CUT[cut]} bg-foreground/15 p-px ${className}`}>
       <div className={`${CUT[cut]} ${glass ? "bg-panel/80 backdrop-blur-md" : "bg-panel"} ${innerClassName}`}>
         {children}
       </div>
@@ -47,15 +47,15 @@ export function SectionTitle({ children, aside }: { children: ReactNode; aside?:
   return (
     <div className="mb-3 flex items-center gap-2">
       <span className="h-3.5 w-1 bg-accent" />
-      <h2 className="font-mono text-[11px] uppercase tracking-[0.22em] text-white/55">{children}</h2>
-      {aside && <span className="ml-auto font-mono text-[11px] text-white/35">{aside}</span>}
+      <h2 className="font-mono text-[11px] uppercase tracking-[0.22em] text-foreground/55">{children}</h2>
+      {aside && <span className="ml-auto font-mono text-[11px] text-foreground/35">{aside}</span>}
     </div>
   );
 }
 
 export function Kbd({ children }: { children: ReactNode }) {
   return (
-    <kbd className="rounded-sm border border-white/20 bg-white/5 px-1.5 py-0.5 font-mono text-[11px] text-white/80">
+    <kbd className="rounded-sm border border-foreground/20 bg-foreground/5 px-1.5 py-0.5 font-mono text-[11px] text-foreground/80">
       {children}
     </kbd>
   );

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Chakra_Petch, Geist_Mono, Inter } from "next/font/google";
 import { SiteHeader } from "@/components/SiteHeader";
 import { NO_INDEX, SITE_URL } from "@/lib/site";
+import { THEME_INIT_SCRIPT } from "@/lib/themeMode";
 import "./globals.css";
 
 // Chakra Petch: font góc cạnh kiểu sci-fi cho tiêu đề/nhãn, có hỗ trợ tiếng Việt.
@@ -35,11 +36,14 @@ export const metadata: Metadata = {
 };
 
 // Thanh địa chỉ trên điện thoại ăn theo màu nền; trang luôn tối nên báo cho trình duyệt (form, thanh cuộn) dùng giao diện tối.
-export const viewport: Viewport = { themeColor: "#06080c", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#06080c", colorScheme: "dark light" };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="vi" className={`${chakra.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}>
+    <html lang="vi" suppressHydrationWarning className={`${chakra.variable} ${inter.variable} ${geistMono.variable} h-full antialiased`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col">
         <SiteHeader />
         <div className="flex-1">{children}</div>

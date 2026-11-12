@@ -9,8 +9,8 @@ const STYLES: Record<Variant, { nav: string; item: string; active: string; idle:
     nav: "flex items-center gap-0.5 font-mono text-xs uppercase tracking-widest",
     item: "relative px-2.5 py-2 outline-none transition sm:px-3",
     active: "text-accent after:absolute after:inset-x-2.5 after:-bottom-px after:h-0.5 after:bg-accent sm:after:inset-x-3",
-    idle: "text-white/65 hover:text-accent focus-visible:text-accent",
-    soon: "cursor-not-allowed text-white/25",
+    idle: "text-foreground/65 hover:text-accent focus-visible:text-accent",
+    soon: "cursor-not-allowed text-foreground/25",
   },
   bd2: {
     nav: "flex items-center gap-0.5 text-[13px] font-medium sm:gap-1 sm:text-sm",
@@ -28,10 +28,10 @@ const STYLES: Record<Variant, { nav: string; item: string; active: string; idle:
   },
   home: {
     nav: "flex items-center gap-0.5 text-[13px] font-semibold sm:gap-1 sm:text-sm",
-    item: "rounded-full px-3 py-1.5 outline-none transition focus-visible:ring-2 focus-visible:ring-white/70 sm:px-4",
-    active: "bg-white text-black",
-    idle: "text-white/65 hover:bg-white/10 hover:text-white",
-    soon: "cursor-not-allowed text-white/25",
+    item: "rounded-full px-3 py-1.5 outline-none transition focus-visible:ring-2 focus-visible:ring-foreground/70 sm:px-4",
+    active: "bg-foreground text-bg",
+    idle: "text-foreground/65 hover:bg-foreground/10 hover:text-foreground",
+    soon: "cursor-not-allowed text-foreground/25",
   },
 };
 

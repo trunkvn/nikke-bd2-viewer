@@ -23,19 +23,19 @@ export default function Home() {
               <span className="absolute -bottom-1 left-0 h-1.5 w-full -skew-x-[30deg] bg-accent" />
             </span>
           </h1>
-          <p className="mt-5 max-w-xl text-white/60">
+          <p className="mt-5 max-w-xl text-foreground/60">
             Chọn một nhân vật để xem animation, đổi trang phục, phóng to, kéo thả và nhấp vào để tương tác.
           </p>
         </div>
         <dl className="relative flex gap-8 font-mono text-xs uppercase tracking-[0.18em]">
           <div aria-hidden className="stripes absolute -inset-x-6 -inset-y-4 [mask-image:linear-gradient(to_left,#000,transparent)]" />
           <div className="relative">
-            <dt className="text-white/40">Units</dt>
-            <dd className="font-display text-3xl font-bold tracking-normal text-white">{characters.length}</dd>
+            <dt className="text-foreground/40">Units</dt>
+            <dd className="font-display text-3xl font-bold tracking-normal text-foreground">{characters.length}</dd>
           </div>
           <div className="relative">
-            <dt className="text-white/40">Skins</dt>
-            <dd className="font-display text-3xl font-bold tracking-normal text-white">{skinCount}</dd>
+            <dt className="text-foreground/40">Skins</dt>
+            <dd className="font-display text-3xl font-bold tracking-normal text-foreground">{skinCount}</dd>
           </div>
         </dl>
       </header>

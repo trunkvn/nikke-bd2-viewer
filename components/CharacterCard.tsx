@@ -64,18 +64,18 @@ export function CharacterCard({ card, eager = false }: { card: CardData; eager?:
 
           <div className="absolute inset-x-0 bottom-0 p-3">
             <h3 className="font-display text-xl font-bold uppercase leading-tight tracking-wide">{card.name}</h3>
-            <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-white/55">
+            <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.14em] text-foreground/55">
               {[card.class, card.weapon].filter(Boolean).join(" · ")}
             </p>
           </div>
         </div>
 
-        <div className="flex items-center justify-between border-t border-white/10 px-3 py-2 font-mono text-[11px] uppercase tracking-widest">
-          <span className="flex items-center gap-2 text-white/70">
+        <div className="flex items-center justify-between border-t border-foreground/10 px-3 py-2 font-mono text-[11px] uppercase tracking-widest">
+          <span className="flex items-center gap-2 text-foreground/70">
             <span className="h-2 w-2 rotate-45 bg-accent" />
             {card.element ?? "—"}
           </span>
-          <span className="text-white/35 transition-colors group-hover:text-accent">
+          <span className="text-foreground/35 transition-colors group-hover:text-accent">
             {card.skinCount > 1 ? `${card.skinCount} SKINS` : "VIEW"} ▸
           </span>
         </div>

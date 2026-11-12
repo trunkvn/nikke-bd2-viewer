@@ -56,7 +56,7 @@ function Chip({
       onClick={onClick}
       style={accentStyle(color)}
       className={`clip-chamfer-sm flex items-center gap-2 px-3 py-1.5 font-display text-sm font-medium tracking-wide outline-none transition focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-accent ${
-        active ? "bg-accent text-black" : "bg-white/[0.06] text-white/75 hover:bg-white/[0.12] hover:text-white"
+        active ? "bg-accent text-black" : "bg-foreground/[0.06] text-foreground/75 hover:bg-foreground/[0.12] hover:text-foreground"
       }`}
     >
       {dot && <span className={`h-1.5 w-1.5 rotate-45 ${active ? "bg-black" : "bg-accent"}`} />}
@@ -176,7 +176,7 @@ export function Gallery({ cards }: { cards: CardData[] }) {
             <svg
               aria-hidden
               viewBox="0 0 24 24"
-              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40"
+              className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/40"
               fill="none"
               stroke="currentColor"
               strokeWidth="2"
@@ -191,7 +191,7 @@ export function Gallery({ cards }: { cards: CardData[] }) {
               value={query.q}
               onChange={(e) => update({ ...query, q: e.target.value })}
               placeholder="Tìm theo tên hoặc tag…"
-              className="clip-chamfer-sm w-full bg-white/[0.06] py-2.5 pl-10 pr-12 text-sm outline-none transition placeholder:text-white/35 focus:bg-white/[0.1] focus:ring-2 focus:ring-inset focus:ring-accent [&::-webkit-search-cancel-button]:hidden"
+              className="clip-chamfer-sm w-full bg-foreground/[0.06] py-2.5 pl-10 pr-12 text-sm outline-none transition placeholder:text-foreground/35 focus:bg-foreground/[0.1] focus:ring-2 focus:ring-inset focus:ring-accent [&::-webkit-search-cancel-button]:hidden"
             />
             {query.q ? (
               <button
@@ -201,12 +201,12 @@ export function Gallery({ cards }: { cards: CardData[] }) {
                   update({ ...query, q: "" });
                   searchRef.current?.focus();
                 }}
-                className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center text-white/50 hover:text-white"
+                className="absolute right-2 top-1/2 flex h-7 w-7 -translate-y-1/2 items-center justify-center text-foreground/50 hover:text-foreground"
               >
                 ✕
               </button>
             ) : (
-              <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-sm border border-white/20 px-1.5 font-mono text-[11px] text-white/40 sm:block">
+              <kbd className="pointer-events-none absolute right-3 top-1/2 hidden -translate-y-1/2 rounded-sm border border-foreground/20 px-1.5 font-mono text-[11px] text-foreground/40 sm:block">
                 /
               </kbd>
             )}
@@ -217,7 +217,7 @@ export function Gallery({ cards }: { cards: CardData[] }) {
               value={query.sort}
               onChange={(e) => update({ ...query, sort: e.target.value as SortKey })}
               aria-label="Sắp xếp"
-              className="clip-chamfer-sm flex-1 bg-white/[0.06] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-inset focus:ring-accent sm:flex-none"
+              className="clip-chamfer-sm flex-1 bg-foreground/[0.06] px-3 py-2.5 text-sm outline-none focus:ring-2 focus:ring-inset focus:ring-accent sm:flex-none"
             >
               <option value="name">Tên A–Z</option>
               <option value="rarity">Độ hiếm</option>
@@ -226,7 +226,7 @@ export function Gallery({ cards }: { cards: CardData[] }) {
               type="button"
               aria-expanded={filtersOpen}
               onClick={() => setFiltersOpen((v) => !v)}
-              className="clip-chamfer-sm flex items-center gap-2 bg-white/[0.06] px-4 py-2.5 font-display text-sm font-medium tracking-wide md:hidden"
+              className="clip-chamfer-sm flex items-center gap-2 bg-foreground/[0.06] px-4 py-2.5 font-display text-sm font-medium tracking-wide md:hidden"
             >
               Bộ lọc{activePills.length > 0 && <span className="text-accent">({activePills.length})</span>}
             </button>
@@ -237,7 +237,7 @@ export function Gallery({ cards }: { cards: CardData[] }) {
           {FILTER_KEYS.map((key) =>
             options[key].length === 0 ? null : (
               <div key={key} className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-4">
-                <span className="w-24 shrink-0 font-mono text-[11px] uppercase tracking-[0.18em] text-white/40">
+                <span className="w-24 shrink-0 font-mono text-[11px] uppercase tracking-[0.18em] text-foreground/40">
                   {FILTER_LABEL[key]}
                 </span>
                 <div className="flex flex-wrap gap-2">
@@ -259,7 +259,7 @@ export function Gallery({ cards }: { cards: CardData[] }) {
       </Panel>
 
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2" aria-live="polite">
-        <p className="font-mono text-xs uppercase tracking-[0.18em] text-white/50">
+        <p className="font-mono text-xs uppercase tracking-[0.18em] text-foreground/50">
           <span className="text-accent">{String(visible.length).padStart(2, "0")}</span>
           {" / "}
           {String(cards.length).padStart(2, "0")} units
@@ -270,9 +270,9 @@ export function Gallery({ cards }: { cards: CardData[] }) {
             type="button"
             onClick={() => toggle(key, value)}
             aria-label={`Bỏ lọc ${FILTER_LABEL[key]} ${value}`}
-            className="clip-chamfer-sm flex items-center gap-1.5 bg-white/[0.08] px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-white/75 hover:bg-white/15"
+            className="clip-chamfer-sm flex items-center gap-1.5 bg-foreground/[0.08] px-2.5 py-1 font-mono text-[11px] uppercase tracking-wider text-foreground/75 hover:bg-foreground/15"
           >
-            {value} <span className="text-white/40">✕</span>
+            {value} <span className="text-foreground/40">✕</span>
           </button>
         ))}
         {activeCount > 0 && (
@@ -288,14 +288,14 @@ export function Gallery({ cards }: { cards: CardData[] }) {
 
       {visible.length === 0 ? (
         <div className="py-20 text-center">
-          <p className="font-display text-5xl font-bold uppercase tracking-widest text-white/10 sm:text-7xl">
+          <p className="font-display text-5xl font-bold uppercase tracking-widest text-foreground/10 sm:text-7xl">
             No signal
           </p>
-          <p className="mt-4 text-white/55">Không có nhân vật nào khớp với bộ lọc hiện tại.</p>
+          <p className="mt-4 text-foreground/55">Không có nhân vật nào khớp với bộ lọc hiện tại.</p>
           <button
             type="button"
             onClick={reset}
-            className="clip-chamfer-sm mt-6 bg-accent px-5 py-2.5 font-display text-sm font-bold uppercase tracking-widest text-black hover:bg-white"
+            className="clip-chamfer-sm mt-6 bg-accent px-5 py-2.5 font-display text-sm font-bold uppercase tracking-widest text-black hover:bg-foreground hover:text-bg"
           >
             Xoá bộ lọc
           </button>
