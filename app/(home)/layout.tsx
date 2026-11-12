@@ -2,7 +2,9 @@ import type { Metadata, Viewport } from "next";
 import Link from "next/link";
 import { Chakra_Petch, Plus_Jakarta_Sans } from "next/font/google";
 import { GameTabs } from "@/components/GameTabs";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { NO_INDEX, SITE_URL } from "@/lib/site";
+import { THEME_INIT_SCRIPT } from "@/lib/themeMode";
 import "./home.css";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -29,11 +31,14 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image", title: "Interactive Anime", description: DESCRIPTION },
 };
 
-export const viewport: Viewport = { themeColor: "#0a0b10", colorScheme: "dark" };
+export const viewport: Viewport = { themeColor: "#0a0b10", colorScheme: "dark light" };
 
 export default function HomeLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="vi" className={`${jakarta.variable} ${chakra.variable} h-full antialiased`}>
+    <html lang="vi" suppressHydrationWarning className={`${jakarta.variable} ${chakra.variable} h-full antialiased`}>
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+      </head>
       <body className="flex min-h-full flex-col">
         <header data-site-header className="sticky top-0 z-40 border-b border-line bg-bg/70 backdrop-blur-xl">
           <div className="mx-auto flex h-14 w-full max-w-6xl items-center gap-4 px-4">
@@ -49,8 +54,9 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
               </span>
               <span className="hidden whitespace-nowrap font-display text-[17px] font-bold tracking-wide sm:inline">Interactive Anime</span>
             </Link>
-            <div className="ml-auto">
+            <div className="ml-auto flex items-center gap-1">
               <GameTabs current="home" variant="home" />
+              <ThemeToggle />
             </div>
           </div>
         </header>

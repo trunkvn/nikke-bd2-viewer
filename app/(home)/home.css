@@ -10,7 +10,25 @@
   --foreground: #eceef4;
   --muted: #98a0b4;
   --line: rgba(255, 255, 255, 0.09);
+  --accent-shade: 0%; /* pha thêm đen vào màu nhấn của từng game trên nền sáng */
+  --hl-a: #f5d90a; /* ba màu của dòng tiêu đề chuyển sắc */
+  --hl-b: #c9b85a;
+  --hl-c: #8b8bf0;
   color-scheme: dark;
+}
+
+/* Giao diện sáng: nền xám xanh nhạt, màu nhấn đậm hơn cho đủ tương phản trên nền trắng. */
+:root[data-theme="light"] {
+  --bg: #f3f4f8;
+  --panel: #ffffff;
+  --foreground: #14161f;
+  --muted: #5d657a;
+  --line: rgba(20, 22, 31, 0.12);
+  --accent-shade: 38%;
+  --hl-a: #a07a00;
+  --hl-b: #7d6a1f;
+  --hl-c: #4747c8;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -45,10 +63,15 @@ body::before {
     radial-gradient(700px 380px at 12% -8%, rgba(245, 217, 10, 0.1), transparent 70%),
     radial-gradient(760px 420px at 88% -10%, rgba(111, 111, 232, 0.16), transparent 70%), var(--bg);
 }
+:root[data-theme="light"] body::before {
+  background:
+    radial-gradient(700px 380px at 12% -8%, rgba(245, 217, 10, 0.22), transparent 70%),
+    radial-gradient(760px 420px at 88% -10%, rgba(111, 111, 232, 0.16), transparent 70%), var(--bg);
+}
 
 ::selection {
-  background: #fff;
-  color: #000;
+  background: var(--foreground);
+  color: var(--bg);
 }
 
 @keyframes fade-up {

@@ -27,14 +27,14 @@ export function GameCard({ game, covers, stats, index }: { game: GameInfo; cover
           covers.slice(0, 3).map((c, i) => (
             <div
               key={c.src}
-              className={`absolute aspect-[3/4] w-[38%] overflow-hidden rounded-xl border border-white/15 bg-black/30 shadow-[0_14px_30px_-10px_rgba(0,0,0,0.8)] transition duration-500 ${FAN[i]}`}
+              className={`absolute aspect-[3/4] w-[38%] overflow-hidden rounded-xl border border-foreground/15 bg-panel/60 shadow-[0_14px_30px_-10px_rgba(0,0,0,0.8)] transition duration-500 ${FAN[i]}`}
             >
               <Image src={c.src} alt={c.name} fill sizes="(min-width: 1024px) 140px, 30vw" className="object-cover object-top" />
             </div>
           ))
         ) : (
           <div className="absolute inset-0 grid place-items-center">
-            <span className="rounded-full border border-dashed border-white/25 px-4 py-1.5 font-display text-sm tracking-widest text-white/50">SẮP CÓ</span>
+            <span className="rounded-full border border-dashed border-foreground/25 px-4 py-1.5 font-display text-sm tracking-widest text-foreground/50">SẮP CÓ</span>
           </div>
         )}
       </div>
@@ -55,7 +55,7 @@ export function GameCard({ game, covers, stats, index }: { game: GameInfo; cover
           </dl>
         )}
         {game.live && (
-          <span className="flex items-center justify-between border-t border-line pt-3 text-sm font-semibold" style={{ color: game.accent }}>
+          <span className="flex items-center justify-between border-t border-line pt-3 text-sm font-semibold" style={{ color: `color-mix(in srgb, ${game.accent}, #000 var(--accent-shade, 0%))` }}>
             Mở gallery
             <span aria-hidden className="transition group-hover:translate-x-1">
               →

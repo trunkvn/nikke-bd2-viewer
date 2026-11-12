@@ -57,7 +57,7 @@ export default function HomePage() {
         <p className="mb-3 text-xs font-semibold uppercase tracking-[0.28em] text-muted">Fan project · Live2D viewer</p>
         <h1 className="font-display text-3xl font-bold leading-[1.1] tracking-tight sm:text-5xl">
           Xem nhân vật game anime,
-          <span className="block bg-gradient-to-r from-[#f5d90a] via-[#c9b85a] to-[#8b8bf0] bg-clip-text text-transparent">chạm vào là họ phản ứng.</span>
+          <span className="block bg-gradient-to-r from-[var(--hl-a)] via-[var(--hl-b)] to-[var(--hl-c)] bg-clip-text text-transparent">chạm vào là họ phản ứng.</span>
         </h1>
         <p className="mt-4 max-w-xl text-base leading-relaxed text-muted">
           Chọn một game. Kéo, phóng to, đổi trang phục, nghe giọng nói và xem các cảnh động của từng nhân vật.
