@@ -42,6 +42,27 @@ node scripts/render-posters.mjs --force          # render lại toàn bộ thumb
 Asset thuộc bản quyền Shift Up / Level Infinite. `public/assets/` và `data/nikke.local.json` đã nằm trong
 `.gitignore`: **đừng commit hay deploy công khai**.
 
+## Ảnh chụp
+
+**NIKKE**: gallery (giao diện tối và sáng) và trang viewer.
+
+![Gallery NIKKE, giao diện tối](docs/screenshots/nikke-gallery.jpg)
+![Gallery NIKKE, giao diện sáng](docs/screenshots/nikke-gallery-light.jpg)
+![Viewer NIKKE](docs/screenshots/nikke-viewer.jpg)
+
+**Brown Dust 2**: gallery, viewer trên máy tính và trên điện thoại.
+
+![Gallery Brown Dust 2](docs/screenshots/bd2-gallery.jpg)
+![Viewer Brown Dust 2](docs/screenshots/bd2-viewer.jpg)
+<img src="docs/screenshots/bd2-viewer-mobile.jpg" alt="Viewer Brown Dust 2 trên điện thoại" width="320">
+
+**Azur Lane** (Live2D): gallery và viewer.
+
+![Gallery Azur Lane](docs/screenshots/azurlane-gallery.jpg)
+![Viewer Azur Lane](docs/screenshots/azurlane-viewer.jpg)
+
+Gallery trong ảnh đã được lọc chỉ còn vài nhân vật; thực tế mỗi trang hiển thị toàn bộ danh sách. Tranh nhân vật thuộc bản quyền của nhà phát hành từng game (xem ghi chú bản quyền ở trên: asset chỉ dùng local, đừng đưa công khai).
+
 ## Giao diện sáng / tối
 
 Nút mặt trời/mặt trăng ở header (cả bốn trang) đổi giữa giao diện sáng và tối. Lựa chọn lưu ở localStorage (khoá `theme`, dùng chung cho mọi trang); chưa chọn thì theo thiết lập sáng/tối của hệ điều hành.
